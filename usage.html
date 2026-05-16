@@ -1,0 +1,1009 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Ollama Fine-Tune Studio — User Guide</title>
+<style>
+:root {
+  --bg: #ffffff;
+  --fg: #1f2328;
+  --muted: #57606a;
+  --accent: #0969da;
+  --accent-soft: #ddf4ff;
+  --border: #d0d7de;
+  --code-bg: #f6f8fa;
+  --code-fg: #1f2328;
+  --table-zebra: #f6f8fa;
+  --shadow: 0 1px 2px rgba(0,0,0,0.04), 0 4px 12px rgba(0,0,0,0.04);
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0d1117;
+    --fg: #e6edf3;
+    --muted: #8b949e;
+    --accent: #58a6ff;
+    --accent-soft: #122036;
+    --border: #30363d;
+    --code-bg: #161b22;
+    --code-fg: #e6edf3;
+    --table-zebra: #161b22;
+    --shadow: 0 1px 2px rgba(0,0,0,0.4), 0 4px 12px rgba(0,0,0,0.3);
+  }
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; scroll-padding-top: 24px; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font: 16px/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Helvetica Neue", Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+header.page {
+  padding: 32px clamp(16px, 4vw, 48px);
+  border-bottom: 1px solid var(--border);
+  background: linear-gradient(180deg, var(--accent-soft) 0%, var(--bg) 100%);
+}
+header.page h1 {
+  margin: 0 0 8px;
+  font-size: clamp(1.6rem, 3vw + 0.5rem, 2.4rem);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+header.page p { margin: 0; color: var(--muted); max-width: 800px; }
+
+.layout {
+  display: grid;
+  grid-template-columns: 1fr;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 24px clamp(16px, 4vw, 48px);
+  gap: 32px;
+}
+@media (min-width: 1024px) {
+  .layout { grid-template-columns: 260px minmax(0, 1fr); }
+}
+
+nav.toc {
+  font-size: 0.92rem;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 16px;
+  background: var(--bg);
+  box-shadow: var(--shadow);
+}
+@media (min-width: 1024px) {
+  nav.toc { position: sticky; top: 24px; align-self: start; max-height: calc(100vh - 48px); overflow: auto; }
+}
+nav.toc .toc-title {
+  font-weight: 600;
+  font-size: 0.78rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 8px;
+}
+nav.toc ul { list-style: none; padding: 0; margin: 0; }
+nav.toc li { margin: 2px 0; }
+nav.toc a { color: var(--fg); text-decoration: none; display: block; padding: 4px 8px; border-radius: 6px; }
+nav.toc a:hover { background: var(--accent-soft); color: var(--accent); }
+nav.toc ul ul { padding-left: 14px; border-left: 1px solid var(--border); margin-left: 8px; }
+
+main.content { min-width: 0; }
+main.content h1, main.content h2, main.content h3, main.content h4 {
+  line-height: 1.25;
+  scroll-margin-top: 24px;
+  margin-top: 1.6em;
+  margin-bottom: 0.5em;
+}
+main.content > :first-child { margin-top: 0; }
+main.content h1 { font-size: clamp(1.4rem, 1.5vw + 1rem, 1.9rem); border-bottom: 1px solid var(--border); padding-bottom: 8px; }
+main.content h2 { font-size: clamp(1.25rem, 1vw + 1rem, 1.55rem); border-bottom: 1px solid var(--border); padding-bottom: 6px; }
+main.content h3 { font-size: 1.2rem; }
+main.content h4 { font-size: 1.05rem; color: var(--muted); }
+
+main.content a { color: var(--accent); text-decoration: none; }
+main.content a:hover { text-decoration: underline; }
+
+main.content p, main.content li { line-height: 1.65; }
+main.content ul, main.content ol { padding-left: 1.4em; }
+main.content li + li { margin-top: 4px; }
+
+main.content code {
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+  font-size: 0.88em;
+  background: var(--code-bg);
+  color: var(--code-fg);
+  padding: 0.15em 0.4em;
+  border-radius: 4px;
+}
+main.content pre {
+  background: var(--code-bg);
+  color: var(--code-fg);
+  padding: 14px 16px;
+  border-radius: 8px;
+  overflow-x: auto;
+  border: 1px solid var(--border);
+  line-height: 1.5;
+  font-size: 0.88rem;
+}
+main.content pre code { background: transparent; padding: 0; font-size: inherit; }
+
+main.content blockquote {
+  margin: 1em 0;
+  padding: 8px 16px;
+  border-left: 3px solid var(--accent);
+  background: var(--accent-soft);
+  color: var(--fg);
+  border-radius: 0 6px 6px 0;
+}
+main.content blockquote p:first-child { margin-top: 0; }
+main.content blockquote p:last-child { margin-bottom: 0; }
+
+main.content hr {
+  border: 0;
+  border-top: 1px solid var(--border);
+  margin: 2em 0;
+}
+
+.table-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  margin: 1em 0;
+  box-shadow: var(--shadow);
+}
+main.content table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.93rem;
+  min-width: 480px;
+}
+main.content th, main.content td {
+  text-align: left;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border);
+  vertical-align: top;
+}
+main.content th {
+  background: var(--code-bg);
+  font-weight: 600;
+  position: sticky;
+  top: 0;
+}
+main.content tr:nth-child(2n) td { background: var(--table-zebra); }
+main.content td code { white-space: nowrap; }
+
+main.content kbd {
+  background: var(--code-bg);
+  border: 1px solid var(--border);
+  border-bottom-width: 2px;
+  border-radius: 4px;
+  padding: 1px 6px;
+  font-family: ui-monospace, monospace;
+  font-size: 0.85em;
+}
+
+a.anchor { color: var(--muted); margin-right: 8px; text-decoration: none; opacity: 0; transition: opacity 0.1s; font-weight: 400; }
+h1:hover a.anchor, h2:hover a.anchor, h3:hover a.anchor, h4:hover a.anchor { opacity: 1; }
+
+footer.page {
+  border-top: 1px solid var(--border);
+  padding: 24px clamp(16px, 4vw, 48px);
+  color: var(--muted);
+  font-size: 0.9rem;
+  text-align: center;
+}
+</style>
+</head>
+<body>
+<header class="page">
+  <h1>Ollama Fine-Tune Studio</h1>
+  <p>User guide: prerequisites, installation, every tab, every parameter, all external APIs, and troubleshooting.</p>
+</header>
+<div class="layout">
+  <nav class="toc" aria-label="Table of contents">
+    <div class="toc-title">On this page</div>
+    <div class="toc">
+<ul>
+<li><a href="#1-prerequisites">1. Prerequisites</a></li>
+<li><a href="#2-installation">2. Installation</a><ul>
+<li><a href="#quick-start-windows">Quick start (Windows)</a></li>
+<li><a href="#manual-install-any-os">Manual install (any OS)</a></li>
+<li><a href="#optional-build-llamacpp-quantization-binary">Optional: build llama.cpp quantization binary</a></li>
+<li><a href="#pull-at-least-one-ollama-model">Pull at least one Ollama model</a></li>
+</ul>
+</li>
+<li><a href="#3-application-stages">3. Application stages</a></li>
+<li><a href="#4-tab-1-configure">4. Tab 1 — Configure</a><ul>
+<li><a href="#41-upload-training-documents">4.1 Upload training documents</a></li>
+<li><a href="#42-tuning-options">4.2 Tuning options</a></li>
+</ul>
+</li>
+<li><a href="#5-tab-2-dataset">5. Tab 2 — Dataset</a><ul>
+<li><a href="#51-approval-banner">5.1 Approval banner</a></li>
+<li><a href="#52-section-1-add-new-dataset-files-optional">5.2 Section 1 — Add new dataset files (optional)</a></li>
+<li><a href="#53-section-2-choose-jsonl-files-to-combine">5.3 Section 2 — Choose JSONL files to combine</a></li>
+<li><a href="#54-section-3-review-merged-dataset">5.4 Section 3 — Review merged dataset</a></li>
+</ul>
+</li>
+<li><a href="#6-tab-3-fine-tune">6. Tab 3 — Fine-tune</a><ul>
+<li><a href="#61-header-summary">6.1 Header summary</a></li>
+<li><a href="#62-the-pipeline-3-internal-steps">6.2 The pipeline (3 internal steps)</a></li>
+<li><a href="#63-training-loss-curve">6.3 Training loss curve</a></li>
+<li><a href="#64-live-log">6.4 Live log</a></li>
+</ul>
+</li>
+<li><a href="#7-tab-4-chat-validate">7. Tab 4 — Chat &amp; validate</a><ul>
+<li><a href="#71-manage-models-expander">7.1 Manage models expander</a></li>
+<li><a href="#72-chat-with-a-model">7.2 Chat with a model</a></li>
+</ul>
+</li>
+<li><a href="#8-parameter-reference">8. Parameter reference</a><ul>
+<li><a href="#81-dataset-generation-configure">8.1 Dataset generation (Configure)</a></li>
+<li><a href="#82-lora-adapter-configure">8.2 LoRA adapter (Configure)</a></li>
+<li><a href="#83-training-loop-configure">8.3 Training loop (Configure)</a></li>
+<li><a href="#84-conversion-registration-configure">8.4 Conversion &amp; registration (Configure)</a></li>
+<li><a href="#85-inference-defaults-configure-used-by-chat-tab-and-embedded-in-the-new-models-modelfile">8.5 Inference defaults (Configure → used by Chat tab AND embedded in the new model's Modelfile)</a></li>
+<li><a href="#86-dataset-tab-additional-fields">8.6 Dataset tab — additional fields</a></li>
+</ul>
+</li>
+<li><a href="#9-external-apis-and-integrations">9. External APIs and integrations</a><ul>
+<li><a href="#wire-format-used-internally">Wire format used internally</a></li>
+</ul>
+</li>
+<li><a href="#10-file-system-layout">10. File system layout</a></li>
+<li><a href="#11-troubleshooting">11. Troubleshooting</a><ul>
+<li><a href="#ollama-unreachable">"Ollama unreachable"</a></li>
+<li><a href="#no-hf-mapping-for-model">"No HF mapping for &lt;model&gt;"</a></li>
+<li><a href="#got-0-pairs-from-n-chunks">"Got 0 pairs from N chunks"</a></li>
+<li><a href="#training-loss-wont-drop-below-25">Training loss won't drop below ~2.5</a></li>
+<li><a href="#element-0-of-tensors-does-not-require-grad">"element 0 of tensors does not require grad"</a></li>
+<li><a href="#out-of-memory-during-training">Out of memory during training</a></li>
+<li><a href="#out-of-memory-during-merge-step">Out of memory during merge step</a></li>
+<li><a href="#llama-quantize-not-found-warning">"llama-quantize not found" warning</a></li>
+<li><a href="#unicodedecodeerror-charmap-on-windows">UnicodeDecodeError 'charmap' on Windows</a></li>
+<li><a href="#the-fine-tuned-model-hallucinates-answers-off-topic">The fine-tuned model hallucinates / answers off-topic</a></li>
+<li><a href="#streamlit-session-widget-error-cannot-be-modified-after-the-widget-x-is-instantiated">Streamlit session widget error: "cannot be modified after the widget X is instantiated"</a></li>
+</ul>
+</li>
+</ul>
+</div>
+
+  </nav>
+  <main class="content">
+<h1 id="ollama-fine-tune-studio-user-guide"><a class="toclink" href="#ollama-fine-tune-studio-user-guide">Ollama Fine-Tune Studio — User Guide</a></h1>
+<p>A Streamlit application that lets you fine-tune any Ollama model on your own documents using LoRA, convert the result to GGUF, register it back with Ollama, and chat with it to validate the result — all from a browser UI.</p>
+<hr>
+<h2 id="1-prerequisites"><a class="toclink" href="#1-prerequisites">1. Prerequisites</a></h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Requirement</th>
+<th>Why it's needed</th>
+<th>How to verify</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Python 3.10+</strong></td>
+<td>Runs the Streamlit app and HuggingFace training stack</td>
+<td><code>python --version</code></td>
+</tr>
+<tr>
+<td><strong>Ollama 0.3+</strong> running locally</td>
+<td>Source models, generation model, final inference</td>
+<td><code>ollama list</code></td>
+</tr>
+<tr>
+<td><strong>Git</strong></td>
+<td>Cloning <code>llama.cpp</code> for GGUF conversion</td>
+<td><code>git --version</code></td>
+</tr>
+<tr>
+<td><strong>~15 GB free disk</strong></td>
+<td>Model downloads, training checkpoints, merged weights, GGUF</td>
+<td>—</td>
+</tr>
+<tr>
+<td><strong>8 GB RAM minimum</strong></td>
+<td>Loading and training even a 0.5B model</td>
+<td>—</td>
+</tr>
+<tr>
+<td><strong>Internet access</strong> (first run only)</td>
+<td>HuggingFace base-model download, <code>llama.cpp</code> clone</td>
+<td>—</td>
+</tr>
+<tr>
+<td><strong>NVIDIA GPU + CUDA</strong> <em>(optional)</em></td>
+<td>Drastically faster training; required for 3B+ models</td>
+<td><code>nvidia-smi</code></td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Reality check on CPU-only machines:</strong> without a GPU, only models up to ~1.1 B parameters are realistic to fine-tune (TinyLlama, Llama 3.2 1B, Qwen 2.5 0.5B). Anything larger will be very slow or run out of memory.</p>
+<p>Make sure Ollama is running in another terminal <em>before</em> you start the app:</p>
+<pre><code class="language-bash">ollama serve
+</code></pre>
+<p>(Skip this if Ollama is installed as a Windows service — it's already running.)</p>
+<hr>
+<h2 id="2-installation"><a class="toclink" href="#2-installation">2. Installation</a></h2>
+<h3 id="quick-start-windows"><a class="toclink" href="#quick-start-windows">Quick start (Windows)</a></h3>
+<pre><code class="language-bat">cd path\to\finetune
+setup.bat
+run.bat
+</code></pre>
+<p><code>setup.bat</code> creates a <code>.venv</code>, installs <code>requirements.txt</code>, and shallow-clones <code>llama.cpp</code> next to the project. <code>run.bat</code> activates the venv and starts Streamlit on port 8501.</p>
+<h3 id="manual-install-any-os"><a class="toclink" href="#manual-install-any-os">Manual install (any OS)</a></h3>
+<pre><code class="language-bash">python -m venv .venv
+.venv\Scripts\activate           # or: source .venv/bin/activate
+pip install -r requirements.txt
+git clone --depth 1 https://github.com/ggerganov/llama.cpp llama.cpp
+pip install -r llama.cpp/requirements.txt
+streamlit run app.py
+</code></pre>
+<p>Open <a href="http://localhost:8501">http://localhost:8501</a>.</p>
+<h3 id="optional-build-llamacpp-quantization-binary"><a class="toclink" href="#optional-build-llamacpp-quantization-binary">Optional: build llama.cpp quantization binary</a></h3>
+<p>By default the GGUF converter writes <code>q8_0</code> files (~500 MB for a 0.5B model). To get smaller <code>q4_k_m</code> / <code>q5_k_m</code> files (~400 MB), build llama.cpp's quantize binary once:</p>
+<pre><code class="language-bash">cd llama.cpp
+cmake -B build
+cmake --build build --config Release
+</code></pre>
+<p>After that the converter auto-detects the binary and uses it.</p>
+<h3 id="pull-at-least-one-ollama-model"><a class="toclink" href="#pull-at-least-one-ollama-model">Pull at least one Ollama model</a></h3>
+<p>If you don't already have any:</p>
+<pre><code class="language-bash">ollama pull qwen2.5:0.5b-instruct       # smallest, CPU-friendly default
+ollama pull qwen3:14b                   # strong generator for Q&amp;A pairs
+</code></pre>
+<hr>
+<h2 id="3-application-stages"><a class="toclink" href="#3-application-stages">3. Application stages</a></h2>
+<p>The app is organized as four sequential tabs, designed to be used left-to-right. State (selected files, approved dataset, training log) is preserved across tabs.</p>
+<pre><code>┌───────────┐   ┌───────────┐   ┌───────────┐   ┌───────────────────┐
+│ Configure │ → │  Dataset  │ → │ Fine-tune │ → │  Chat &amp; validate  │
+└───────────┘   └───────────┘   └───────────┘   └───────────────────┘
+   upload         build,            train             query the new
+   docs +         review,           LoRA →            model, manage
+   set hyper-     approve           merge →           Ollama models,
+   parameters    JSONL              GGUF →            delete unwanted
+                                    register          ones
+</code></pre>
+<p>A <strong>persistent sidebar</strong> is visible on every tab. It contains:</p>
+<ul>
+<li><strong>Ollama model to fine-tune</strong> — the <em>target</em> model that will be LoRA-tuned.</li>
+<li>Status badges (HF base mapping, CPU-friendliness warning).</li>
+<li><strong>Reset all to defaults</strong> button — restores every form field to the recommended preset.</li>
+</ul>
+<hr>
+<h2 id="4-tab-1-configure"><a class="toclink" href="#4-tab-1-configure">4. Tab 1 — Configure</a></h2>
+<p>This tab has two purposes: collect training documents and let the user override training hyperparameters.</p>
+<h3 id="41-upload-training-documents"><a class="toclink" href="#41-upload-training-documents">4.1 Upload training documents</a></h3>
+<p>Drag-and-drop area accepts:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Extension</th>
+<th>Parser</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>.pdf</code></td>
+<td>pypdf — per-page text extraction</td>
+</tr>
+<tr>
+<td><code>.docx</code></td>
+<td>python-docx — paragraph text</td>
+</tr>
+<tr>
+<td><code>.txt</code>, <code>.md</code>, <code>.markdown</code>, <code>.rst</code></td>
+<td>UTF-8 read with replace-on-error</td>
+</tr>
+<tr>
+<td><code>.csv</code>, <code>.json</code>, <code>.py</code></td>
+<td>Treated as plain text</td>
+</tr>
+</tbody>
+</table></div>
+<p>Files are saved to <code>data/uploads/</code>. The "Documents in uploads" expander lists them and lets you delete individual files.</p>
+<h3 id="42-tuning-options"><a class="toclink" href="#42-tuning-options">4.2 Tuning options</a></h3>
+<p>All options are grouped into expanders, each pre-filled with a <strong>recommended default</strong>. The expanders are:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Expander</th>
+<th>What it controls</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Dataset generation</td>
+<td>How documents are chunked and how many Q&amp;A pairs are produced per chunk</td>
+</tr>
+<tr>
+<td>LoRA adapter</td>
+<td>Rank, alpha, dropout, target modules</td>
+</tr>
+<tr>
+<td>Training loop</td>
+<td>Epochs, learning rate, batch size, scheduler, optimizer, fp16/bf16/4-bit</td>
+</tr>
+<tr>
+<td>Conversion &amp; registration</td>
+<td>GGUF quantization, suffix for the new model name</td>
+</tr>
+<tr>
+<td>Inference defaults</td>
+<td>Chat temperature, top-p, max new tokens, system prompt</td>
+</tr>
+</tbody>
+</table></div>
+<p>See <a href="#8-parameter-reference">Parameter reference</a> for what every individual field means and how to tune it.</p>
+<blockquote>
+<p><strong>Tip:</strong> Use the sidebar's <strong>Reset all to defaults</strong> button to reload the recommended preset at any time.</p>
+</blockquote>
+<hr>
+<h2 id="5-tab-2-dataset"><a class="toclink" href="#5-tab-2-dataset">5. Tab 2 — Dataset</a></h2>
+<p>The training set must be reviewed before any LoRA pass — bad pairs lead to model drift. This tab supports <strong>combining multiple sources</strong> (any mix of generated + uploaded + existing JSONL files) into a single approved dataset.</p>
+<h3 id="51-approval-banner"><a class="toclink" href="#51-approval-banner">5.1 Approval banner</a></h3>
+<p>At the top, a status banner tells you whether a dataset is approved:</p>
+<ul>
+<li>✅ <strong>green</strong> → approved file name + pair count; Fine-tune tab is unlocked.</li>
+<li>ℹ️ <strong>blue</strong> → no approval yet; Fine-tune is blocked.</li>
+</ul>
+<h3 id="52-section-1-add-new-dataset-files-optional"><a class="toclink" href="#52-section-1-add-new-dataset-files-optional">5.2 Section 1 — Add new dataset files (optional)</a></h3>
+<p>Two collapsible sub-sections, both available at all times:</p>
+<h4 id="a-generate-from-documents"><a class="toclink" href="#a-generate-from-documents">A. Generate from documents</a></h4>
+<p>A dedicated <strong>Generation model</strong> dropdown lets you pick <em>which</em> Ollama model produces the Q&amp;A pairs (independent of the model being fine-tuned). Use a <strong>strong</strong> model here — tiny models often emit broken JSON and produce 0 pairs per chunk.</p>
+<p>Workflow:
+1. Pick generation model (e.g. <code>qwen3:14b</code> for cleanest JSON).
+2. Click <strong>Generate now</strong>.
+3. The app loads uploaded documents, chunks them, asks the generation model for <code>pairs/chunk</code> Q&amp;A pairs per chunk, parses the JSON, and writes a JSONL file to <code>data/datasets/</code>.
+4. The new file is automatically ticked in the file pool below.</p>
+<p>A live progress bar and log show each chunk's pair count.</p>
+<h4 id="b-upload-my-own-jsonl"><a class="toclink" href="#b-upload-my-own-jsonl">B. Upload my own JSONL</a></h4>
+<p>Drop in a pre-built JSONL file with the schema:</p>
+<pre><code class="language-json">{&quot;messages&quot;: [
+  {&quot;role&quot;: &quot;user&quot;, &quot;content&quot;: &quot;What is X?&quot;},
+  {&quot;role&quot;: &quot;assistant&quot;, &quot;content&quot;: &quot;X is ...&quot;}
+]}
+</code></pre>
+<p>One JSON object per line. Optional <code>"source"</code> field is supported. The app validates every line and shows a metrics summary (valid / total) plus a per-line errors expander.</p>
+<p>Click <strong>Save &amp; add to pool</strong> to copy it to <code>data/datasets/</code> and auto-add it to the file pool.</p>
+<h3 id="53-section-2-choose-jsonl-files-to-combine"><a class="toclink" href="#53-section-2-choose-jsonl-files-to-combine">5.3 Section 2 — Choose JSONL files to combine</a></h3>
+<p>A multi-select widget lists every JSONL in <code>data/datasets/</code>, newest first, with each file's pair count. Tick as many files as you want; total pair count updates live.</p>
+<p>Click <strong>Merge &amp; review →</strong> when the selection looks right.</p>
+<p>A <strong>Download a selected file</strong> popover lets you grab any selected JSONL to inspect outside the app.</p>
+<h3 id="54-section-3-review-merged-dataset"><a class="toclink" href="#54-section-3-review-merged-dataset">5.4 Section 3 — Review merged dataset</a></h3>
+<p>The merged content from all selected files is loaded into an editable table:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>keep</th>
+<th>question</th>
+<th>answer</th>
+<th>source</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>☑</td>
+<td>(editable)</td>
+<td>(editable)</td>
+<td>(read-only — original filename)</td>
+</tr>
+</tbody>
+</table></div>
+<p>Actions:</p>
+<ul>
+<li><strong>Edit</strong> any cell inline (click in).</li>
+<li><strong>Uncheck <code>keep</code></strong> to drop a row.</li>
+<li><strong>Add a row</strong> at the bottom (the <code>+</code> icon).</li>
+<li><strong>Delete a row</strong> by selecting it and pressing Del.</li>
+</ul>
+<p>Live metrics: total rows, marked keep, dropped.</p>
+<p>Two final buttons:</p>
+<ul>
+<li><strong>Save merged as new JSONL</strong> → writes <code>merged-&lt;timestamp&gt;.jsonl</code> to <code>data/datasets/</code> with only your kept + edited rows. Adds it to the pool.</li>
+<li><strong>Approve &amp; use for training</strong> → saves AND locks this file as the approved training dataset. Banner turns green; Fine-tune unlocks.</li>
+</ul>
+<hr>
+<h2 id="6-tab-3-fine-tune"><a class="toclink" href="#6-tab-3-fine-tune">6. Tab 3 — Fine-tune</a></h2>
+<p>Once a dataset is approved, this tab runs the LoRA training pipeline and registers the result with Ollama.</p>
+<h3 id="61-header-summary"><a class="toclink" href="#61-header-summary">6.1 Header summary</a></h3>
+<p>Four metrics across the top show what's about to be trained:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Metric</th>
+<th>Source</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Source model</td>
+<td>Sidebar selection (the target Ollama tag)</td>
+</tr>
+<tr>
+<td>HF base</td>
+<td>The HuggingFace repo mapped to that Ollama tag</td>
+</tr>
+<tr>
+<td>Approved dataset</td>
+<td>Filename from Dataset tab approval</td>
+</tr>
+<tr>
+<td>Training pairs</td>
+<td>Pair count in the approved JSONL</td>
+</tr>
+</tbody>
+</table></div>
+<p>If any is missing, a warning explains what to do.</p>
+<h3 id="62-the-pipeline-3-internal-steps"><a class="toclink" href="#62-the-pipeline-3-internal-steps">6.2 The pipeline (3 internal steps)</a></h3>
+<p>Clicking <strong>Start fine-tuning</strong> runs sequentially:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Step</th>
+<th>What happens</th>
+<th>Output location</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>1 — LoRA train</strong></td>
+<td>Loads HF base in fp32 (CPU) / fp16 (GPU), wraps it with PEFT LoRA, trains on the approved JSONL using <code>transformers.Trainer</code>. Saves the adapter only.</td>
+<td><code>data/checkpoints/&lt;run-id&gt;/adapter/</code></td>
+</tr>
+<tr>
+<td><strong>2 — Merge + GGUF</strong></td>
+<td>Loads base again, merges LoRA weights via <code>peft.PeftModel.merge_and_unload()</code>, saves the merged HF model, then runs llama.cpp's <code>convert_hf_to_gguf.py</code>. Falls back to <code>q8_0</code> if <code>llama-quantize</code> is missing.</td>
+<td><code>data/merged/&lt;run-id&gt;/</code>, <code>data/gguf/&lt;run-id&gt;.&lt;quant&gt;.gguf</code></td>
+</tr>
+<tr>
+<td><strong>3 — Register</strong></td>
+<td>Writes a Modelfile with <code>FROM &lt;gguf&gt;</code>, default temperature, top_p, and system prompt. Runs <code>ollama create &lt;new-name&gt; -f Modelfile</code>.</td>
+<td>New tag in <code>ollama list</code> (e.g. <code>qwen2.5-0.5b-instruct-ft-20260516-070745:latest</code>)</td>
+</tr>
+</tbody>
+</table></div>
+<p>A <strong>live progress bar</strong> advances from 0 → 100 across the three steps.</p>
+<h3 id="63-training-loss-curve"><a class="toclink" href="#63-training-loss-curve">6.3 Training loss curve</a></h3>
+<p>While training runs, a real-time chart plots loss per optimizer step. Curve interpretation:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Shape</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Smooth monotonic descent below ~1.5</td>
+<td>Healthy — model is learning</td>
+</tr>
+<tr>
+<td>Plateau above ~2.5</td>
+<td>Underfit — raise epochs, LoRA rank, or pairs/chunk</td>
+</tr>
+<tr>
+<td>U-shape (goes down then back up)</td>
+<td>Overfit — lower epochs or raise LoRA dropout</td>
+</tr>
+<tr>
+<td>Spiky / oscillating</td>
+<td>Learning rate too high</td>
+</tr>
+</tbody>
+</table></div>
+<p>The curve persists across reruns of the app via <code>st.session_state</code>, so you can compare runs.</p>
+<h3 id="64-live-log"><a class="toclink" href="#64-live-log">6.4 Live log</a></h3>
+<p>Every <code>transformers</code> log line, model load message, GGUF conversion line, and Ollama subprocess line streams into the log box. The last 200 lines are kept; older lines scroll off.</p>
+<hr>
+<h2 id="7-tab-4-chat-validate"><a class="toclink" href="#7-tab-4-chat-validate">7. Tab 4 — Chat &amp; validate</a></h2>
+<h3 id="71-manage-models-expander"><a class="toclink" href="#71-manage-models-expander">7.1 Manage models expander</a></h3>
+<p>A collapsible panel at the top lists every Ollama model on this machine with: name, size, <strong>delete</strong> button. Clicking delete opens a confirmation dialog — only after explicit confirmation is <code>ollama delete</code> called.</p>
+<h3 id="72-chat-with-a-model"><a class="toclink" href="#72-chat-with-a-model">7.2 Chat with a model</a></h3>
+<ul>
+<li><strong>Model to chat with</strong> dropdown — lists every model live (refreshed each render). Defaults to the most-recently-fine-tuned model if one exists.</li>
+<li><strong>Clear chat</strong> button — wipes the conversation buffer.</li>
+<li><strong>Delete model</strong> button — opens the confirmation dialog for the currently-selected model.</li>
+<li><strong>Chat input</strong> — standard Streamlit <code>st.chat_input</code>. The conversation streams from Ollama with the system prompt set in Configure → Inference defaults.</li>
+</ul>
+<p>The conversation uses the inference defaults you configured (temperature, top-p, max new tokens).</p>
+<hr>
+<h2 id="8-parameter-reference"><a class="toclink" href="#8-parameter-reference">8. Parameter reference</a></h2>
+<p>Every form field, in tab order.</p>
+<h3 id="81-dataset-generation-configure"><a class="toclink" href="#81-dataset-generation-configure">8.1 Dataset generation (Configure)</a></h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Default</th>
+<th>Typical range</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Q&amp;A pairs per chunk</strong></td>
+<td>15</td>
+<td>5–20</td>
+<td>How many Q&amp;A pairs to request per chunk. Higher → larger dataset, more redundancy. Small models can't reliably exceed ~10.</td>
+</tr>
+<tr>
+<td><strong>Max chunks (cap)</strong></td>
+<td>30</td>
+<td>5–200</td>
+<td>Hard ceiling on chunks. Keeps CPU runs finite.</td>
+</tr>
+<tr>
+<td><strong>Chunk size (characters)</strong></td>
+<td>300</td>
+<td>200–1000</td>
+<td>Smaller chunks → more chunks → more pairs, but each pair sees less context. Larger chunks → richer content per pair but fewer total chunks.</td>
+</tr>
+<tr>
+<td><strong>Chunk overlap</strong></td>
+<td>50</td>
+<td>0–200</td>
+<td>Characters shared between consecutive chunks. Prevents Q&amp;A topics from being cut off at chunk boundaries.</td>
+</tr>
+<tr>
+<td><strong>Generation temperature</strong></td>
+<td>0.4</td>
+<td>0.0–1.0</td>
+<td>Controls Q&amp;A diversity. Too high → off-topic. Too low → repetitive paraphrases.</td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="82-lora-adapter-configure"><a class="toclink" href="#82-lora-adapter-configure">8.2 LoRA adapter (Configure)</a></h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Default</th>
+<th>Typical range</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>LoRA rank (r)</strong></td>
+<td>16</td>
+<td>4–64</td>
+<td>Capacity of the adapter. Higher r → more parameters → better fit, but slower and uses more RAM.</td>
+</tr>
+<tr>
+<td><strong>LoRA alpha</strong></td>
+<td>32</td>
+<td>r to 4×r</td>
+<td>Effective learning rate scaler. Rule of thumb: <code>alpha = 2 * r</code>.</td>
+</tr>
+<tr>
+<td><strong>LoRA dropout</strong></td>
+<td>0.05</td>
+<td>0.0–0.2</td>
+<td>Regularization. Raise to combat overfit on tiny datasets.</td>
+</tr>
+<tr>
+<td><strong>Target modules</strong></td>
+<td><code>auto</code></td>
+<td>comma list or <code>auto</code></td>
+<td>Which transformer modules to LoRA-tune. <code>auto</code> lets PEFT pick (works for most architectures). For Llama/Qwen: <code>q_proj,k_proj,v_proj,o_proj</code>.</td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="83-training-loop-configure"><a class="toclink" href="#83-training-loop-configure">8.3 Training loop (Configure)</a></h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Default</th>
+<th>Typical range</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Epochs</strong></td>
+<td>8</td>
+<td>1–30</td>
+<td>Passes over the dataset. Tiny datasets (&lt; 100 pairs) need more (10-20); large datasets need fewer (2-3).</td>
+</tr>
+<tr>
+<td><strong>Learning rate</strong></td>
+<td>3e-4</td>
+<td>1e-5 to 1e-3</td>
+<td>LoRA loves 1e-4 to 5e-4. Too high → spiky loss curve. Too low → no learning.</td>
+</tr>
+<tr>
+<td><strong>Per-device batch size</strong></td>
+<td>1</td>
+<td>1–8 (CPU), 1–64 (GPU)</td>
+<td>How many examples per forward pass. CPU users almost always need 1.</td>
+</tr>
+<tr>
+<td><strong>Grad accumulation steps</strong></td>
+<td>4</td>
+<td>1–32</td>
+<td>Effective batch = <code>batch_size × grad_accum</code>. Use this to simulate larger batches without the memory cost.</td>
+</tr>
+<tr>
+<td><strong>Max sequence length</strong></td>
+<td>384</td>
+<td>128–2048</td>
+<td>Truncates examples to this many tokens. Lower → less RAM, faster. Q&amp;A pairs are short — 384 is plenty.</td>
+</tr>
+<tr>
+<td><strong>Random seed</strong></td>
+<td>42</td>
+<td>any int</td>
+<td>Makes runs reproducible.</td>
+</tr>
+<tr>
+<td><strong>Warmup ratio</strong></td>
+<td>0.03</td>
+<td>0.0–0.1</td>
+<td>Fraction of training spent ramping LR from 0 to peak.</td>
+</tr>
+<tr>
+<td><strong>Weight decay</strong></td>
+<td>0.0</td>
+<td>0.0–0.1</td>
+<td>L2 regularization. LoRA usually doesn't need it.</td>
+</tr>
+<tr>
+<td><strong>LR scheduler</strong></td>
+<td><code>cosine</code></td>
+<td>cosine / linear / constant / constant_with_warmup</td>
+<td>How LR changes over training.</td>
+</tr>
+<tr>
+<td><strong>Optimizer</strong></td>
+<td><code>adamw_torch</code></td>
+<td><code>adamw_torch</code> / <code>adamw_torch_fused</code> / <code>adafactor</code> / <code>sgd</code></td>
+<td>AdamW is the default everywhere. Adafactor uses less RAM.</td>
+</tr>
+<tr>
+<td><strong>Use 4-bit (QLoRA)</strong></td>
+<td>off</td>
+<td>GPU only</td>
+<td>Loads base model in 4-bit via bitsandbytes. Required for ≥7B models on consumer GPUs.</td>
+</tr>
+<tr>
+<td><strong>fp16</strong> / <strong>bf16</strong></td>
+<td>off</td>
+<td>GPU only</td>
+<td>Half-precision training. bf16 is preferred on Ampere+ GPUs.</td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="84-conversion-registration-configure"><a class="toclink" href="#84-conversion-registration-configure">8.4 Conversion &amp; registration (Configure)</a></h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Default</th>
+<th>Choices</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>GGUF quantization</strong></td>
+<td><code>q4_k_m</code></td>
+<td><code>q4_k_m</code> / <code>q5_k_m</code> / <code>q8_0</code> / <code>f16</code></td>
+<td>Output GGUF size vs quality. <code>q4_k_m</code> requires <code>llama-quantize</code> binary (else falls back to <code>q8_0</code>).</td>
+</tr>
+<tr>
+<td><strong>New model name suffix</strong></td>
+<td><code>ft</code></td>
+<td>any string</td>
+<td>Final tag = <code>&lt;original-name&gt;-&lt;suffix&gt;-&lt;timestamp&gt;</code>.</td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="85-inference-defaults-configure-used-by-chat-tab-and-embedded-in-the-new-models-modelfile"><a class="toclink" href="#85-inference-defaults-configure-used-by-chat-tab-and-embedded-in-the-new-models-modelfile">8.5 Inference defaults (Configure → used by Chat tab AND embedded in the new model's Modelfile)</a></h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Default</th>
+<th>Range</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Chat temperature</strong></td>
+<td>0.3</td>
+<td>0.0–1.5</td>
+<td>Lower → more deterministic, less drift to base-model priors. Higher → more creative.</td>
+</tr>
+<tr>
+<td><strong>Chat top-p</strong></td>
+<td>0.9</td>
+<td>0.0–1.0</td>
+<td>Nucleus sampling. 0.9 is a sane default.</td>
+</tr>
+<tr>
+<td><strong>Max new tokens</strong></td>
+<td>512</td>
+<td>32–8192</td>
+<td>Maximum length of each reply.</td>
+</tr>
+<tr>
+<td><strong>System prompt</strong></td>
+<td>(grounding prompt)</td>
+<td>any text</td>
+<td>Injected before every chat turn. Use this to constrain the model's behavior (e.g. "Do not generate code").</td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="86-dataset-tab-additional-fields"><a class="toclink" href="#86-dataset-tab-additional-fields">8.6 Dataset tab — additional fields</a></h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Default</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Generation model</strong></td>
+<td>same as sidebar's target</td>
+<td>Pick a STRONG model here (qwen3:14b, mistral-nemo:12b). Has no effect on what gets fine-tuned.</td>
+</tr>
+</tbody>
+</table></div>
+<hr>
+<h2 id="9-external-apis-and-integrations"><a class="toclink" href="#9-external-apis-and-integrations">9. External APIs and integrations</a></h2>
+<p>The application does NOT call any cloud LLM API. All inference happens via local Ollama. The only external network calls are:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Endpoint</th>
+<th>Purpose</th>
+<th>When</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>http://localhost:11434/api/tags</code></td>
+<td>List Ollama models</td>
+<td>Every page render (<code>pipeline/ollama_client.list_models</code>)</td>
+</tr>
+<tr>
+<td><code>http://localhost:11434/api/chat</code></td>
+<td>Chat with a model</td>
+<td>Streaming chat (Chat tab) AND Q&amp;A generation (Dataset tab)</td>
+</tr>
+<tr>
+<td><code>http://localhost:11434/api/delete</code></td>
+<td>Delete a model</td>
+<td>When user confirms deletion in Manage models dialog</td>
+</tr>
+<tr>
+<td><code>ollama create -f Modelfile</code> (CLI subprocess)</td>
+<td>Register the fine-tuned GGUF as a new model tag</td>
+<td>Final step of every Fine-tune run</td>
+</tr>
+<tr>
+<td><code>https://huggingface.co/&lt;repo&gt;</code></td>
+<td>Download base model weights via <code>transformers.from_pretrained</code></td>
+<td>First fine-tune of a previously-unused base model</td>
+</tr>
+<tr>
+<td><code>https://github.com/ggerganov/llama.cpp</code></td>
+<td>Shallow clone for GGUF conversion script</td>
+<td>First Fine-tune ever (or first run after deleting <code>llama.cpp/</code>)</td>
+</tr>
+</tbody>
+</table></div>
+<p>If you want to use <strong>gated HuggingFace models</strong> (Llama 3, Mistral, etc.) you must accept their license on huggingface.co AND set <code>HF_TOKEN</code> in the environment or run <code>huggingface-cli login</code>.</p>
+<h3 id="wire-format-used-internally"><a class="toclink" href="#wire-format-used-internally">Wire format used internally</a></h3>
+<p>The training JSONL uses OpenAI-style chat messages:</p>
+<pre><code class="language-json">{
+  &quot;messages&quot;: [
+    {&quot;role&quot;: &quot;user&quot;, &quot;content&quot;: &quot;...&quot;},
+    {&quot;role&quot;: &quot;assistant&quot;, &quot;content&quot;: &quot;...&quot;}
+  ],
+  &quot;source&quot;: &quot;tuning.txt&quot;
+}
+</code></pre>
+<p>The trainer formats each example through the tokenizer's chat template, computes loss on the full sequence (including the user turn — standard SFT setup).</p>
+<hr>
+<h2 id="10-file-system-layout"><a class="toclink" href="#10-file-system-layout">10. File system layout</a></h2>
+<pre><code>finetune/
+├── app.py                  # Streamlit entry — all UI lives here
+├── config.py               # DEFAULT_CONFIG + Ollama → HF mapping
+├── requirements.txt
+├── setup.bat / run.bat
+├── pipeline/
+│   ├── __init__.py
+│   ├── ollama_client.py    # list / generate / chat-stream / create / delete wrappers
+│   ├── document_loader.py  # PDF/DOCX/TXT/MD/CSV/JSON/PY parsing + chunking
+│   ├── dataset_builder.py  # JSONL Q&amp;A generation using an Ollama model
+│   ├── trainer.py          # PEFT LoRA training, gradient checkpointing, metric callback
+│   └── converter.py        # LoRA merge → GGUF via llama.cpp → Ollama register
+├── data/                   # All gitignored
+│   ├── uploads/            # Your source documents
+│   ├── datasets/           # Generated/uploaded/edited JSONL files
+│   ├── checkpoints/        # LoRA adapter weights, one folder per run
+│   ├── merged/             # Merged HF models (adapter folded into base)
+│   └── gguf/               # GGUF + Modelfile pairs
+└── llama.cpp/              # Cloned automatically on first Fine-tune (gitignored)
+</code></pre>
+<p>You can freely delete anything in <code>data/</code> to reclaim disk; just keep <code>data/uploads/</code> if you want to regenerate datasets.</p>
+<hr>
+<h2 id="11-troubleshooting"><a class="toclink" href="#11-troubleshooting">11. Troubleshooting</a></h2>
+<h3 id="ollama-unreachable"><a class="toclink" href="#ollama-unreachable">"Ollama unreachable"</a></h3>
+<p><code>ollama serve</code> isn't running, or the daemon crashed.</p>
+<pre><code class="language-bash">ollama serve            # starts the daemon in the foreground
+</code></pre>
+<p>Or check the Windows service: <code>Get-Service Ollama</code> in PowerShell.</p>
+<h3 id="no-hf-mapping-for-model"><a class="toclink" href="#no-hf-mapping-for-model">"No HF mapping for <code>&lt;model&gt;</code>"</a></h3>
+<p>The selected Ollama tag isn't in <code>OLLAMA_TO_HF</code> inside <code>config.py</code>. Add an entry:</p>
+<pre><code class="language-python">&quot;my-model:tag&quot;: &quot;huggingface-user/MyModel-Instruct&quot;,
+</code></pre>
+<p>LoRA fine-tuning needs the original HF weights — Ollama only ships GGUF.</p>
+<h3 id="got-0-pairs-from-n-chunks"><a class="toclink" href="#got-0-pairs-from-n-chunks">"Got 0 pairs from N chunks"</a></h3>
+<p>The generation model is producing broken JSON. Fix by:</p>
+<ol>
+<li>Dataset tab → Generate from documents → set <strong>Generation model</strong> to a stronger model like <code>qwen3:14b</code> or <code>qwen2.5-coder:14b</code>. The tiny 0.5B model is unreliable at structured output.</li>
+<li>Lower <strong>Q&amp;A pairs per chunk</strong> to 5–8.</li>
+<li>Increase <strong>Chunk size</strong> to 400–500 so each chunk has enough content to support many distinct questions.</li>
+</ol>
+<h3 id="training-loss-wont-drop-below-25"><a class="toclink" href="#training-loss-wont-drop-below-25">Training loss won't drop below ~2.5</a></h3>
+<p>Underfit. Try (in order):</p>
+<ol>
+<li>More training data — generate again with <code>pairs/chunk = 15</code> and <code>chunk_size = 300</code> to get more diverse pairs from the same documents.</li>
+<li>More epochs — bump from 8 to 15-20.</li>
+<li>Larger LoRA rank — bump from 16 to 32.</li>
+<li>Larger base model — <code>qwen2.5:3b-instruct</code> will fit much more capacity (slower on CPU).</li>
+</ol>
+<h3 id="element-0-of-tensors-does-not-require-grad"><a class="toclink" href="#element-0-of-tensors-does-not-require-grad">"element 0 of tensors does not require grad"</a></h3>
+<p>Already fixed in <code>pipeline/trainer.py</code>: gradient checkpointing + PEFT needs <code>model.enable_input_require_grads()</code> and <code>use_reentrant=False</code>. If you somehow regress, this is the cause.</p>
+<h3 id="out-of-memory-during-training"><a class="toclink" href="#out-of-memory-during-training">Out of memory during training</a></h3>
+<p>Lower in this order:</p>
+<ol>
+<li><strong><code>per_device_batch_size</code></strong> to 1</li>
+<li><strong><code>max_seq_length</code></strong> to 256 or 128</li>
+<li>Increase <strong><code>gradient_accumulation_steps</code></strong> to compensate</li>
+<li>Pick a smaller base model</li>
+</ol>
+<h3 id="out-of-memory-during-merge-step"><a class="toclink" href="#out-of-memory-during-merge-step">Out of memory during merge step</a></h3>
+<p>The merge loads the full base model in fp16. For 7B+ models you need ~16 GB RAM. Close other apps, or skip merge by manually serving the LoRA adapter via vLLM/transformers — but Ollama needs a GGUF.</p>
+<h3 id="llama-quantize-not-found-warning"><a class="toclink" href="#llama-quantize-not-found-warning">"llama-quantize not found" warning</a></h3>
+<p>The converter automatically falls back to <code>q8_0</code> (~500 MB for 0.5B). To get true <code>q4_k_m</code> (~400 MB), build llama.cpp:</p>
+<pre><code class="language-bash">cd llama.cpp
+cmake -B build
+cmake --build build --config Release
+</code></pre>
+<h3 id="unicodedecodeerror-charmap-on-windows"><a class="toclink" href="#unicodedecodeerror-charmap-on-windows">UnicodeDecodeError 'charmap' on Windows</a></h3>
+<p>Already fixed: <code>ollama create</code> output is UTF-8 with spinner glyphs; the subprocess is now opened with <code>encoding="utf-8", errors="replace"</code>. If you regress, this is the cause.</p>
+<h3 id="the-fine-tuned-model-hallucinates-answers-off-topic"><a class="toclink" href="#the-fine-tuned-model-hallucinates-answers-off-topic">The fine-tuned model hallucinates / answers off-topic</a></h3>
+<p>Two causes:</p>
+<ol>
+<li>Dataset too small → model didn't learn the domain → falls back to base-model priors. See "Training loss won't drop below 2.5" above.</li>
+<li>System prompt isn't constraining behavior. Edit Configure → Inference defaults → System prompt to explicitly fence off failure modes, e.g.:</li>
+</ol>
+<pre><code class="language-text">You are HealthPlan Assist, a virtual assistant for insurance advisors.
+You only answer using the company policy documents you were trained on.
+If a question is outside that scope, say so briefly.
+Do not generate code or unrelated examples.
+</code></pre>
+<p>The system prompt is embedded in the GGUF Modelfile at registration time, so every subsequent chat session uses it automatically.</p>
+<h3 id="streamlit-session-widget-error-cannot-be-modified-after-the-widget-x-is-instantiated"><a class="toclink" href="#streamlit-session-widget-error-cannot-be-modified-after-the-widget-x-is-instantiated">Streamlit session widget error: "cannot be modified after the widget X is instantiated"</a></h3>
+<p>This is a Streamlit rule: any widget with a <code>key=</code> parameter "owns" that key. You can't assign to <code>st.session_state[key]</code> after the widget renders. In this codebase we use a separate non-widget-bound key (e.g. <code>dataset_pool</code>) plus a versioned widget key (e.g. <code>ms_files_v0</code>, <code>ms_files_v1</code>) to programmatically refresh the multi-select.</p>
+<hr>
+<p><em>Last updated: 2026-05.</em></p>
+  </main>
+</div>
+<footer class="page">Standalone documentation — open this file directly in any browser. No internet required.</footer>
+</body>
+</html>
