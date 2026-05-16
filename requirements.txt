@@ -1,0 +1,16 @@
+streamlit>=1.39
+ollama>=0.4.0
+transformers>=4.46
+peft>=0.13
+datasets>=3.0
+accelerate>=1.0
+trl>=0.11
+sentencepiece>=0.2
+protobuf>=4.25
+safetensors>=0.4
+torch>=2.4
+pypdf>=5.0
+python-docx>=1.1
+huggingface-hub>=0.25
+tqdm>=4.66
+gguf>=0.10
