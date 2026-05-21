@@ -1,15 +1,20 @@
 """Merge LoRA adapter → convert to GGUF → register with Ollama."""
 from __future__ import annotations
 
+import json
 import os
+import re
 import shutil
 import subprocess
 import sys
+from datetime import datetime
 from pathlib import Path
-from typing import Callable
+from typing import Callable, Literal
 
 from config import GGUF_DIR, LLAMA_CPP_DIR, MERGED_DIR
 from . import ollama_client
+
+FolderKind = Literal["adapter", "merged", "unknown"]
 
 
 def merge_lora(adapter_dir: Path, base_model_repo: str, out_dir: Path,
@@ -173,3 +178,174 @@ def register_with_ollama(name: str, modelfile: Path,
     for line in ollama_client.create_model(name, str(modelfile)):
         log(line)
     return name
+
+
+# ---------------------------------------------------------------------------
+# Bring-your-own-adapter: register an externally fine-tuned folder with Ollama
+# ---------------------------------------------------------------------------
+def _has_model_weights(folder: Path) -> bool:
+    """A merged HF model has either model.safetensors or *.bin shards."""
+    if (folder / "model.safetensors").exists():
+        return True
+    if (folder / "model.safetensors.index.json").exists():
+        return True
+    if any(folder.glob("pytorch_model*.bin")):
+        return True
+    if any(folder.glob("model-*-of-*.safetensors")):
+        return True
+    return False
+
+
+def inspect_external_folder(path: Path) -> dict:
+    """Identify what's in a user-supplied fine-tune folder.
+
+    Returns: {
+        "kind": "adapter" | "merged" | "unknown",
+        "base_model": str | None,
+        "has_tokenizer": bool,
+        "notes": list[str],
+    }
+    """
+    notes: list[str] = []
+    info = {"kind": "unknown", "base_model": None,
+            "has_tokenizer": False, "notes": notes}
+
+    if not path.exists() or not path.is_dir():
+        notes.append(f"Path does not exist or is not a directory: {path}")
+        return info
+
+    adapter_cfg = path / "adapter_config.json"
+    model_cfg = path / "config.json"
+
+    if adapter_cfg.exists():
+        info["kind"] = "adapter"
+        try:
+            data = json.loads(adapter_cfg.read_text(encoding="utf-8"))
+            info["base_model"] = data.get("base_model_name_or_path")
+        except Exception as exc:
+            notes.append(f"Could not parse adapter_config.json: {exc}")
+        if not (path / "adapter_model.safetensors").exists() and \
+                not (path / "adapter_model.bin").exists():
+            notes.append("No adapter_model.safetensors / .bin found — "
+                         "merge will fail.")
+    elif model_cfg.exists() and _has_model_weights(path):
+        info["kind"] = "merged"
+        try:
+            data = json.loads(model_cfg.read_text(encoding="utf-8"))
+            info["base_model"] = data.get("_name_or_path") or \
+                                 data.get("name_or_path")
+        except Exception as exc:
+            notes.append(f"Could not parse config.json: {exc}")
+    else:
+        notes.append(
+            "Folder contains neither adapter_config.json nor a full HF model "
+            "(config.json + weights). If this is a Trainer output, try a "
+            "subdirectory like checkpoint-XXXX/."
+        )
+
+    if (path / "tokenizer.json").exists() or \
+            (path / "tokenizer_config.json").exists() or \
+            (path / "tokenizer.model").exists():
+        info["has_tokenizer"] = True
+    elif info["kind"] != "unknown":
+        notes.append("No tokenizer files in folder — GGUF conversion may fail "
+                     "unless the base model's tokenizer is fetched from HF.")
+
+    return info
+
+
+def _slugify_for_ollama(name: str) -> str:
+    """Ollama tags accept letters/digits/_/-/. — turn anything else into '-'."""
+    name = name.strip().lower()
+    name = re.sub(r"[^a-z0-9._-]+", "-", name)
+    name = re.sub(r"-+", "-", name).strip("-.")
+    return name or "imported"
+
+
+def suggest_ollama_name(adapter_path: Path, base_model: str | None) -> str:
+    """Build a reasonable default Ollama tag from the folder + base model."""
+    ts = datetime.now().strftime("%Y%m%d-%H%M%S")
+    if base_model:
+        base = base_model.split("/")[-1]
+    else:
+        base = adapter_path.name
+    return f"{_slugify_for_ollama(base)}-imported-{ts}"
+
+
+def import_external_to_ollama(
+    folder: Path,
+    *,
+    base_model_repo: str | None,
+    ollama_name: str,
+    quant: str = "q4_k_m",
+    system_prompt: str = "",
+    temperature: float = 0.3,
+    top_p: float = 0.9,
+    mode: FolderKind = "unknown",
+    log_cb: Callable[[str], None] | None = None,
+) -> dict:
+    """Take a user-supplied folder and register it with Ollama.
+
+    `mode` is either "adapter" (always merge), "merged" (skip merge), or
+    "unknown" (auto-detect via inspect_external_folder).
+
+    Returns the final paths and the Ollama tag.
+    """
+    def log(m: str) -> None:
+        if log_cb:
+            log_cb(m)
+
+    folder = Path(folder)
+    if not folder.exists() or not folder.is_dir():
+        raise ValueError(f"Folder not found: {folder}")
+
+    if mode == "unknown":
+        info = inspect_external_folder(folder)
+        detected = info["kind"]
+        if detected == "unknown":
+            raise ValueError(
+                "Could not detect folder kind. " +
+                (" ".join(info["notes"]) or "")
+            )
+        mode = detected  # type: ignore[assignment]
+        log(f"Auto-detected folder kind: {mode}")
+        if info["base_model"] and not base_model_repo:
+            base_model_repo = info["base_model"]
+            log(f"Auto-detected base model: {base_model_repo}")
+
+    run_id = _slugify_for_ollama(folder.name) + "-" + \
+             datetime.now().strftime("%Y%m%d-%H%M%S")
+
+    if mode == "adapter":
+        if not base_model_repo:
+            raise ValueError(
+                "Base HF model repo is required to merge a LoRA adapter "
+                "(e.g. 'TinyLlama/TinyLlama-1.1B-Chat-v1.0')."
+            )
+        merged_dir = MERGED_DIR / run_id
+        merge_lora(folder, base_model_repo, merged_dir, log_cb=log_cb)
+    elif mode == "merged":
+        merged_dir = folder
+        log(f"Skipping merge — using merged folder directly: {merged_dir}")
+    else:
+        raise ValueError(f"Unsupported mode: {mode}")
+
+    requested_gguf = GGUF_DIR / f"{run_id}.{quant}.gguf"
+    gguf_path = convert_to_gguf(merged_dir, requested_gguf,
+                                quant=quant, log_cb=log_cb)
+
+    modelfile = write_modelfile(
+        gguf_path,
+        system_prompt=system_prompt,
+        temperature=temperature,
+        top_p=top_p,
+    )
+    ollama_tag = _slugify_for_ollama(ollama_name)
+    register_with_ollama(ollama_tag, modelfile, log_cb=log_cb)
+
+    return {
+        "ollama_name": ollama_tag,
+        "merged_dir": str(merged_dir),
+        "gguf_path": str(gguf_path),
+        "modelfile": str(modelfile),
+    }

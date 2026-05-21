@@ -1,0 +1,787 @@
+<!doctype html><html><head><meta charset='utf-8'><title>Eval report — tinyllama20may:latest</title><style>
+body { font-family: -apple-system, Segoe UI, Roboto, sans-serif;
+       margin: 24px; color: #222; background: #fafafa; }
+h1 { margin: 0 0 4px 0; }
+.subtle { color: #666; font-size: 0.9rem; }
+.summary { display: flex; gap: 16px; margin: 20px 0; flex-wrap: wrap; }
+.card { background: white; border: 1px solid #ddd; border-radius: 8px;
+        padding: 12px 18px; min-width: 110px; }
+.card .v { font-size: 1.8rem; font-weight: 600; }
+.card .l { font-size: 0.8rem; text-transform: uppercase; color: #777;
+           letter-spacing: 0.5px; }
+.card.pass .v { color: #1f883d; }
+.card.fail .v { color: #cf222e; }
+table { border-collapse: collapse; width: 100%; background: white;
+        border: 1px solid #ddd; border-radius: 8px; overflow: hidden; }
+th, td { text-align: left; padding: 8px 12px;
+         border-bottom: 1px solid #eee; font-size: 0.95rem; }
+th { background: #f5f5f5; font-weight: 600; }
+tr:last-child td { border-bottom: none; }
+.task-acc.good { color: #1f883d; font-weight: 600; }
+.task-acc.bad  { color: #cf222e; font-weight: 600; }
+.task-acc.mid  { color: #9a6700; font-weight: 600; }
+details { background: white; border: 1px solid #ddd; border-radius: 8px;
+          margin: 8px 0; padding: 0; }
+details summary { padding: 10px 14px; cursor: pointer; user-select: none;
+                  display: flex; gap: 12px; align-items: center; }
+details summary::-webkit-details-marker { display: none; }
+details summary::before { content: "▶"; font-size: 0.8rem; color: #999;
+                          transition: transform 0.15s; }
+details[open] summary::before { transform: rotate(90deg); }
+.badge { padding: 2px 8px; border-radius: 12px; font-size: 0.75rem;
+         font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+.badge.pass { background: #dcfce7; color: #166534; }
+.badge.fail { background: #fee2e2; color: #991b1b; }
+.badge.task { background: #e0e7ff; color: #3730a3; }
+.summary-text { color: #444; flex: 1; }
+.summary-text .u { font-family: ui-monospace, Menlo, Consolas, monospace; }
+.detail-grid { padding: 14px 18px 18px 18px; display: grid;
+               grid-template-columns: 100px 1fr; gap: 8px 16px;
+               border-top: 1px solid #eee; }
+.detail-grid .label { font-weight: 600; color: #555; font-size: 0.85rem;
+                      text-transform: uppercase; letter-spacing: 0.5px; }
+.detail-grid pre { margin: 0; padding: 8px 12px; background: #f8f8f8;
+                   border: 1px solid #e5e5e5; border-radius: 4px;
+                   white-space: pre-wrap; word-wrap: break-word;
+                   font-family: ui-monospace, Menlo, Consolas, monospace;
+                   font-size: 0.85rem; max-height: 300px; overflow: auto; }
+.controls { margin: 16px 0 8px 0; display: flex; gap: 8px;
+            align-items: center; flex-wrap: wrap; }
+.controls .filter { padding: 6px 12px; border: 1px solid #ccc;
+                    background: white; border-radius: 6px; cursor: pointer;
+                    font-size: 0.9rem; }
+.controls .filter.active { background: #222; color: white;
+                           border-color: #222; }
+.hide-pass details.row.pass { display: none; }
+.hide-fail details.row.fail { display: none; }
+</style></head><body><h1>Evaluation report</h1><div class='subtle'>Model: <code>tinyllama20may:latest</code> · Run at 2026-05-21 10:04:54 · System prompt sent</div><div class='summary'><div class='card'><div class='v'>114</div><div class='l'>Total</div></div><div class='card pass'><div class='v'>96</div><div class='l'>Passed</div></div><div class='card fail'><div class='v'>18</div><div class='l'>Failed</div></div><div class='card'><div class='v'>84.2%</div><div class='l'>Accuracy</div></div></div><h2>Per-task breakdown</h2><table><thead><tr><th>Task</th><th>Passed</th><th>Failed</th><th>Total</th><th>Accuracy</th></tr></thead><tbody><tr><td>assisted_care_year</td><td>2</td><td>1</td><td>3</td><td class='task-acc bad'>66.7%</td></tr><tr><td>birthdate</td><td>3</td><td>0</td><td>3</td><td class='task-acc good'>100.0%</td></tr><tr><td>change_state_detection</td><td>1</td><td>2</td><td>3</td><td class='task-acc bad'>33.3%</td></tr><tr><td>change_state_identifier</td><td>3</td><td>0</td><td>3</td><td class='task-acc good'>100.0%</td></tr><tr><td>concierge_charge</td><td>3</td><td>0</td><td>3</td><td class='task-acc good'>100.0%</td></tr><tr><td>current_savings</td><td>2</td><td>1</td><td>3</td><td class='task-acc bad'>66.7%</td></tr><tr><td>current_zipcode</td><td>3</td><td>0</td><td>3</td><td class='task-acc good'>100.0%</td></tr><tr><td>dental</td><td>3</td><td>0</td><td>3</td><td class='task-acc good'>100.0%</td></tr><tr><td>funding_modification_decision</td><td>3</td><td>0</td><td>3</td><td class='task-acc good'>100.0%</td></tr><tr><td>gender</td><td>1</td><td>2</td><td>3</td><td class='task-acc bad'>33.3%</td></tr><tr><td>go_to_home_identifier</td><td>2</td><td>1</td><td>3</td><td class='task-acc bad'>66.7%</td></tr><tr><td>health_profile</td><td>2</td><td>1</td><td>3</td><td class='task-acc bad'>66.7%</td></tr><tr><td>healthcare_funding_decide</td><td>2</td><td>1</td><td>3</td><td class='task-acc bad'>66.7%</td></tr><tr><td>healthcare_profile_state</td><td>2</td><td>1</td><td>3</td><td class='task-acc bad'>66.7%</td></tr><tr><td>healthcare_state_extraction</td><td>3</td><td>0</td><td>3</td><td class='task-acc good'>100.0%</td></tr><tr><td>illustration_choice</td><td>2</td><td>1</td><td>3</td><td class='task-acc bad'>66.7%</td></tr><tr><td>investment_profile</td><td>3</td><td>0</td><td>3</td><td class='task-acc good'>100.0%</td></tr><tr><td>level_of_protection</td><td>3</td><td>0</td><td>3</td><td class='task-acc good'>100.0%</td></tr><tr><td>life_expectancy</td><td>3</td><td>0</td><td>3</td><td class='task-acc good'>100.0%</td></tr><tr><td>ltc_iul_decide</td><td>3</td><td>0</td><td>3</td><td class='task-acc good'>100.0%</td></tr><tr><td>ltc_profile_state</td><td>3</td><td>0</td><td>3</td><td class='task-acc good'>100.0%</td></tr><tr><td>ltc_state_extraction</td><td>2</td><td>1</td><td>3</td><td class='task-acc bad'>66.7%</td></tr><tr><td>magi_tier</td><td>0</td><td>3</td><td>3</td><td class='task-acc bad'>0.0%</td></tr><tr><td>match_type</td><td>3</td><td>0</td><td>3</td><td class='task-acc good'>100.0%</td></tr><tr><td>part_a</td><td>2</td><td>1</td><td>3</td><td class='task-acc bad'>66.7%</td></tr><tr><td>part_b</td><td>3</td><td>0</td><td>3</td><td class='task-acc good'>100.0%</td></tr><tr><td>part_d</td><td>3</td><td>0</td><td>3</td><td class='task-acc good'>100.0%</td></tr><tr><td>pre_medicare_plan</td><td>3</td><td>0</td><td>3</td><td class='task-acc good'>100.0%</td></tr><tr><td>quality_of_care</td><td>3</td><td>0</td><td>3</td><td class='task-acc good'>100.0%</td></tr><tr><td>retirement_age</td><td>3</td><td>0</td><td>3</td><td class='task-acc good'>100.0%</td></tr><tr><td>retirement_zipcode</td><td>3</td><td>0</td><td>3</td><td class='task-acc good'>100.0%</td></tr><tr><td>supplement</td><td>3</td><td>0</td><td>3</td><td class='task-acc good'>100.0%</td></tr><tr><td>tax_filing_status</td><td>3</td><td>0</td><td>3</td><td class='task-acc good'>100.0%</td></tr><tr><td>tobacco_usage</td><td>3</td><td>0</td><td>3</td><td class='task-acc good'>100.0%</td></tr><tr><td>tranche_size</td><td>2</td><td>1</td><td>3</td><td class='task-acc bad'>66.7%</td></tr><tr><td>user_profile_field_detection</td><td>2</td><td>1</td><td>3</td><td class='task-acc bad'>66.7%</td></tr><tr><td>user_profile_intent</td><td>3</td><td>0</td><td>3</td><td class='task-acc good'>100.0%</td></tr><tr><td>years_to_save</td><td>3</td><td>0</td><td>3</td><td class='task-acc good'>100.0%</td></tr></tbody></table><h2>Per-prompt results</h2><div class='controls'><span>Filter:</span><button class='filter active' data-mode='all' onclick="setFilter('all')">All</button><button class='filter' data-mode='fail' onclick="setFilter('fail')">Failed only</button><button class='filter' data-mode='pass' onclick="setFilter('pass')">Passed only</button><span class='subtle'>Click a row to see the full prompt and output.</span></div><details class='row fail'><summary><span class='badge fail'>FAIL</span><span class='badge task'>healthcare_funding_decide</span><span class='summary-text'>#1 · <span class='u'>abort it</span> → expected <code>no</code>, got <code>yes</code></span></summary><div class='detail-grid'><div class='label'>Task</div><div>healthcare_funding_decide</div><div class='label'>System</div><pre>You are an assistant that identifies YES/NO intent from user replies.
+
+STRICT RULES:
+- Return only: yes, no, or RETRY
+- Use both userInput and question context together
+- Infer conversational intent naturally
+- Short confirmations or partial phrases should still be interpreted
+
+Affirmative examples: yes, proceed, continue, go ahead, okay, ok, sure, do it, let&#x27;s do it
+Negative examples: no, don&#x27;t, stop, cancel, not now, never mind
+
+If intent is unclear, return RETRY</pre><div class='label'>User</div><pre>abort it</pre><div class='label'>Expected</div><pre>no</pre><div class='label'>Got</div><pre>yes</pre></div></details><details class='row pass'><summary><span class='badge pass'>PASS</span><span class='badge task'>birthdate</span><span class='summary-text'>#2 · <span class='u'>march2001</span> → expected <code>03-2001</code>, got <code>03-2001</code></span></summary><div class='detail-grid'><div class='label'>Task</div><div>birthdate</div><div class='label'>System</div><pre>You are an assistant that extracts and normalizes a user&#x27;s birth date.
+
+STRICT_RULE:
+- Return only one value in format: MM-YYYY
+- Month must always be 2 digits (01-12)
+- If date is unclear return RETRY</pre><div class='label'>User</div><pre>march2001</pre><div class='label'>Expected</div><pre>03-2001</pre><div class='label'>Got</div><pre>03-2001</pre></div></details><details class='row pass'><summary><span class='badge pass'>PASS</span><span class='badge task'>healthcare_state_extraction</span><span class='summary-text'>#3 · <span class='u'>magi tear</span> → expected <code>magiTier</code>, got <code>magiTier</code></span></summary><div class='detail-grid'><div class='label'>Task</div><div>healthcare_state_extraction</div><div class='label'>System</div><pre>You are an assistant that maps user input to healthcare state.
+
+Return only one value from:
+magiTier, partA, partB, partD, supplement, preMedicarePlan, dental, RETRY</pre><div class='label'>User</div><pre>magi tear</pre><div class='label'>Expected</div><pre>magiTier</pre><div class='label'>Got</div><pre>magiTier</pre></div></details><details class='row pass'><summary><span class='badge pass'>PASS</span><span class='badge task'>change_state_identifier</span><span class='summary-text'>#4 · <span class='u'>edit my retirement zip code</span> → expected <code>true</code>, got <code>true</code></span></summary><div class='detail-grid'><div class='label'>Task</div><div>change_state_identifier</div><div class='label'>System</div><pre>You are a Change State Identifier.
+
+Return true only if:
+- The input contains an intent keyword like modify/change/go to/update/switch AND
+  the user specifies what is being changed.
+Return false otherwise.
+
+Output format: true/false</pre><div class='label'>User</div><pre>edit my retirement zip code</pre><div class='label'>Expected</div><pre>true</pre><div class='label'>Got</div><pre>true</pre></div></details><details class='row pass'><summary><span class='badge pass'>PASS</span><span class='badge task'>supplement</span><span class='summary-text'>#5 · <span class='u'>medigap n</span> → expected <code>planN</code>, got <code>planN</code></span></summary><div class='detail-grid'><div class='label'>Task</div><div>supplement</div><div class='label'>System</div><pre>You are an assistant to identify if user is opting for one of the below supplement / medigap / medicare advantage plan:
+- PART C also known as PLANC or MA plan or MEDICARE ADVANTAGE PLAN
+- PLAN N
+- PLAN G
+- PLAN F
+
+STRICT_RULES:
+- Fix typo in order to match the input out of above mentioned plans
+- Return planC for PART C / MA / MEDICARE ADVANTAGE / planC
+- Return planG for PLAN G / Medigap Plan G / planG
+- Return planN for PLAN N / Medigap Plan N / planN
+- Return planF for PART F / Medigap Plan F / planF
+- if not clear then return RETRY</pre><div class='label'>User</div><pre>medigap n</pre><div class='label'>Expected</div><pre>planN</pre><div class='label'>Got</div><pre>planN</pre></div></details><details class='row fail'><summary><span class='badge fail'>FAIL</span><span class='badge task'>gender</span><span class='summary-text'>#6 · <span class='u'>maile</span> → expected <code>M</code>, got <code>RETRY</code></span></summary><div class='detail-grid'><div class='label'>Task</div><div>gender</div><div class='label'>System</div><pre>You are an assistant that identifies user gender from input text.
+
+STRICT_RULE:
+- Return only one value: M or F
+- If unclear return RETRY</pre><div class='label'>User</div><pre>maile</pre><div class='label'>Expected</div><pre>M</pre><div class='label'>Got</div><pre>RETRY</pre></div></details><details class='row pass'><summary><span class='badge pass'>PASS</span><span class='badge task'>part_b</span><span class='summary-text'>#7 · <span class='u'>defenately</span> → expected <code>true</code>, got <code>true</code></span></summary><div class='detail-grid'><div class='label'>Task</div><div>part_b</div><div class='label'>System</div><pre>You are an assistant to identify if user has purchased PART B Plan of medicare insurance.
+
+STRICT_RULES:
+- Return only true/false
+- if not clear then return RETRY</pre><div class='label'>User</div><pre>defenately</pre><div class='label'>Expected</div><pre>true</pre><div class='label'>Got</div><pre>true</pre></div></details><details class='row pass'><summary><span class='badge pass'>PASS</span><span class='badge task'>part_a</span><span class='summary-text'>#8 · <span class='u'>more than 10 years</span> → expected <code>false</code>, got <code>false</code></span></summary><div class='detail-grid'><div class='label'>Task</div><div>part_a</div><div class='label'>System</div><pre>You are an assistant to identify if user has paid medicare taxes for 10 years or 40 quarters.
+
+DECISION:
+- If user has paid medicare taxes for &gt;=10 years then return false
+- If user has not paid medicare taxes for &gt;=10 years then return true
+- yes -&gt; false
+- no -&gt; true
+
+STRICT_RULES:
+- Return only true/false
+- if not clear then return RETRY</pre><div class='label'>User</div><pre>more than 10 years</pre><div class='label'>Expected</div><pre>false</pre><div class='label'>Got</div><pre>false</pre></div></details><details class='row pass'><summary><span class='badge pass'>PASS</span><span class='badge task'>quality_of_care</span><span class='summary-text'>#9 · <span class='u'>lux</span> → expected <code>2</code>, got <code>2</code></span></summary><div class='detail-grid'><div class='label'>Task</div><div>quality_of_care</div><div class='label'>System</div><pre>You are a strict classifier.
+
+Map [Comfortable, Luxury, Premium Luxury]:
+- Comfortable -&gt; 1
+- Luxury -&gt; 2
+- Premium Luxury -&gt; 3
+
+Output:
+- Return ONLY one value: 1, 2, 3 or RETRY</pre><div class='label'>User</div><pre>lux</pre><div class='label'>Expected</div><pre>2</pre><div class='label'>Got</div><pre>2</pre></div></details><details class='row pass'><summary><span class='badge pass'>PASS</span><span class='badge task'>investment_profile</span><span class='summary-text'>#10 · <span class='u'>qwerty</span> → expected <code>RETRY</code>, got <code>RETRY</code></span></summary><div class='detail-grid'><div class='label'>Task</div><div>investment_profile</div><div class='label'>System</div><pre>You are a strict classifier.
+
+Map the given user input to EXACTLY one of these:
+- Conservative -&gt; 4.5
+- Moderate -&gt; 6.5
+- Aggressive -&gt; 8.5
+
+Rules:
+- ALWAYS resolve typos and misspellings to the closest valid category
+- Treat inputs like &quot;agrasive&quot;, &quot;aggresive&quot; as &quot;Aggressive&quot;
+- Even partial words must be mapped (e.g., &quot;aggr&quot;, &quot;mod&quot;, &quot;cons&quot;)
+- NEVER return RETRY if the input resembles any category even slightly
+- Return RETRY only if input is completely unrelated
+
+Output:
+- Return ONLY one value: 4.5 or 6.5 or 8.5 or RETRY
+- Do NOT return any text</pre><div class='label'>User</div><pre>qwerty</pre><div class='label'>Expected</div><pre>RETRY</pre><div class='label'>Got</div><pre>RETRY</pre></div></details><details class='row pass'><summary><span class='badge pass'>PASS</span><span class='badge task'>ltc_state_extraction</span><span class='summary-text'>#11 · <span class='u'>qualty of care</span> → expected <code>qualityOfCare</code>, got <code>qualityOfCare</code></span></summary><div class='detail-grid'><div class='label'>Task</div><div>ltc_state_extraction</div><div class='label'>System</div><pre>You are an assistant that maps user input to LTC state.
+
+Return only one value from:
+qualityOfCare, homeCareYears, assistedCareYears, nursingCareYears, adultDayYears, RETRY</pre><div class='label'>User</div><pre>qualty of care</pre><div class='label'>Expected</div><pre>qualityOfCare</pre><div class='label'>Got</div><pre>qualityOfCare</pre></div></details><details class='row pass'><summary><span class='badge pass'>PASS</span><span class='badge task'>user_profile_intent</span><span class='summary-text'>#12 · <span class='u'>go ahead</span> → expected <code>false</code>, got <code>false</code></span></summary><div class='detail-grid'><div class='label'>Task</div><div>user_profile_intent</div><div class='label'>System</div><pre>You are an assistant to identify user intent for profile modification.
+
+STRICT_RULE:
+- return true for modification intent else false
+- If unclear return RETRY</pre><div class='label'>User</div><pre>go ahead</pre><div class='label'>Expected</div><pre>false</pre><div class='label'>Got</div><pre>false</pre></div></details><details class='row fail'><summary><span class='badge fail'>FAIL</span><span class='badge task'>magi_tier</span><span class='summary-text'>#13 · <span class='u'>$50,000</span> → expected <code>1</code>, got <code>2</code></span></summary><div class='detail-grid'><div class='label'>Task</div><div>magi_tier</div><div class='label'>System</div><pre>You are an assistant to convert or extract numeric value from User Input.
+MAGI_TIER_RANGES (USD): [103000, 129000, 161000, 193000, 500000]
+
+STRICT_RULES:
+- Convert all values to full numbers (e.g., 218K = 218000)
+- Interpret ranges as:
+  1: x &lt; 103000
+  2: 103000 &lt;= x &lt; 129000
+  3: 129000 &lt;= x &lt; 161000
+  4: 161000 &lt;= x &lt; 193000
+  5: 193000 &lt;= x &lt;= 500000
+  6: x &gt; 500000
+- ALWAYS compare using numeric values, not text
+- If input is between 1-6, return it directly
+- Return only number [1-6]
+- If unclear, return RETRY</pre><div class='label'>User</div><pre>$50,000</pre><div class='label'>Expected</div><pre>1</pre><div class='label'>Got</div><pre>2</pre></div></details><details class='row pass'><summary><span class='badge pass'>PASS</span><span class='badge task'>part_d</span><span class='summary-text'>#14 · <span class='u'>I don&#x27;t take meds</span> → expected <code>false</code>, got <code>false</code></span></summary><div class='detail-grid'><div class='label'>Task</div><div>part_d</div><div class='label'>System</div><pre>You are an assistant to identify if user has purchased PART D / Prescription Plan of medicare insurance.
+
+STRICT_RULES:
+- Return only true/false
+- if not clear then return RETRY</pre><div class='label'>User</div><pre>I don&#x27;t take meds</pre><div class='label'>Expected</div><pre>false</pre><div class='label'>Got</div><pre>false</pre></div></details><details class='row fail'><summary><span class='badge fail'>FAIL</span><span class='badge task'>gender</span><span class='summary-text'>#15 · <span class='u'>femail</span> → expected <code>F</code>, got <code>RETRY</code></span></summary><div class='detail-grid'><div class='label'>Task</div><div>gender</div><div class='label'>System</div><pre>You are an assistant that identifies user gender from input text.
+
+STRICT_RULE:
+- Return only one value: M or F
+- If unclear return RETRY</pre><div class='label'>User</div><pre>femail</pre><div class='label'>Expected</div><pre>F</pre><div class='label'>Got</div><pre>RETRY</pre></div></details><details class='row fail'><summary><span class='badge fail'>FAIL</span><span class='badge task'>current_savings</span><span class='summary-text'>#16 · <span class='u'>0</span> → expected <code>0</code>, got <code>RETRY</code></span></summary><div class='detail-grid'><div class='label'>Task</div><div>current_savings</div><div class='label'>System</div><pre>You are an assistant to convert or extract numeric value from User Input.
+
+STRICT_RULES:
+- Return only number
+- if not clear then return RETRY</pre><div class='label'>User</div><pre>0</pre><div class='label'>Expected</div><pre>0</pre><div class='label'>Got</div><pre>RETRY</pre></div></details><details class='row pass'><summary><span class='badge pass'>PASS</span><span class='badge task'>illustration_choice</span><span class='summary-text'>#17 · <span class='u'>start hc</span> → expected <code>healthcare</code>, got <code>healthcare</code></span></summary><div class='detail-grid'><div class='label'>Task</div><div>illustration_choice</div><div class='label'>System</div><pre>Map the user&#x27;s intent to exactly one value from this list:
+[healthcare, ltc, funding, iul, viewHealthIllustrations, viewLtcIllustrations, compareHealthIllustrations, compareLtcIllustrations]
+
+Rules:
+- create/new/start -&gt; healthcare or ltc
+- view/show/list -&gt; viewHealthIllustrations or viewLtcIllustrations
+- compare -&gt; compareHealthIllustrations or compareLtcIllustrations
+
+Return ONLY one exact value from the list, or NULL if unclear.</pre><div class='label'>User</div><pre>start hc</pre><div class='label'>Expected</div><pre>healthcare</pre><div class='label'>Got</div><pre>healthcare</pre></div></details><details class='row pass'><summary><span class='badge pass'>PASS</span><span class='badge task'>ltc_iul_decide</span><span class='summary-text'>#18 · <span class='u'>plz go</span> → expected <code>yes</code>, got <code>yes</code></span></summary><div class='detail-grid'><div class='label'>Task</div><div>ltc_iul_decide</div><div class='label'>System</div><pre>You are an assistant that identifies YES/NO intent from user replies.
+
+STRICT RULES:
+- Return only: yes, no, or RETRY</pre><div class='label'>User</div><pre>plz go</pre><div class='label'>Expected</div><pre>yes</pre><div class='label'>Got</div><pre>yes</pre></div></details><details class='row pass'><summary><span class='badge pass'>PASS</span><span class='badge task'>supplement</span><span class='summary-text'>#19 · <span class='u'>plnc</span> → expected <code>planC</code>, got <code>planC</code></span></summary><div class='detail-grid'><div class='label'>Task</div><div>supplement</div><div class='label'>System</div><pre>You are an assistant to identify if user is opting for one of the below supplement / medigap / medicare advantage plan:
+- PART C also known as PLANC or MA plan or MEDICARE ADVANTAGE PLAN
+- PLAN N
+- PLAN G
+- PLAN F
+
+STRICT_RULES:
+- Fix typo in order to match the input out of above mentioned plans
+- Return planC for PART C / MA / MEDICARE ADVANTAGE / planC
+- Return planG for PLAN G / Medigap Plan G / planG
+- Return planN for PLAN N / Medigap Plan N / planN
+- Return planF for PART F / Medigap Plan F / planF
+- if not clear then return RETRY</pre><div class='label'>User</div><pre>plnc</pre><div class='label'>Expected</div><pre>planC</pre><div class='label'>Got</div><pre>planC</pre></div></details><details class='row fail'><summary><span class='badge fail'>FAIL</span><span class='badge task'>magi_tier</span><span class='summary-text'>#20 · <span class='u'>$60,000</span> → expected <code>1</code>, got <code>2</code></span></summary><div class='detail-grid'><div class='label'>Task</div><div>magi_tier</div><div class='label'>System</div><pre>You are an assistant to convert or extract numeric value from User Input.
+MAGI_TIER_RANGES (USD): [103000, 129000, 161000, 193000, 500000]
+
+STRICT_RULES:
+- Convert all values to full numbers (e.g., 218K = 218000)
+- Interpret ranges as:
+  1: x &lt; 103000
+  2: 103000 &lt;= x &lt; 129000
+  3: 129000 &lt;= x &lt; 161000
+  4: 161000 &lt;= x &lt; 193000
+  5: 193000 &lt;= x &lt;= 500000
+  6: x &gt; 500000
+- ALWAYS compare using numeric values, not text
+- If input is between 1-6, return it directly
+- Return only number [1-6]
+- If unclear, return RETRY</pre><div class='label'>User</div><pre>$60,000</pre><div class='label'>Expected</div><pre>1</pre><div class='label'>Got</div><pre>2</pre></div></details><details class='row pass'><summary><span class='badge pass'>PASS</span><span class='badge task'>retirement_age</span><span class='summary-text'>#21 · <span class='u'>age 72</span> → expected <code>72</code>, got <code>72</code></span></summary><div class='detail-grid'><div class='label'>Task</div><div>retirement_age</div><div class='label'>System</div><pre>You are an assistant that extracts a retirement age (in years).
+
+STRICT_RULE:
+- Return only a whole number
+- If input is ambiguous return RETRY</pre><div class='label'>User</div><pre>age 72</pre><div class='label'>Expected</div><pre>72</pre><div class='label'>Got</div><pre>72</pre></div></details><details class='row pass'><summary><span class='badge pass'>PASS</span><span class='badge task'>change_state_identifier</span><span class='summary-text'>#22 · <span class='u'>i don&#x27;t know</span> → expected <code>false</code>, got <code>false</code></span></summary><div class='detail-grid'><div class='label'>Task</div><div>change_state_identifier</div><div class='label'>System</div><pre>You are a Change State Identifier.
+
+Return true only if:
+- The input contains an intent keyword like modify/change/go to/update/switch AND
+  the user specifies what is being changed.
+Return false otherwise.
+
+Output format: true/false</pre><div class='label'>User</div><pre>i don&#x27;t know</pre><div class='label'>Expected</div><pre>false</pre><div class='label'>Got</div><pre>false</pre></div></details><details class='row pass'><summary><span class='badge pass'>PASS</span><span class='badge task'>ltc_iul_decide</span><span class='summary-text'>#23 · <span class='u'>no thanks</span> → expected <code>no</code>, got <code>no</code></span></summary><div class='detail-grid'><div class='label'>Task</div><div>ltc_iul_decide</div><div class='label'>System</div><pre>You are an assistant that identifies YES/NO intent from user replies.
+
+STRICT RULES:
+- Return only: yes, no, or RETRY</pre><div class='label'>User</div><pre>no thanks</pre><div class='label'>Expected</div><pre>no</pre><div class='label'>Got</div><pre>no</pre></div></details><details class='row pass'><summary><span class='badge pass'>PASS</span><span class='badge task'>life_expectancy</span><span class='summary-text'>#24 · <span class='u'>plus 5</span> → expected <code>90</code>, got <code>90</code></span></summary><div class='detail-grid'><div class='label'>Task</div><div>life_expectancy</div><div class='label'>System</div><pre>You are an assistant that extracts a life expectancy value (in years).
+DEFAULT_LIFE_EXPECTANCY = 85
+
+STRICT_RULE:
+- Return only a whole number
+- If user intent is unclear return RETRY</pre><div class='label'>User</div><pre>plus 5</pre><div class='label'>Expected</div><pre>90</pre><div class='label'>Got</div><pre>90</pre></div></details><details class='row pass'><summary><span class='badge pass'>PASS</span><span class='badge task'>assisted_care_year</span><span class='summary-text'>#25 · <span class='u'>five years</span> → expected <code>5</code>, got <code>5</code></span></summary><div class='detail-grid'><div class='label'>Task</div><div>assisted_care_year</div><div class='label'>System</div><pre>You are an assistant to identify a number from user input.
+
+STRICT_RULE:
+- return value from [0-10]
+- if input is string in place of number then try to identify a number from [0-10]
+- If unclear return RETRY</pre><div class='label'>User</div><pre>five years</pre><div class='label'>Expected</div><pre>5</pre><div class='label'>Got</div><pre>5</pre></div></details><details class='row pass'><summary><span class='badge pass'>PASS</span><span class='badge task'>level_of_protection</span><span class='summary-text'>#26 · <span class='u'>50 percent</span> → expected <code>50</code>, got <code>50</code></span></summary><div class='detail-grid'><div class='label'>Task</div><div>level_of_protection</div><div class='label'>System</div><pre>You are an assistant to extract percent value from User Input which is closest to below array:
+[15,50,75,100]
+
+STRICT_RULES:
+- Return only number
+- if not clear then return RETRY</pre><div class='label'>User</div><pre>50 percent</pre><div class='label'>Expected</div><pre>50</pre><div class='label'>Got</div><pre>50</pre></div></details><details class='row pass'><summary><span class='badge pass'>PASS</span><span class='badge task'>tranche_size</span><span class='summary-text'>#27 · <span class='u'>asdf</span> → expected <code>RETRY</code>, got <code>RETRY</code></span></summary><div class='detail-grid'><div class='label'>Task</div><div>tranche_size</div><div class='label'>System</div><pre>You are an assistant that extracts a positive integer (number of years per tranche) from user input.
+
+RULES:
+- The output MUST be a positive integer (&gt;= 1).
+- Convert words or misspelled words into their numeric meaning
+- If unable to identify a number then return RETRY
+- Return ONLY the number (no explanation).</pre><div class='label'>User</div><pre>asdf</pre><div class='label'>Expected</div><pre>RETRY</pre><div class='label'>Got</div><pre>RETRY</pre></div></details><details class='row pass'><summary><span class='badge pass'>PASS</span><span class='badge task'>ltc_profile_state</span><span class='summary-text'>#28 · <span class='u'>modify selection</span> → expected <code>yes</code>, got <code>yes</code></span></summary><div class='detail-grid'><div class='label'>Task</div><div>ltc_profile_state</div><div class='label'>System</div><pre>You are an assistant to identify ltc modification intent yes/no.
+
+STRICT_RULE:
+- return value yes/no
+- If unclear return RETRY</pre><div class='label'>User</div><pre>modify selection</pre><div class='label'>Expected</div><pre>yes</pre><div class='label'>Got</div><pre>yes</pre></div></details><details class='row pass'><summary><span class='badge pass'>PASS</span><span class='badge task'>healthcare_state_extraction</span><span class='summary-text'>#29 · <span class='u'>pre medicare plan</span> → expected <code>preMedicarePlan</code>, got <code>preMedicarePlan</code></span></summary><div class='detail-grid'><div class='label'>Task</div><div>healthcare_state_extraction</div><div class='label'>System</div><pre>You are an assistant that maps user input to healthcare state.
+
+Return only one value from:
+magiTier, partA, partB, partD, supplement, preMedicarePlan, dental, RETRY</pre><div class='label'>User</div><pre>pre medicare plan</pre><div class='label'>Expected</div><pre>preMedicarePlan</pre><div class='label'>Got</div><pre>preMedicarePlan</pre></div></details><details class='row pass'><summary><span class='badge pass'>PASS</span><span class='badge task'>user_profile_intent</span><span class='summary-text'>#30 · <span class='u'>let me update</span> → expected <code>true</code>, got <code>true</code></span></summary><div class='detail-grid'><div class='label'>Task</div><div>user_profile_intent</div><div class='label'>System</div><pre>You are an assistant to identify user intent for profile modification.
+
+STRICT_RULE:
+- return true for modification intent else false
+- If unclear return RETRY</pre><div class='label'>User</div><pre>let me update</pre><div class='label'>Expected</div><pre>true</pre><div class='label'>Got</div><pre>true</pre></div></details><details class='row pass'><summary><span class='badge pass'>PASS</span><span class='badge task'>retirement_age</span><span class='summary-text'>#31 · <span class='u'>when i&#x27;m 70</span> → expected <code>70</code>, got <code>70</code></span></summary><div class='detail-grid'><div class='label'>Task</div><div>retirement_age</div><div class='label'>System</div><pre>You are an assistant that extracts a retirement age (in years).
+
+STRICT_RULE:
+- Return only a whole number
+- If input is ambiguous return RETRY</pre><div class='label'>User</div><pre>when i&#x27;m 70</pre><div class='label'>Expected</div><pre>70</pre><div class='label'>Got</div><pre>70</pre></div></details><details class='row pass'><summary><span class='badge pass'>PASS</span><span class='badge task'>quality_of_care</span><span class='summary-text'>#32 · <span class='u'>luxxury</span> → expected <code>2</code>, got <code>2</code></span></summary><div class='detail-grid'><div class='label'>Task</div><div>quality_of_care</div><div class='label'>System</div><pre>You are a strict classifier.
+
+Map [Comfortable, Luxury, Premium Luxury]:
+- Comfortable -&gt; 1
+- Luxury -&gt; 2
+- Premium Luxury -&gt; 3
+
+Output:
+- Return ONLY one value: 1, 2, 3 or RETRY</pre><div class='label'>User</div><pre>luxxury</pre><div class='label'>Expected</div><pre>2</pre><div class='label'>Got</div><pre>2</pre></div></details><details class='row pass'><summary><span class='badge pass'>PASS</span><span class='badge task'>part_a</span><span class='summary-text'>#33 · <span class='u'>what does this mean</span> → expected <code>RETRY</code>, got <code>RETRY</code></span></summary><div class='detail-grid'><div class='label'>Task</div><div>part_a</div><div class='label'>System</div><pre>You are an assistant to identify if user has paid medicare taxes for 10 years or 40 quarters.
+
+DECISION:
+- If user has paid medicare taxes for &gt;=10 years then return false
+- If user has not paid medicare taxes for &gt;=10 years then return true
+- yes -&gt; false
+- no -&gt; true
+
+STRICT_RULES:
+- Return only true/false
+- if not clear then return RETRY</pre><div class='label'>User</div><pre>what does this mean</pre><div class='label'>Expected</div><pre>RETRY</pre><div class='label'>Got</div><pre>RETRY</pre></div></details><details class='row pass'><summary><span class='badge pass'>PASS</span><span class='badge task'>dental</span><span class='summary-text'>#34 · <span class='u'>ya</span> → expected <code>true</code>, got <code>true</code></span></summary><div class='detail-grid'><div class='label'>Task</div><div>dental</div><div class='label'>System</div><pre>You are an assistant to identify if user has purchased DENTAL Plan of dental insurance.
+
+STRICT_RULES:
+- Return only true/false
+- if not clear then return RETRY</pre><div class='label'>User</div><pre>ya</pre><div class='label'>Expected</div><pre>true</pre><div class='label'>Got</div><pre>true</pre></div></details><details class='row fail'><summary><span class='badge fail'>FAIL</span><span class='badge task'>user_profile_field_detection</span><span class='summary-text'>#35 · <span class='u'>lst name</span> → expected <code>lastName</code>, got <code>firstName</code></span></summary><div class='detail-grid'><div class='label'>Task</div><div>user_profile_field_detection</div><div class='label'>System</div><pre>You are an assistant that identifies which user profile field the user wants to modify.
+
+userState:
+[firstName,lastName,birthdate,gender,tobaccoUsage,currentZipcode,retirementZipcode,taxFilingStatus,retirementAge,lifeExpectancy,healthProfile,conciergeCharge]
+
+Output:
+- Return ONLY one value from userState list, or RETRY</pre><div class='label'>User</div><pre>lst name</pre><div class='label'>Expected</div><pre>lastName</pre><div class='label'>Got</div><pre>firstName</pre></div></details><details class='row pass'><summary><span class='badge pass'>PASS</span><span class='badge task'>current_savings</span><span class='summary-text'>#36 · <span class='u'>$1,000,000</span> → expected <code>1000000</code>, got <code>1000000</code></span></summary><div class='detail-grid'><div class='label'>Task</div><div>current_savings</div><div class='label'>System</div><pre>You are an assistant to convert or extract numeric value from User Input.
+
+STRICT_RULES:
+- Return only number
+- if not clear then return RETRY</pre><div class='label'>User</div><pre>$1,000,000</pre><div class='label'>Expected</div><pre>1000000</pre><div class='label'>Got</div><pre>1000000</pre></div></details><details class='row pass'><summary><span class='badge pass'>PASS</span><span class='badge task'>current_zipcode</span><span class='summary-text'>#37 · <span class='u'>98101-1234</span> → expected <code>98101</code>, got <code>98101</code></span></summary><div class='detail-grid'><div class='label'>Task</div><div>current_zipcode</div><div class='label'>System</div><pre>You are an assistant that extracts a valid 5-digit USA ZIP code.
+
+STRICT_RULE:
+- Return only a 5-digit number (exactly 5 digits)
+- If no valid ZIP code is found return RETRY</pre><div class='label'>User</div><pre>98101-1234</pre><div class='label'>Expected</div><pre>98101</pre><div class='label'>Got</div><pre>98101</pre></div></details><details class='row pass'><summary><span class='badge pass'>PASS</span><span class='badge task'>retirement_age</span><span class='summary-text'>#38 · <span class='u'>retire at sixty six</span> → expected <code>66</code>, got <code>66</code></span></summary><div class='detail-grid'><div class='label'>Task</div><div>retirement_age</div><div class='label'>System</div><pre>You are an assistant that extracts a retirement age (in years).
+
+STRICT_RULE:
+- Return only a whole number
+- If input is ambiguous return RETRY</pre><div class='label'>User</div><pre>retire at sixty six</pre><div class='label'>Expected</div><pre>66</pre><div class='label'>Got</div><pre>66</pre></div></details><details class='row pass'><summary><span class='badge pass'>PASS</span><span class='badge task'>retirement_zipcode</span><span class='summary-text'>#39 · <span class='u'>ZIP 33101</span> → expected <code>33101</code>, got <code>33101</code></span></summary><div class='detail-grid'><div class='label'>Task</div><div>retirement_zipcode</div><div class='label'>System</div><pre>You are an assistant that extracts a retirement ZIP code.
+CURRENT_ZIPCODE = 90210
+
+STRICT_RULE:
+- Return only a 5-digit number (exactly 5 digits)
+- &quot;same&quot;,&quot;use current&quot;,&quot;no change&quot; -&gt; 90210
+- If input is unclear return RETRY</pre><div class='label'>User</div><pre>ZIP 33101</pre><div class='label'>Expected</div><pre>33101</pre><div class='label'>Got</div><pre>33101</pre></div></details><details class='row pass'><summary><span class='badge pass'>PASS</span><span class='badge task'>part_b</span><span class='summary-text'>#40 · <span class='u'>ofkorse</span> → expected <code>true</code>, got <code>true</code></span></summary><div class='detail-grid'><div class='label'>Task</div><div>part_b</div><div class='label'>System</div><pre>You are an assistant to identify if user has purchased PART B Plan of medicare insurance.
+
+STRICT_RULES:
+- Return only true/false
+- if not clear then return RETRY</pre><div class='label'>User</div><pre>ofkorse</pre><div class='label'>Expected</div><pre>true</pre><div class='label'>Got</div><pre>true</pre></div></details><details class='row pass'><summary><span class='badge pass'>PASS</span><span class='badge task'>health_profile</span><span class='summary-text'>#41 · <span class='u'>doin well</span> → expected <code>2</code>, got <code>2</code></span></summary><div class='detail-grid'><div class='label'>Task</div><div>health_profile</div><div class='label'>System</div><pre>You are an assistant that identifies a user&#x27;s health profile.
+
+STRICT_RULE:
+- Return only one value: 1, 2, 3, 4, or 5
+- If health status is unclear return RETRY
+
+MAPPING_RULES:
+- Best Health -&gt; 1
+- Good Health -&gt; 2
+- Moderate Health -&gt; 3
+- Poor Health -&gt; 4
+- Sick -&gt; 5</pre><div class='label'>User</div><pre>doin well</pre><div class='label'>Expected</div><pre>2</pre><div class='label'>Got</div><pre>2</pre></div></details><details class='row pass'><summary><span class='badge pass'>PASS</span><span class='badge task'>go_to_home_identifier</span><span class='summary-text'>#42 · <span class='u'>reset</span> → expected <code>true</code>, got <code>true</code></span></summary><div class='detail-grid'><div class='label'>Task</div><div>go_to_home_identifier</div><div class='label'>System</div><pre>You are a strict go-to-home identifier.
+
+Return true ONLY when the user&#x27;s message clearly means go home / start over / restart.
+
+STRICT_RULES:
+- Return only true or false.
+- If unclear, return false.</pre><div class='label'>User</div><pre>reset</pre><div class='label'>Expected</div><pre>true</pre><div class='label'>Got</div><pre>true</pre></div></details><details class='row pass'><summary><span class='badge pass'>PASS</span><span class='badge task'>life_expectancy</span><span class='summary-text'>#43 · <span class='u'>decrease by 10</span> → expected <code>75</code>, got <code>75</code></span></summary><div class='detail-grid'><div class='label'>Task</div><div>life_expectancy</div><div class='label'>System</div><pre>You are an assistant that extracts a life expectancy value (in years).
+DEFAULT_LIFE_EXPECTANCY = 85
+
+STRICT_RULE:
+- Return only a whole number
+- If user intent is unclear return RETRY</pre><div class='label'>User</div><pre>decrease by 10</pre><div class='label'>Expected</div><pre>75</pre><div class='label'>Got</div><pre>75</pre></div></details><details class='row pass'><summary><span class='badge pass'>PASS</span><span class='badge task'>funding_modification_decision</span><span class='summary-text'>#44 · <span class='u'>update funding</span> → expected <code>true</code>, got <code>true</code></span></summary><div class='detail-grid'><div class='label'>Task</div><div>funding_modification_decision</div><div class='label'>System</div><pre>You are an assistant to identify answer in true/false form from User Input.
+
+STRICT_RULES:
+- Return only true/false for modify INTENT answer
+- if not clear then return RETRY</pre><div class='label'>User</div><pre>update funding</pre><div class='label'>Expected</div><pre>true</pre><div class='label'>Got</div><pre>true</pre></div></details><details class='row pass'><summary><span class='badge pass'>PASS</span><span class='badge task'>tax_filing_status</span><span class='summary-text'>#45 · <span class='u'>singgle</span> → expected <code>FILING_INDIVIDUALLY</code>, got <code>FILING_INDIVIDUALLY</code></span></summary><div class='detail-grid'><div class='label'>Task</div><div>tax_filing_status</div><div class='label'>System</div><pre>You are an assistant that identifies a user&#x27;s tax filing status.
+
+STRICT_RULE:
+- Return only one value: FILING_INDIVIDUALLY or MARRIED_FILING_JOINTLY
+- If status is unclear return RETRY</pre><div class='label'>User</div><pre>singgle</pre><div class='label'>Expected</div><pre>FILING_INDIVIDUALLY</pre><div class='label'>Got</div><pre>FILING_INDIVIDUALLY</pre></div></details><details class='row pass'><summary><span class='badge pass'>PASS</span><span class='badge task'>tobacco_usage</span><span class='summary-text'>#46 · <span class='u'>no smok</span> → expected <code>false</code>, got <code>false</code></span></summary><div class='detail-grid'><div class='label'>Task</div><div>tobacco_usage</div><div class='label'>System</div><pre>You are an assistant that identifies whether a user uses tobacco.
+
+STRICT_RULE:
+- Return only one value: true or false
+- If unclear return RETRY</pre><div class='label'>User</div><pre>no smok</pre><div class='label'>Expected</div><pre>false</pre><div class='label'>Got</div><pre>false</pre></div></details><details class='row fail'><summary><span class='badge fail'>FAIL</span><span class='badge task'>tranche_size</span><span class='summary-text'>#47 · <span class='u'>1</span> → expected <code>1</code>, got <code>RETRY</code></span></summary><div class='detail-grid'><div class='label'>Task</div><div>tranche_size</div><div class='label'>System</div><pre>You are an assistant that extracts a positive integer (number of years per tranche) from user input.
+
+RULES:
+- The output MUST be a positive integer (&gt;= 1).
+- Convert words or misspelled words into their numeric meaning
+- If unable to identify a number then return RETRY
+- Return ONLY the number (no explanation).</pre><div class='label'>User</div><pre>1</pre><div class='label'>Expected</div><pre>1</pre><div class='label'>Got</div><pre>RETRY</pre></div></details><details class='row fail'><summary><span class='badge fail'>FAIL</span><span class='badge task'>go_to_home_identifier</span><span class='summary-text'>#48 · <span class='u'>yes</span> → expected <code>false</code>, got <code>true</code></span></summary><div class='detail-grid'><div class='label'>Task</div><div>go_to_home_identifier</div><div class='label'>System</div><pre>You are a strict go-to-home identifier.
+
+Return true ONLY when the user&#x27;s message clearly means go home / start over / restart.
+
+STRICT_RULES:
+- Return only true or false.
+- If unclear, return false.</pre><div class='label'>User</div><pre>yes</pre><div class='label'>Expected</div><pre>false</pre><div class='label'>Got</div><pre>true</pre></div></details><details class='row pass'><summary><span class='badge pass'>PASS</span><span class='badge task'>dental</span><span class='summary-text'>#49 · <span class='u'>nooo</span> → expected <code>false</code>, got <code>false</code></span></summary><div class='detail-grid'><div class='label'>Task</div><div>dental</div><div class='label'>System</div><pre>You are an assistant to identify if user has purchased DENTAL Plan of dental insurance.
+
+STRICT_RULES:
+- Return only true/false
+- if not clear then return RETRY</pre><div class='label'>User</div><pre>nooo</pre><div class='label'>Expected</div><pre>false</pre><div class='label'>Got</div><pre>false</pre></div></details><details class='row pass'><summary><span class='badge pass'>PASS</span><span class='badge task'>current_zipcode</span><span class='summary-text'>#50 · <span class='u'>my zip is 94103</span> → expected <code>94103</code>, got <code>94103</code></span></summary><div class='detail-grid'><div class='label'>Task</div><div>current_zipcode</div><div class='label'>System</div><pre>You are an assistant that extracts a valid 5-digit USA ZIP code.
+
+STRICT_RULE:
+- Return only a 5-digit number (exactly 5 digits)
+- If no valid ZIP code is found return RETRY</pre><div class='label'>User</div><pre>my zip is 94103</pre><div class='label'>Expected</div><pre>94103</pre><div class='label'>Got</div><pre>94103</pre></div></details><details class='row pass'><summary><span class='badge pass'>PASS</span><span class='badge task'>healthcare_state_extraction</span><span class='summary-text'>#51 · <span class='u'>magi teir</span> → expected <code>magiTier</code>, got <code>magiTier</code></span></summary><div class='detail-grid'><div class='label'>Task</div><div>healthcare_state_extraction</div><div class='label'>System</div><pre>You are an assistant that maps user input to healthcare state.
+
+Return only one value from:
+magiTier, partA, partB, partD, supplement, preMedicarePlan, dental, RETRY</pre><div class='label'>User</div><pre>magi teir</pre><div class='label'>Expected</div><pre>magiTier</pre><div class='label'>Got</div><pre>magiTier</pre></div></details><details class='row pass'><summary><span class='badge pass'>PASS</span><span class='badge task'>match_type</span><span class='summary-text'>#52 · <span class='u'>idk</span> → expected <code>RETRY</code>, got <code>RETRY</code></span></summary><div class='detail-grid'><div class='label'>Task</div><div>match_type</div><div class='label'>System</div><pre>You are a strict classifier.
+
+Map the given user input to EXACTLY one of these values:
+- EXACT
+- TRANCHE
+
+Output:
+- Return ONLY one value: EXACT or TRANCHE or RETRY</pre><div class='label'>User</div><pre>idk</pre><div class='label'>Expected</div><pre>RETRY</pre><div class='label'>Got</div><pre>RETRY</pre></div></details><details class='row pass'><summary><span class='badge pass'>PASS</span><span class='badge task'>years_to_save</span><span class='summary-text'>#53 · <span class='u'>20 year</span> → expected <code>20</code>, got <code>20</code></span></summary><div class='detail-grid'><div class='label'>Task</div><div>years_to_save</div><div class='label'>System</div><pre>You are an assistant that maps user input to the closest matching value from this list:
+[5,10,15,20,25,30,&quot;five&quot;,&quot;ten&quot;,&quot;twenty&quot;,&quot;twenty five&quot;,&quot;thirty&quot;]
+
+RULES:
+- The output MUST be one of: 5,10,15,20,25,30
+- Convert words or misspelled words into their numeric meaning
+- Ignore extra words like &quot;year&quot;, &quot;years&quot;, etc.
+- Only map to available values in the list
+- Choose the closest valid number
+- If no reasonable match exists, return: RETRY
+- Return ONLY the number (no explanation)</pre><div class='label'>User</div><pre>20 year</pre><div class='label'>Expected</div><pre>20</pre><div class='label'>Got</div><pre>20</pre></div></details><details class='row pass'><summary><span class='badge pass'>PASS</span><span class='badge task'>tobacco_usage</span><span class='summary-text'>#54 · <span class='u'>I smoke ciggs</span> → expected <code>true</code>, got <code>true</code></span></summary><div class='detail-grid'><div class='label'>Task</div><div>tobacco_usage</div><div class='label'>System</div><pre>You are an assistant that identifies whether a user uses tobacco.
+
+STRICT_RULE:
+- Return only one value: true or false
+- If unclear return RETRY</pre><div class='label'>User</div><pre>I smoke ciggs</pre><div class='label'>Expected</div><pre>true</pre><div class='label'>Got</div><pre>true</pre></div></details><details class='row fail'><summary><span class='badge fail'>FAIL</span><span class='badge task'>health_profile</span><span class='summary-text'>#55 · <span class='u'>manageable</span> → expected <code>3</code>, got <code>2</code></span></summary><div class='detail-grid'><div class='label'>Task</div><div>health_profile</div><div class='label'>System</div><pre>You are an assistant that identifies a user&#x27;s health profile.
+
+STRICT_RULE:
+- Return only one value: 1, 2, 3, 4, or 5
+- If health status is unclear return RETRY
+
+MAPPING_RULES:
+- Best Health -&gt; 1
+- Good Health -&gt; 2
+- Moderate Health -&gt; 3
+- Poor Health -&gt; 4
+- Sick -&gt; 5</pre><div class='label'>User</div><pre>manageable</pre><div class='label'>Expected</div><pre>3</pre><div class='label'>Got</div><pre>2</pre></div></details><details class='row fail'><summary><span class='badge fail'>FAIL</span><span class='badge task'>ltc_state_extraction</span><span class='summary-text'>#56 · <span class='u'>nursingCareYears</span> → expected <code>nursingCareYears</code>, got <code>adultDayYears</code></span></summary><div class='detail-grid'><div class='label'>Task</div><div>ltc_state_extraction</div><div class='label'>System</div><pre>You are an assistant that maps user input to LTC state.
+
+Return only one value from:
+qualityOfCare, homeCareYears, assistedCareYears, nursingCareYears, adultDayYears, RETRY</pre><div class='label'>User</div><pre>nursingCareYears</pre><div class='label'>Expected</div><pre>nursingCareYears</pre><div class='label'>Got</div><pre>adultDayYears</pre></div></details><details class='row fail'><summary><span class='badge fail'>FAIL</span><span class='badge task'>healthcare_profile_state</span><span class='summary-text'>#57 · <span class='u'>i am done</span> → expected <code>no</code>, got <code>yes</code></span></summary><div class='detail-grid'><div class='label'>Task</div><div>healthcare_profile_state</div><div class='label'>System</div><pre>You are an assistant to identify healthcare selection modification intent yes/no.
+
+STRICT_RULE:
+- return value yes/no
+- If unclear return RETRY</pre><div class='label'>User</div><pre>i am done</pre><div class='label'>Expected</div><pre>no</pre><div class='label'>Got</div><pre>yes</pre></div></details><details class='row pass'><summary><span class='badge pass'>PASS</span><span class='badge task'>level_of_protection</span><span class='summary-text'>#58 · <span class='u'>fifteen</span> → expected <code>15</code>, got <code>15</code></span></summary><div class='detail-grid'><div class='label'>Task</div><div>level_of_protection</div><div class='label'>System</div><pre>You are an assistant to extract percent value from User Input which is closest to below array:
+[15,50,75,100]
+
+STRICT_RULES:
+- Return only number
+- if not clear then return RETRY</pre><div class='label'>User</div><pre>fifteen</pre><div class='label'>Expected</div><pre>15</pre><div class='label'>Got</div><pre>15</pre></div></details><details class='row pass'><summary><span class='badge pass'>PASS</span><span class='badge task'>tobacco_usage</span><span class='summary-text'>#59 · <span class='u'>i quit</span> → expected <code>false</code>, got <code>false</code></span></summary><div class='detail-grid'><div class='label'>Task</div><div>tobacco_usage</div><div class='label'>System</div><pre>You are an assistant that identifies whether a user uses tobacco.
+
+STRICT_RULE:
+- Return only one value: true or false
+- If unclear return RETRY</pre><div class='label'>User</div><pre>i quit</pre><div class='label'>Expected</div><pre>false</pre><div class='label'>Got</div><pre>false</pre></div></details><details class='row pass'><summary><span class='badge pass'>PASS</span><span class='badge task'>part_d</span><span class='summary-text'>#60 · <span class='u'>maybe</span> → expected <code>RETRY</code>, got <code>RETRY</code></span></summary><div class='detail-grid'><div class='label'>Task</div><div>part_d</div><div class='label'>System</div><pre>You are an assistant to identify if user has purchased PART D / Prescription Plan of medicare insurance.
+
+STRICT_RULES:
+- Return only true/false
+- if not clear then return RETRY</pre><div class='label'>User</div><pre>maybe</pre><div class='label'>Expected</div><pre>RETRY</pre><div class='label'>Got</div><pre>RETRY</pre></div></details><details class='row pass'><summary><span class='badge pass'>PASS</span><span class='badge task'>illustration_choice</span><span class='summary-text'>#61 · <span class='u'>make heathcare</span> → expected <code>healthcare</code>, got <code>healthcare</code></span></summary><div class='detail-grid'><div class='label'>Task</div><div>illustration_choice</div><div class='label'>System</div><pre>Map the user&#x27;s intent to exactly one value from this list:
+[healthcare, ltc, funding, iul, viewHealthIllustrations, viewLtcIllustrations, compareHealthIllustrations, compareLtcIllustrations]
+
+Rules:
+- create/new/start -&gt; healthcare or ltc
+- view/show/list -&gt; viewHealthIllustrations or viewLtcIllustrations
+- compare -&gt; compareHealthIllustrations or compareLtcIllustrations
+
+Return ONLY one exact value from the list, or NULL if unclear.</pre><div class='label'>User</div><pre>make heathcare</pre><div class='label'>Expected</div><pre>healthcare</pre><div class='label'>Got</div><pre>healthcare</pre></div></details><details class='row pass'><summary><span class='badge pass'>PASS</span><span class='badge task'>ltc_state_extraction</span><span class='summary-text'>#62 · <span class='u'>lifestyle</span> → expected <code>qualityOfCare</code>, got <code>qualityOfCare</code></span></summary><div class='detail-grid'><div class='label'>Task</div><div>ltc_state_extraction</div><div class='label'>System</div><pre>You are an assistant that maps user input to LTC state.
+
+Return only one value from:
+qualityOfCare, homeCareYears, assistedCareYears, nursingCareYears, adultDayYears, RETRY</pre><div class='label'>User</div><pre>lifestyle</pre><div class='label'>Expected</div><pre>qualityOfCare</pre><div class='label'>Got</div><pre>qualityOfCare</pre></div></details><details class='row pass'><summary><span class='badge pass'>PASS</span><span class='badge task'>pre_medicare_plan</span><span class='summary-text'>#63 · <span class='u'>the bronz ppoo</span> → expected <code>BronzePPO</code>, got <code>BronzePPO</code></span></summary><div class='detail-grid'><div class='label'>Task</div><div>pre_medicare_plan</div><div class='label'>System</div><pre>You are an assistant to identify a plan from below list based on User Input:
+- BronzeHMO
+- SilverHMO
+- GoldHMO
+- BronzePPO
+- SilverPPO
+- GoldPPO
+
+STRICT_RULES:
+- Return only from above list
+- Fix typo errors in order to match the plans from above list
+- if not clear then return RETRY</pre><div class='label'>User</div><pre>the bronz ppoo</pre><div class='label'>Expected</div><pre>BronzePPO</pre><div class='label'>Got</div><pre>BronzePPO</pre></div></details><details class='row pass'><summary><span class='badge pass'>PASS</span><span class='badge task'>user_profile_field_detection</span><span class='summary-text'>#64 · <span class='u'>last nam</span> → expected <code>lastName</code>, got <code>lastName</code></span></summary><div class='detail-grid'><div class='label'>Task</div><div>user_profile_field_detection</div><div class='label'>System</div><pre>You are an assistant that identifies which user profile field the user wants to modify.
+
+userState:
+[firstName,lastName,birthdate,gender,tobaccoUsage,currentZipcode,retirementZipcode,taxFilingStatus,retirementAge,lifeExpectancy,healthProfile,conciergeCharge]
+
+Output:
+- Return ONLY one value from userState list, or RETRY</pre><div class='label'>User</div><pre>last nam</pre><div class='label'>Expected</div><pre>lastName</pre><div class='label'>Got</div><pre>lastName</pre></div></details><details class='row pass'><summary><span class='badge pass'>PASS</span><span class='badge task'>funding_modification_decision</span><span class='summary-text'>#65 · <span class='u'>no</span> → expected <code>false</code>, got <code>false</code></span></summary><div class='detail-grid'><div class='label'>Task</div><div>funding_modification_decision</div><div class='label'>System</div><pre>You are an assistant to identify answer in true/false form from User Input.
+
+STRICT_RULES:
+- Return only true/false for modify INTENT answer
+- if not clear then return RETRY</pre><div class='label'>User</div><pre>no</pre><div class='label'>Expected</div><pre>false</pre><div class='label'>Got</div><pre>false</pre></div></details><details class='row pass'><summary><span class='badge pass'>PASS</span><span class='badge task'>ltc_profile_state</span><span class='summary-text'>#66 · <span class='u'>yeah</span> → expected <code>yes</code>, got <code>yes</code></span></summary><div class='detail-grid'><div class='label'>Task</div><div>ltc_profile_state</div><div class='label'>System</div><pre>You are an assistant to identify ltc modification intent yes/no.
+
+STRICT_RULE:
+- return value yes/no
+- If unclear return RETRY</pre><div class='label'>User</div><pre>yeah</pre><div class='label'>Expected</div><pre>yes</pre><div class='label'>Got</div><pre>yes</pre></div></details><details class='row fail'><summary><span class='badge fail'>FAIL</span><span class='badge task'>part_a</span><span class='summary-text'>#67 · <span class='u'>just 5 yrs</span> → expected <code>true</code>, got <code>false</code></span></summary><div class='detail-grid'><div class='label'>Task</div><div>part_a</div><div class='label'>System</div><pre>You are an assistant to identify if user has paid medicare taxes for 10 years or 40 quarters.
+
+DECISION:
+- If user has paid medicare taxes for &gt;=10 years then return false
+- If user has not paid medicare taxes for &gt;=10 years then return true
+- yes -&gt; false
+- no -&gt; true
+
+STRICT_RULES:
+- Return only true/false
+- if not clear then return RETRY</pre><div class='label'>User</div><pre>just 5 yrs</pre><div class='label'>Expected</div><pre>true</pre><div class='label'>Got</div><pre>false</pre></div></details><details class='row pass'><summary><span class='badge pass'>PASS</span><span class='badge task'>birthdate</span><span class='summary-text'>#68 · <span class='u'>nov 1995</span> → expected <code>11-1995</code>, got <code>11-1995</code></span></summary><div class='detail-grid'><div class='label'>Task</div><div>birthdate</div><div class='label'>System</div><pre>You are an assistant that extracts and normalizes a user&#x27;s birth date.
+
+STRICT_RULE:
+- Return only one value in format: MM-YYYY
+- Month must always be 2 digits (01-12)
+- If date is unclear return RETRY</pre><div class='label'>User</div><pre>nov 1995</pre><div class='label'>Expected</div><pre>11-1995</pre><div class='label'>Got</div><pre>11-1995</pre></div></details><details class='row pass'><summary><span class='badge pass'>PASS</span><span class='badge task'>pre_medicare_plan</span><span class='summary-text'>#69 · <span class='u'>bronze ppo</span> → expected <code>BronzePPO</code>, got <code>BronzePPO</code></span></summary><div class='detail-grid'><div class='label'>Task</div><div>pre_medicare_plan</div><div class='label'>System</div><pre>You are an assistant to identify a plan from below list based on User Input:
+- BronzeHMO
+- SilverHMO
+- GoldHMO
+- BronzePPO
+- SilverPPO
+- GoldPPO
+
+STRICT_RULES:
+- Return only from above list
+- Fix typo errors in order to match the plans from above list
+- if not clear then return RETRY</pre><div class='label'>User</div><pre>bronze ppo</pre><div class='label'>Expected</div><pre>BronzePPO</pre><div class='label'>Got</div><pre>BronzePPO</pre></div></details><details class='row pass'><summary><span class='badge pass'>PASS</span><span class='badge task'>ltc_profile_state</span><span class='summary-text'>#70 · <span class='u'>yes please</span> → expected <code>yes</code>, got <code>yes</code></span></summary><div class='detail-grid'><div class='label'>Task</div><div>ltc_profile_state</div><div class='label'>System</div><pre>You are an assistant to identify ltc modification intent yes/no.
+
+STRICT_RULE:
+- return value yes/no
+- If unclear return RETRY</pre><div class='label'>User</div><pre>yes please</pre><div class='label'>Expected</div><pre>yes</pre><div class='label'>Got</div><pre>yes</pre></div></details><details class='row fail'><summary><span class='badge fail'>FAIL</span><span class='badge task'>illustration_choice</span><span class='summary-text'>#71 · <span class='u'>see existing ltc</span> → expected <code>viewLtcIllustrations</code>, got <code>viewLtcIllustration</code></span></summary><div class='detail-grid'><div class='label'>Task</div><div>illustration_choice</div><div class='label'>System</div><pre>Map the user&#x27;s intent to exactly one value from this list:
+[healthcare, ltc, funding, iul, viewHealthIllustrations, viewLtcIllustrations, compareHealthIllustrations, compareLtcIllustrations]
+
+Rules:
+- create/new/start -&gt; healthcare or ltc
+- view/show/list -&gt; viewHealthIllustrations or viewLtcIllustrations
+- compare -&gt; compareHealthIllustrations or compareLtcIllustrations
+
+Return ONLY one exact value from the list, or NULL if unclear.</pre><div class='label'>User</div><pre>see existing ltc</pre><div class='label'>Expected</div><pre>viewLtcIllustrations</pre><div class='label'>Got</div><pre>viewLtcIllustration</pre></div></details><details class='row fail'><summary><span class='badge fail'>FAIL</span><span class='badge task'>assisted_care_year</span><span class='summary-text'>#72 · <span class='u'>there</span> → expected <code>3</code>, got <code>RETRY</code></span></summary><div class='detail-grid'><div class='label'>Task</div><div>assisted_care_year</div><div class='label'>System</div><pre>You are an assistant to identify a number from user input.
+
+STRICT_RULE:
+- return value from [0-10]
+- if input is string in place of number then try to identify a number from [0-10]
+- If unclear return RETRY</pre><div class='label'>User</div><pre>there</pre><div class='label'>Expected</div><pre>3</pre><div class='label'>Got</div><pre>RETRY</pre></div></details><details class='row pass'><summary><span class='badge pass'>PASS</span><span class='badge task'>level_of_protection</span><span class='summary-text'>#73 · <span class='u'>full</span> → expected <code>100</code>, got <code>100</code></span></summary><div class='detail-grid'><div class='label'>Task</div><div>level_of_protection</div><div class='label'>System</div><pre>You are an assistant to extract percent value from User Input which is closest to below array:
+[15,50,75,100]
+
+STRICT_RULES:
+- Return only number
+- if not clear then return RETRY</pre><div class='label'>User</div><pre>full</pre><div class='label'>Expected</div><pre>100</pre><div class='label'>Got</div><pre>100</pre></div></details><details class='row pass'><summary><span class='badge pass'>PASS</span><span class='badge task'>supplement</span><span class='summary-text'>#74 · <span class='u'>medicare advantage plan</span> → expected <code>planC</code>, got <code>planC</code></span></summary><div class='detail-grid'><div class='label'>Task</div><div>supplement</div><div class='label'>System</div><pre>You are an assistant to identify if user is opting for one of the below supplement / medigap / medicare advantage plan:
+- PART C also known as PLANC or MA plan or MEDICARE ADVANTAGE PLAN
+- PLAN N
+- PLAN G
+- PLAN F
+
+STRICT_RULES:
+- Fix typo in order to match the input out of above mentioned plans
+- Return planC for PART C / MA / MEDICARE ADVANTAGE / planC
+- Return planG for PLAN G / Medigap Plan G / planG
+- Return planN for PLAN N / Medigap Plan N / planN
+- Return planF for PART F / Medigap Plan F / planF
+- if not clear then return RETRY</pre><div class='label'>User</div><pre>medicare advantage plan</pre><div class='label'>Expected</div><pre>planC</pre><div class='label'>Got</div><pre>planC</pre></div></details><details class='row pass'><summary><span class='badge pass'>PASS</span><span class='badge task'>part_b</span><span class='summary-text'>#75 · <span class='u'>i don&#x27;t have</span> → expected <code>false</code>, got <code>false</code></span></summary><div class='detail-grid'><div class='label'>Task</div><div>part_b</div><div class='label'>System</div><pre>You are an assistant to identify if user has purchased PART B Plan of medicare insurance.
+
+STRICT_RULES:
+- Return only true/false
+- if not clear then return RETRY</pre><div class='label'>User</div><pre>i don&#x27;t have</pre><div class='label'>Expected</div><pre>false</pre><div class='label'>Got</div><pre>false</pre></div></details><details class='row pass'><summary><span class='badge pass'>PASS</span><span class='badge task'>user_profile_field_detection</span><span class='summary-text'>#76 · <span class='u'>date of birth</span> → expected <code>birthdate</code>, got <code>birthdate</code></span></summary><div class='detail-grid'><div class='label'>Task</div><div>user_profile_field_detection</div><div class='label'>System</div><pre>You are an assistant that identifies which user profile field the user wants to modify.
+
+userState:
+[firstName,lastName,birthdate,gender,tobaccoUsage,currentZipcode,retirementZipcode,taxFilingStatus,retirementAge,lifeExpectancy,healthProfile,conciergeCharge]
+
+Output:
+- Return ONLY one value from userState list, or RETRY</pre><div class='label'>User</div><pre>date of birth</pre><div class='label'>Expected</div><pre>birthdate</pre><div class='label'>Got</div><pre>birthdate</pre></div></details><details class='row pass'><summary><span class='badge pass'>PASS</span><span class='badge task'>years_to_save</span><span class='summary-text'>#77 · <span class='u'>fiftn</span> → expected <code>15</code>, got <code>15</code></span></summary><div class='detail-grid'><div class='label'>Task</div><div>years_to_save</div><div class='label'>System</div><pre>You are an assistant that maps user input to the closest matching value from this list:
+[5,10,15,20,25,30,&quot;five&quot;,&quot;ten&quot;,&quot;twenty&quot;,&quot;twenty five&quot;,&quot;thirty&quot;]
+
+RULES:
+- The output MUST be one of: 5,10,15,20,25,30
+- Convert words or misspelled words into their numeric meaning
+- Ignore extra words like &quot;year&quot;, &quot;years&quot;, etc.
+- Only map to available values in the list
+- Choose the closest valid number
+- If no reasonable match exists, return: RETRY
+- Return ONLY the number (no explanation)</pre><div class='label'>User</div><pre>fiftn</pre><div class='label'>Expected</div><pre>15</pre><div class='label'>Got</div><pre>15</pre></div></details><details class='row pass'><summary><span class='badge pass'>PASS</span><span class='badge task'>part_d</span><span class='summary-text'>#78 · <span class='u'>skip partd</span> → expected <code>false</code>, got <code>false</code></span></summary><div class='detail-grid'><div class='label'>Task</div><div>part_d</div><div class='label'>System</div><pre>You are an assistant to identify if user has purchased PART D / Prescription Plan of medicare insurance.
+
+STRICT_RULES:
+- Return only true/false
+- if not clear then return RETRY</pre><div class='label'>User</div><pre>skip partd</pre><div class='label'>Expected</div><pre>false</pre><div class='label'>Got</div><pre>false</pre></div></details><details class='row pass'><summary><span class='badge pass'>PASS</span><span class='badge task'>current_zipcode</span><span class='summary-text'>#79 · <span class='u'>zipcode 94103</span> → expected <code>94103</code>, got <code>94103</code></span></summary><div class='detail-grid'><div class='label'>Task</div><div>current_zipcode</div><div class='label'>System</div><pre>You are an assistant that extracts a valid 5-digit USA ZIP code.
+
+STRICT_RULE:
+- Return only a 5-digit number (exactly 5 digits)
+- If no valid ZIP code is found return RETRY</pre><div class='label'>User</div><pre>zipcode 94103</pre><div class='label'>Expected</div><pre>94103</pre><div class='label'>Got</div><pre>94103</pre></div></details><details class='row pass'><summary><span class='badge pass'>PASS</span><span class='badge task'>go_to_home_identifier</span><span class='summary-text'>#80 · <span class='u'>go to main</span> → expected <code>true</code>, got <code>true</code></span></summary><div class='detail-grid'><div class='label'>Task</div><div>go_to_home_identifier</div><div class='label'>System</div><pre>You are a strict go-to-home identifier.
+
+Return true ONLY when the user&#x27;s message clearly means go home / start over / restart.
+
+STRICT_RULES:
+- Return only true or false.
+- If unclear, return false.</pre><div class='label'>User</div><pre>go to main</pre><div class='label'>Expected</div><pre>true</pre><div class='label'>Got</div><pre>true</pre></div></details><details class='row pass'><summary><span class='badge pass'>PASS</span><span class='badge task'>concierge_charge</span><span class='summary-text'>#81 · <span class='u'>$175</span> → expected <code>175</code>, got <code>175</code></span></summary><div class='detail-grid'><div class='label'>Task</div><div>concierge_charge</div><div class='label'>System</div><pre>You are an assistant that extracts a concierge charge amount in US dollars.
+
+STRICT_RULE:
+- Return only a numeric value
+- Do NOT include currency symbols or text
+- If amount is unclear return RETRY</pre><div class='label'>User</div><pre>$175</pre><div class='label'>Expected</div><pre>175</pre><div class='label'>Got</div><pre>175</pre></div></details><details class='row fail'><summary><span class='badge fail'>FAIL</span><span class='badge task'>change_state_detection</span><span class='summary-text'>#82 · <span class='u'>modfy concierge fee</span> → expected <code>{&quot;cStage&quot;:&quot;user&quot;,&quot;cState&quot;:&quot;conciergeCharge&quot;}</code>, got <code>{&quot;cStage&quot;:&quot;ltc&quot;,&quot;cState&quot;:&quot;conciergeFee&quot;}</code></span></summary><div class='detail-grid'><div class='label'>Task</div><div>change_state_detection</div><div class='label'>System</div><pre>You are an assistant to identify stage and state from User input.
+
+Output Format (STRICT):
+- Return ONLY valid JSON: {&quot;cStage&quot;:&quot;&lt;stage&gt;&quot;,&quot;cState&quot;:&quot;&lt;field&gt;&quot;}
+- If unclear return NONE</pre><div class='label'>User</div><pre>modfy concierge fee</pre><div class='label'>Expected</div><pre>{&quot;cStage&quot;:&quot;user&quot;,&quot;cState&quot;:&quot;conciergeCharge&quot;}</pre><div class='label'>Got</div><pre>{&quot;cStage&quot;:&quot;ltc&quot;,&quot;cState&quot;:&quot;conciergeFee&quot;}</pre></div></details><details class='row pass'><summary><span class='badge pass'>PASS</span><span class='badge task'>tax_filing_status</span><span class='summary-text'>#83 · <span class='u'>solo filing</span> → expected <code>FILING_INDIVIDUALLY</code>, got <code>FILING_INDIVIDUALLY</code></span></summary><div class='detail-grid'><div class='label'>Task</div><div>tax_filing_status</div><div class='label'>System</div><pre>You are an assistant that identifies a user&#x27;s tax filing status.
+
+STRICT_RULE:
+- Return only one value: FILING_INDIVIDUALLY or MARRIED_FILING_JOINTLY
+- If status is unclear return RETRY</pre><div class='label'>User</div><pre>solo filing</pre><div class='label'>Expected</div><pre>FILING_INDIVIDUALLY</pre><div class='label'>Got</div><pre>FILING_INDIVIDUALLY</pre></div></details><details class='row pass'><summary><span class='badge pass'>PASS</span><span class='badge task'>healthcare_profile_state</span><span class='summary-text'>#84 · <span class='u'>make changes</span> → expected <code>yes</code>, got <code>yes</code></span></summary><div class='detail-grid'><div class='label'>Task</div><div>healthcare_profile_state</div><div class='label'>System</div><pre>You are an assistant to identify healthcare selection modification intent yes/no.
+
+STRICT_RULE:
+- return value yes/no
+- If unclear return RETRY</pre><div class='label'>User</div><pre>make changes</pre><div class='label'>Expected</div><pre>yes</pre><div class='label'>Got</div><pre>yes</pre></div></details><details class='row pass'><summary><span class='badge pass'>PASS</span><span class='badge task'>change_state_identifier</span><span class='summary-text'>#85 · <span class='u'>update part D</span> → expected <code>true</code>, got <code>true</code></span></summary><div class='detail-grid'><div class='label'>Task</div><div>change_state_identifier</div><div class='label'>System</div><pre>You are a Change State Identifier.
+
+Return true only if:
+- The input contains an intent keyword like modify/change/go to/update/switch AND
+  the user specifies what is being changed.
+Return false otherwise.
+
+Output format: true/false</pre><div class='label'>User</div><pre>update part D</pre><div class='label'>Expected</div><pre>true</pre><div class='label'>Got</div><pre>true</pre></div></details><details class='row fail'><summary><span class='badge fail'>FAIL</span><span class='badge task'>magi_tier</span><span class='summary-text'>#86 · <span class='u'>one hundred twenty thousand</span> → expected <code>2</code>, got <code>3</code></span></summary><div class='detail-grid'><div class='label'>Task</div><div>magi_tier</div><div class='label'>System</div><pre>You are an assistant to convert or extract numeric value from User Input.
+MAGI_TIER_RANGES (USD): [103000, 129000, 161000, 193000, 500000]
+
+STRICT_RULES:
+- Convert all values to full numbers (e.g., 218K = 218000)
+- Interpret ranges as:
+  1: x &lt; 103000
+  2: 103000 &lt;= x &lt; 129000
+  3: 129000 &lt;= x &lt; 161000
+  4: 161000 &lt;= x &lt; 193000
+  5: 193000 &lt;= x &lt;= 500000
+  6: x &gt; 500000
+- ALWAYS compare using numeric values, not text
+- If input is between 1-6, return it directly
+- Return only number [1-6]
+- If unclear, return RETRY</pre><div class='label'>User</div><pre>one hundred twenty thousand</pre><div class='label'>Expected</div><pre>2</pre><div class='label'>Got</div><pre>3</pre></div></details><details class='row pass'><summary><span class='badge pass'>PASS</span><span class='badge task'>birthdate</span><span class='summary-text'>#87 · <span class='u'>marc 2001</span> → expected <code>03-2001</code>, got <code>03-2001</code></span></summary><div class='detail-grid'><div class='label'>Task</div><div>birthdate</div><div class='label'>System</div><pre>You are an assistant that extracts and normalizes a user&#x27;s birth date.
+
+STRICT_RULE:
+- Return only one value in format: MM-YYYY
+- Month must always be 2 digits (01-12)
+- If date is unclear return RETRY</pre><div class='label'>User</div><pre>marc 2001</pre><div class='label'>Expected</div><pre>03-2001</pre><div class='label'>Got</div><pre>03-2001</pre></div></details><details class='row pass'><summary><span class='badge pass'>PASS</span><span class='badge task'>tax_filing_status</span><span class='summary-text'>#88 · <span class='u'>joint filing</span> → expected <code>MARRIED_FILING_JOINTLY</code>, got <code>MARRIED_FILING_JOINTLY</code></span></summary><div class='detail-grid'><div class='label'>Task</div><div>tax_filing_status</div><div class='label'>System</div><pre>You are an assistant that identifies a user&#x27;s tax filing status.
+
+STRICT_RULE:
+- Return only one value: FILING_INDIVIDUALLY or MARRIED_FILING_JOINTLY
+- If status is unclear return RETRY</pre><div class='label'>User</div><pre>joint filing</pre><div class='label'>Expected</div><pre>MARRIED_FILING_JOINTLY</pre><div class='label'>Got</div><pre>MARRIED_FILING_JOINTLY</pre></div></details><details class='row pass'><summary><span class='badge pass'>PASS</span><span class='badge task'>healthcare_profile_state</span><span class='summary-text'>#89 · <span class='u'>what does this mean</span> → expected <code>RETRY</code>, got <code>RETRY</code></span></summary><div class='detail-grid'><div class='label'>Task</div><div>healthcare_profile_state</div><div class='label'>System</div><pre>You are an assistant to identify healthcare selection modification intent yes/no.
+
+STRICT_RULE:
+- return value yes/no
+- If unclear return RETRY</pre><div class='label'>User</div><pre>what does this mean</pre><div class='label'>Expected</div><pre>RETRY</pre><div class='label'>Got</div><pre>RETRY</pre></div></details><details class='row pass'><summary><span class='badge pass'>PASS</span><span class='badge task'>health_profile</span><span class='summary-text'>#90 · <span class='u'>pretty gud</span> → expected <code>2</code>, got <code>2</code></span></summary><div class='detail-grid'><div class='label'>Task</div><div>health_profile</div><div class='label'>System</div><pre>You are an assistant that identifies a user&#x27;s health profile.
+
+STRICT_RULE:
+- Return only one value: 1, 2, 3, 4, or 5
+- If health status is unclear return RETRY
+
+MAPPING_RULES:
+- Best Health -&gt; 1
+- Good Health -&gt; 2
+- Moderate Health -&gt; 3
+- Poor Health -&gt; 4
+- Sick -&gt; 5</pre><div class='label'>User</div><pre>pretty gud</pre><div class='label'>Expected</div><pre>2</pre><div class='label'>Got</div><pre>2</pre></div></details><details class='row pass'><summary><span class='badge pass'>PASS</span><span class='badge task'>gender</span><span class='summary-text'>#91 · <span class='u'>gentlmen</span> → expected <code>M</code>, got <code>M</code></span></summary><div class='detail-grid'><div class='label'>Task</div><div>gender</div><div class='label'>System</div><pre>You are an assistant that identifies user gender from input text.
+
+STRICT_RULE:
+- Return only one value: M or F
+- If unclear return RETRY</pre><div class='label'>User</div><pre>gentlmen</pre><div class='label'>Expected</div><pre>M</pre><div class='label'>Got</div><pre>M</pre></div></details><details class='row pass'><summary><span class='badge pass'>PASS</span><span class='badge task'>dental</span><span class='summary-text'>#92 · <span class='u'>with dental</span> → expected <code>true</code>, got <code>true</code></span></summary><div class='detail-grid'><div class='label'>Task</div><div>dental</div><div class='label'>System</div><pre>You are an assistant to identify if user has purchased DENTAL Plan of dental insurance.
+
+STRICT_RULES:
+- Return only true/false
+- if not clear then return RETRY</pre><div class='label'>User</div><pre>with dental</pre><div class='label'>Expected</div><pre>true</pre><div class='label'>Got</div><pre>true</pre></div></details><details class='row pass'><summary><span class='badge pass'>PASS</span><span class='badge task'>assisted_care_year</span><span class='summary-text'>#93 · <span class='u'>three yrs</span> → expected <code>3</code>, got <code>3</code></span></summary><div class='detail-grid'><div class='label'>Task</div><div>assisted_care_year</div><div class='label'>System</div><pre>You are an assistant to identify a number from user input.
+
+STRICT_RULE:
+- return value from [0-10]
+- if input is string in place of number then try to identify a number from [0-10]
+- If unclear return RETRY</pre><div class='label'>User</div><pre>three yrs</pre><div class='label'>Expected</div><pre>3</pre><div class='label'>Got</div><pre>3</pre></div></details><details class='row pass'><summary><span class='badge pass'>PASS</span><span class='badge task'>years_to_save</span><span class='summary-text'>#94 · <span class='u'>around 5</span> → expected <code>5</code>, got <code>5</code></span></summary><div class='detail-grid'><div class='label'>Task</div><div>years_to_save</div><div class='label'>System</div><pre>You are an assistant that maps user input to the closest matching value from this list:
+[5,10,15,20,25,30,&quot;five&quot;,&quot;ten&quot;,&quot;twenty&quot;,&quot;twenty five&quot;,&quot;thirty&quot;]
+
+RULES:
+- The output MUST be one of: 5,10,15,20,25,30
+- Convert words or misspelled words into their numeric meaning
+- Ignore extra words like &quot;year&quot;, &quot;years&quot;, etc.
+- Only map to available values in the list
+- Choose the closest valid number
+- If no reasonable match exists, return: RETRY
+- Return ONLY the number (no explanation)</pre><div class='label'>User</div><pre>around 5</pre><div class='label'>Expected</div><pre>5</pre><div class='label'>Got</div><pre>5</pre></div></details><details class='row pass'><summary><span class='badge pass'>PASS</span><span class='badge task'>quality_of_care</span><span class='summary-text'>#95 · <span class='u'>luxurios</span> → expected <code>2</code>, got <code>2</code></span></summary><div class='detail-grid'><div class='label'>Task</div><div>quality_of_care</div><div class='label'>System</div><pre>You are a strict classifier.
+
+Map [Comfortable, Luxury, Premium Luxury]:
+- Comfortable -&gt; 1
+- Luxury -&gt; 2
+- Premium Luxury -&gt; 3
+
+Output:
+- Return ONLY one value: 1, 2, 3 or RETRY</pre><div class='label'>User</div><pre>luxurios</pre><div class='label'>Expected</div><pre>2</pre><div class='label'>Got</div><pre>2</pre></div></details><details class='row pass'><summary><span class='badge pass'>PASS</span><span class='badge task'>match_type</span><span class='summary-text'>#96 · <span class='u'>averaging</span> → expected <code>TRANCHE</code>, got <code>TRANCHE</code></span></summary><div class='detail-grid'><div class='label'>Task</div><div>match_type</div><div class='label'>System</div><pre>You are a strict classifier.
+
+Map the given user input to EXACTLY one of these values:
+- EXACT
+- TRANCHE
+
+Output:
+- Return ONLY one value: EXACT or TRANCHE or RETRY</pre><div class='label'>User</div><pre>averaging</pre><div class='label'>Expected</div><pre>TRANCHE</pre><div class='label'>Got</div><pre>TRANCHE</pre></div></details><details class='row pass'><summary><span class='badge pass'>PASS</span><span class='badge task'>pre_medicare_plan</span><span class='summary-text'>#97 · <span class='u'>gold-hmo</span> → expected <code>GoldHMO</code>, got <code>GoldHMO</code></span></summary><div class='detail-grid'><div class='label'>Task</div><div>pre_medicare_plan</div><div class='label'>System</div><pre>You are an assistant to identify a plan from below list based on User Input:
+- BronzeHMO
+- SilverHMO
+- GoldHMO
+- BronzePPO
+- SilverPPO
+- GoldPPO
+
+STRICT_RULES:
+- Return only from above list
+- Fix typo errors in order to match the plans from above list
+- if not clear then return RETRY</pre><div class='label'>User</div><pre>gold-hmo</pre><div class='label'>Expected</div><pre>GoldHMO</pre><div class='label'>Got</div><pre>GoldHMO</pre></div></details><details class='row pass'><summary><span class='badge pass'>PASS</span><span class='badge task'>investment_profile</span><span class='summary-text'>#98 · <span class='u'>the 4.5 one</span> → expected <code>4.5</code>, got <code>4.5</code></span></summary><div class='detail-grid'><div class='label'>Task</div><div>investment_profile</div><div class='label'>System</div><pre>You are a strict classifier.
+
+Map the given user input to EXACTLY one of these:
+- Conservative -&gt; 4.5
+- Moderate -&gt; 6.5
+- Aggressive -&gt; 8.5
+
+Rules:
+- ALWAYS resolve typos and misspellings to the closest valid category
+- Treat inputs like &quot;agrasive&quot;, &quot;aggresive&quot; as &quot;Aggressive&quot;
+- Even partial words must be mapped (e.g., &quot;aggr&quot;, &quot;mod&quot;, &quot;cons&quot;)
+- NEVER return RETRY if the input resembles any category even slightly
+- Return RETRY only if input is completely unrelated
+
+Output:
+- Return ONLY one value: 4.5 or 6.5 or 8.5 or RETRY
+- Do NOT return any text</pre><div class='label'>User</div><pre>the 4.5 one</pre><div class='label'>Expected</div><pre>4.5</pre><div class='label'>Got</div><pre>4.5</pre></div></details><details class='row pass'><summary><span class='badge pass'>PASS</span><span class='badge task'>current_savings</span><span class='summary-text'>#99 · <span class='u'>75000</span> → expected <code>75000</code>, got <code>75000</code></span></summary><div class='detail-grid'><div class='label'>Task</div><div>current_savings</div><div class='label'>System</div><pre>You are an assistant to convert or extract numeric value from User Input.
+
+STRICT_RULES:
+- Return only number
+- if not clear then return RETRY</pre><div class='label'>User</div><pre>75000</pre><div class='label'>Expected</div><pre>75000</pre><div class='label'>Got</div><pre>75000</pre></div></details><details class='row pass'><summary><span class='badge pass'>PASS</span><span class='badge task'>retirement_zipcode</span><span class='summary-text'>#100 · <span class='u'>zip: 48201</span> → expected <code>48201</code>, got <code>48201</code></span></summary><div class='detail-grid'><div class='label'>Task</div><div>retirement_zipcode</div><div class='label'>System</div><pre>You are an assistant that extracts a retirement ZIP code.
+CURRENT_ZIPCODE = 90210
+
+STRICT_RULE:
+- Return only a 5-digit number (exactly 5 digits)
+- &quot;same&quot;,&quot;use current&quot;,&quot;no change&quot; -&gt; 90210
+- If input is unclear return RETRY</pre><div class='label'>User</div><pre>zip: 48201</pre><div class='label'>Expected</div><pre>48201</pre><div class='label'>Got</div><pre>48201</pre></div></details><details class='row pass'><summary><span class='badge pass'>PASS</span><span class='badge task'>tranche_size</span><span class='summary-text'>#101 · <span class='u'>tranche of 7 years</span> → expected <code>7</code>, got <code>7</code></span></summary><div class='detail-grid'><div class='label'>Task</div><div>tranche_size</div><div class='label'>System</div><pre>You are an assistant that extracts a positive integer (number of years per tranche) from user input.
+
+RULES:
+- The output MUST be a positive integer (&gt;= 1).
+- Convert words or misspelled words into their numeric meaning
+- If unable to identify a number then return RETRY
+- Return ONLY the number (no explanation).</pre><div class='label'>User</div><pre>tranche of 7 years</pre><div class='label'>Expected</div><pre>7</pre><div class='label'>Got</div><pre>7</pre></div></details><details class='row pass'><summary><span class='badge pass'>PASS</span><span class='badge task'>change_state_detection</span><span class='summary-text'>#102 · <span class='u'>asdf</span> → expected <code>NONE</code>, got <code>NONE</code></span></summary><div class='detail-grid'><div class='label'>Task</div><div>change_state_detection</div><div class='label'>System</div><pre>You are an assistant to identify stage and state from User input.
+
+Output Format (STRICT):
+- Return ONLY valid JSON: {&quot;cStage&quot;:&quot;&lt;stage&gt;&quot;,&quot;cState&quot;:&quot;&lt;field&gt;&quot;}
+- If unclear return NONE</pre><div class='label'>User</div><pre>asdf</pre><div class='label'>Expected</div><pre>NONE</pre><div class='label'>Got</div><pre>NONE</pre></div></details><details class='row pass'><summary><span class='badge pass'>PASS</span><span class='badge task'>concierge_charge</span><span class='summary-text'>#103 · <span class='u'>five hundred dollars</span> → expected <code>500</code>, got <code>500</code></span></summary><div class='detail-grid'><div class='label'>Task</div><div>concierge_charge</div><div class='label'>System</div><pre>You are an assistant that extracts a concierge charge amount in US dollars.
+
+STRICT_RULE:
+- Return only a numeric value
+- Do NOT include currency symbols or text
+- If amount is unclear return RETRY</pre><div class='label'>User</div><pre>five hundred dollars</pre><div class='label'>Expected</div><pre>500</pre><div class='label'>Got</div><pre>500</pre></div></details><details class='row pass'><summary><span class='badge pass'>PASS</span><span class='badge task'>investment_profile</span><span class='summary-text'>#104 · <span class='u'>conservatiive</span> → expected <code>4.5</code>, got <code>4.5</code></span></summary><div class='detail-grid'><div class='label'>Task</div><div>investment_profile</div><div class='label'>System</div><pre>You are a strict classifier.
+
+Map the given user input to EXACTLY one of these:
+- Conservative -&gt; 4.5
+- Moderate -&gt; 6.5
+- Aggressive -&gt; 8.5
+
+Rules:
+- ALWAYS resolve typos and misspellings to the closest valid category
+- Treat inputs like &quot;agrasive&quot;, &quot;aggresive&quot; as &quot;Aggressive&quot;
+- Even partial words must be mapped (e.g., &quot;aggr&quot;, &quot;mod&quot;, &quot;cons&quot;)
+- NEVER return RETRY if the input resembles any category even slightly
+- Return RETRY only if input is completely unrelated
+
+Output:
+- Return ONLY one value: 4.5 or 6.5 or 8.5 or RETRY
+- Do NOT return any text</pre><div class='label'>User</div><pre>conservatiive</pre><div class='label'>Expected</div><pre>4.5</pre><div class='label'>Got</div><pre>4.5</pre></div></details><details class='row pass'><summary><span class='badge pass'>PASS</span><span class='badge task'>user_profile_intent</span><span class='summary-text'>#105 · <span class='u'>want to edit</span> → expected <code>true</code>, got <code>true</code></span></summary><div class='detail-grid'><div class='label'>Task</div><div>user_profile_intent</div><div class='label'>System</div><pre>You are an assistant to identify user intent for profile modification.
+
+STRICT_RULE:
+- return true for modification intent else false
+- If unclear return RETRY</pre><div class='label'>User</div><pre>want to edit</pre><div class='label'>Expected</div><pre>true</pre><div class='label'>Got</div><pre>true</pre></div></details><details class='row pass'><summary><span class='badge pass'>PASS</span><span class='badge task'>healthcare_funding_decide</span><span class='summary-text'>#106 · <span class='u'>no</span> → expected <code>no</code>, got <code>no</code></span></summary><div class='detail-grid'><div class='label'>Task</div><div>healthcare_funding_decide</div><div class='label'>System</div><pre>You are an assistant that identifies YES/NO intent from user replies.
+
+STRICT RULES:
+- Return only: yes, no, or RETRY
+- Use both userInput and question context together
+- Infer conversational intent naturally
+- Short confirmations or partial phrases should still be interpreted
+
+Affirmative examples: yes, proceed, continue, go ahead, okay, ok, sure, do it, let&#x27;s do it
+Negative examples: no, don&#x27;t, stop, cancel, not now, never mind
+
+If intent is unclear, return RETRY</pre><div class='label'>User</div><pre>no</pre><div class='label'>Expected</div><pre>no</pre><div class='label'>Got</div><pre>no</pre></div></details><details class='row pass'><summary><span class='badge pass'>PASS</span><span class='badge task'>ltc_iul_decide</span><span class='summary-text'>#107 · <span class='u'>asdf</span> → expected <code>RETRY</code>, got <code>RETRY</code></span></summary><div class='detail-grid'><div class='label'>Task</div><div>ltc_iul_decide</div><div class='label'>System</div><pre>You are an assistant that identifies YES/NO intent from user replies.
+
+STRICT RULES:
+- Return only: yes, no, or RETRY</pre><div class='label'>User</div><pre>asdf</pre><div class='label'>Expected</div><pre>RETRY</pre><div class='label'>Got</div><pre>RETRY</pre></div></details><details class='row pass'><summary><span class='badge pass'>PASS</span><span class='badge task'>concierge_charge</span><span class='summary-text'>#108 · <span class='u'>three hundred</span> → expected <code>300</code>, got <code>300</code></span></summary><div class='detail-grid'><div class='label'>Task</div><div>concierge_charge</div><div class='label'>System</div><pre>You are an assistant that extracts a concierge charge amount in US dollars.
+
+STRICT_RULE:
+- Return only a numeric value
+- Do NOT include currency symbols or text
+- If amount is unclear return RETRY</pre><div class='label'>User</div><pre>three hundred</pre><div class='label'>Expected</div><pre>300</pre><div class='label'>Got</div><pre>300</pre></div></details><details class='row fail'><summary><span class='badge fail'>FAIL</span><span class='badge task'>change_state_detection</span><span class='summary-text'>#109 · <span class='u'>updt life expectncy</span> → expected <code>{&quot;cStage&quot;:&quot;user&quot;,&quot;cState&quot;:&quot;lifeExpectancy&quot;}</code>, got <code>{&quot;cStage&quot;:&quot;healthcare&quot;,&quot;cState&quot;:&quot;lifeExpectancy&quot;}</code></span></summary><div class='detail-grid'><div class='label'>Task</div><div>change_state_detection</div><div class='label'>System</div><pre>You are an assistant to identify stage and state from User input.
+
+Output Format (STRICT):
+- Return ONLY valid JSON: {&quot;cStage&quot;:&quot;&lt;stage&gt;&quot;,&quot;cState&quot;:&quot;&lt;field&gt;&quot;}
+- If unclear return NONE</pre><div class='label'>User</div><pre>updt life expectncy</pre><div class='label'>Expected</div><pre>{&quot;cStage&quot;:&quot;user&quot;,&quot;cState&quot;:&quot;lifeExpectancy&quot;}</pre><div class='label'>Got</div><pre>{&quot;cStage&quot;:&quot;healthcare&quot;,&quot;cState&quot;:&quot;lifeExpectancy&quot;}</pre></div></details><details class='row pass'><summary><span class='badge pass'>PASS</span><span class='badge task'>funding_modification_decision</span><span class='summary-text'>#110 · <span class='u'>no modifications</span> → expected <code>false</code>, got <code>false</code></span></summary><div class='detail-grid'><div class='label'>Task</div><div>funding_modification_decision</div><div class='label'>System</div><pre>You are an assistant to identify answer in true/false form from User Input.
+
+STRICT_RULES:
+- Return only true/false for modify INTENT answer
+- if not clear then return RETRY</pre><div class='label'>User</div><pre>no modifications</pre><div class='label'>Expected</div><pre>false</pre><div class='label'>Got</div><pre>false</pre></div></details><details class='row pass'><summary><span class='badge pass'>PASS</span><span class='badge task'>match_type</span><span class='summary-text'>#111 · <span class='u'>level out</span> → expected <code>TRANCHE</code>, got <code>TRANCHE</code></span></summary><div class='detail-grid'><div class='label'>Task</div><div>match_type</div><div class='label'>System</div><pre>You are a strict classifier.
+
+Map the given user input to EXACTLY one of these values:
+- EXACT
+- TRANCHE
+
+Output:
+- Return ONLY one value: EXACT or TRANCHE or RETRY</pre><div class='label'>User</div><pre>level out</pre><div class='label'>Expected</div><pre>TRANCHE</pre><div class='label'>Got</div><pre>TRANCHE</pre></div></details><details class='row pass'><summary><span class='badge pass'>PASS</span><span class='badge task'>life_expectancy</span><span class='summary-text'>#112 · <span class='u'>seventy</span> → expected <code>70</code>, got <code>70</code></span></summary><div class='detail-grid'><div class='label'>Task</div><div>life_expectancy</div><div class='label'>System</div><pre>You are an assistant that extracts a life expectancy value (in years).
+DEFAULT_LIFE_EXPECTANCY = 85
+
+STRICT_RULE:
+- Return only a whole number
+- If user intent is unclear return RETRY</pre><div class='label'>User</div><pre>seventy</pre><div class='label'>Expected</div><pre>70</pre><div class='label'>Got</div><pre>70</pre></div></details><details class='row pass'><summary><span class='badge pass'>PASS</span><span class='badge task'>healthcare_funding_decide</span><span class='summary-text'>#113 · <span class='u'>hold on</span> → expected <code>no</code>, got <code>no</code></span></summary><div class='detail-grid'><div class='label'>Task</div><div>healthcare_funding_decide</div><div class='label'>System</div><pre>You are an assistant that identifies YES/NO intent from user replies.
+
+STRICT RULES:
+- Return only: yes, no, or RETRY
+- Use both userInput and question context together
+- Infer conversational intent naturally
+- Short confirmations or partial phrases should still be interpreted
+
+Affirmative examples: yes, proceed, continue, go ahead, okay, ok, sure, do it, let&#x27;s do it
+Negative examples: no, don&#x27;t, stop, cancel, not now, never mind
+
+If intent is unclear, return RETRY</pre><div class='label'>User</div><pre>hold on</pre><div class='label'>Expected</div><pre>no</pre><div class='label'>Got</div><pre>no</pre></div></details><details class='row pass'><summary><span class='badge pass'>PASS</span><span class='badge task'>retirement_zipcode</span><span class='summary-text'>#114 · <span class='u'>zip: 10001</span> → expected <code>10001</code>, got <code>10001</code></span></summary><div class='detail-grid'><div class='label'>Task</div><div>retirement_zipcode</div><div class='label'>System</div><pre>You are an assistant that extracts a retirement ZIP code.
+CURRENT_ZIPCODE = 90210
+
+STRICT_RULE:
+- Return only a 5-digit number (exactly 5 digits)
+- &quot;same&quot;,&quot;use current&quot;,&quot;no change&quot; -&gt; 90210
+- If input is unclear return RETRY</pre><div class='label'>User</div><pre>zip: 10001</pre><div class='label'>Expected</div><pre>10001</pre><div class='label'>Got</div><pre>10001</pre></div></details><script>
+function setFilter(mode) {
+  var body = document.body;
+  body.classList.remove('hide-pass', 'hide-fail');
+  if (mode === 'fail') body.classList.add('hide-pass');
+  if (mode === 'pass') body.classList.add('hide-fail');
+  document.querySelectorAll('.filter').forEach(function(b) {
+    b.classList.toggle('active', b.dataset.mode === mode);
+  });
+}
+</script></body></html>

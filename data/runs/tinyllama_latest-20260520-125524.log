@@ -1,0 +1,79 @@
+[transformers] `torch_dtype` is deprecated! Use `dtype` instead!
+Loading weights:   0%|          | 0/201 [00:00<?, ?it/s]Loading weights:   0%|          | 1/201 [00:00<00:48,  4.13it/s]Loading weights:   1%|          | 2/201 [00:00<00:58,  3.43it/s]Loading weights:  36%|###5      | 72/201 [00:00<00:00, 157.55it/s]Loading weights:  63%|######3   | 127/201 [00:00<00:00, 248.24it/s]Loading weights:  84%|########3 | 168/201 [00:00<00:00, 286.92it/s]Loading weights: 100%|##########| 201/201 [00:00<00:00, 216.81it/s]
+Generating train split: 0 examples [00:00, ? examples/s]Generating train split: 3657 examples [00:00, 269433.32 examples/s]
+tokenizing:   0%|          | 0/3657 [00:00<?, ? examples/s]tokenizing:   8%|8         | 302/3657 [00:00<00:01, 2995.70 examples/s]tokenizing:  17%|#6        | 607/3657 [00:00<00:01, 3025.01 examples/s]tokenizing:  27%|##7       | 1000/3657 [00:00<00:00, 3111.80 examples/s]tokenizing:  46%|####5     | 1673/3657 [00:00<00:00, 4451.25 examples/s]tokenizing:  59%|#####9    | 2172/3657 [00:00<00:00, 4632.95 examples/s]tokenizing:  76%|#######5  | 2769/3657 [00:00<00:00, 5069.55 examples/s]tokenizing:  92%|#########1| 3356/3657 [00:00<00:00, 5312.63 examples/s]tokenizing: 100%|##########| 3657/3657 [00:00<00:00, 4289.00 examples/s]
+[transformers] warmup_ratio is deprecated and will be removed in v5.2. Use `warmup_steps` instead.
+  0%|          | 0/370 [00:00<?, ?it/s]E:\A_FP_AI\LLM_FINE_TUNE\finetune\.venv\Lib\site-packages\torch\utils\data\dataloader.py:752: UserWarning: 'pin_memory' argument is set as true but no accelerator is found, then device pinned memory won't be used.
+  super().__init__(loader)
+  0%|          | 0/370 [00:00<?, ?it/s]
+nsor, you should probably activate truncation and/or padding with 'padding=True' 'truncation=True' to have batched tensors with the same length. Perhaps your features (`labels` in this case) have excessive nesting (inputs type `list` where type `int` is expected).
+Traceback (most recent call last):
+  File "E:\A_FP_AI\LLM_FINE_TUNE\finetune\.venv\Lib\site-packages\transformers\tokenization_utils_base.py", line 742, in convert_to_tensors
+    tensor = as_tensor(value)
+  File "E:\A_FP_AI\LLM_FINE_TUNE\finetune\.venv\Lib\site-packages\transformers\tokenization_utils_base.py", line 701, in as_tensor
+    return torch.tensor(value, dtype=dtype)
+           ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+ValueError: expected sequence of length 64 at dim 1 (got 58)
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "E:\A_FP_AI\LLM_FINE_TUNE\finetune\pipeline\run_trainer.py", line 80, in main
+    result = trainer.train_lora(
+        dataset_path=dataset_path,
+    ...<4 lines>...
+        metrics_cb=push_metric,
+    )
+  File "E:\A_FP_AI\LLM_FINE_TUNE\finetune\pipeline\trainer.py", line 197, in train_lora
+    train_out = trainer.train()
+  File "E:\A_FP_AI\LLM_FINE_TUNE\finetune\.venv\Lib\site-packages\transformers\trainer.py", line 1427, in train
+    return inner_training_loop(
+        args=args,
+    ...<2 lines>...
+        ignore_keys_for_eval=ignore_keys_for_eval,
+    )
+  File "E:\A_FP_AI\LLM_FINE_TUNE\finetune\.venv\Lib\site-packages\transformers\trainer.py", line 1509, in _inner_training_loop
+    self._run_epoch(
+    ~~~~~~~~~~~~~~~^
+        model=model,
+        ^^^^^^^^^^^^
+    ...<9 lines>...
+        steps_trained_in_current_epoch=steps_trained_in_current_epoch,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "E:\A_FP_AI\LLM_FINE_TUNE\finetune\.venv\Lib\site-packages\transformers\trainer.py", line 1704, in _run_epoch
+    batch_samples, num_items_in_batch = self.get_batch_samples(epoch_iterator, num_batches, self.args.device)
+                                        ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\A_FP_AI\LLM_FINE_TUNE\finetune\.venv\Lib\site-packages\transformers\trainer.py", line 2105, in get_batch_samples
+    batch_samples.append(next(epoch_iterator))
+                         ~~~~^^^^^^^^^^^^^^^^
+  File "E:\A_FP_AI\LLM_FINE_TUNE\finetune\.venv\Lib\site-packages\accelerate\data_loader.py", line 577, in __iter__
+    current_batch = next(dataloader_iter)
+  File "E:\A_FP_AI\LLM_FINE_TUNE\finetune\.venv\Lib\site-packages\torch\utils\data\dataloader.py", line 718, in __next__
+    data = self._next_data()
+  File "E:\A_FP_AI\LLM_FINE_TUNE\finetune\.venv\Lib\site-packages\torch\utils\data\dataloader.py", line 778, in _next_data
+    data = self._dataset_fetcher.fetch(index)  # may raise StopIteration
+  File "E:\A_FP_AI\LLM_FINE_TUNE\finetune\.venv\Lib\site-packages\torch\utils\data\_utils\fetch.py", line 57, in fetch
+    return self.collate_fn(data)
+           ~~~~~~~~~~~~~~~^^^^^^
+  File "E:\A_FP_AI\LLM_FINE_TUNE\finetune\.venv\Lib\site-packages\transformers\data\data_collator.py", line 42, in __call__
+    return self.torch_call(features)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^
+  File "E:\A_FP_AI\LLM_FINE_TUNE\finetune\.venv\Lib\site-packages\transformers\data\data_collator.py", line 774, in torch_call
+    batch = pad_without_fast_tokenizer_warning(
+        self.tokenizer, examples, return_tensors="pt", pad_to_multiple_of=self.pad_to_multiple_of
+    )
+  File "E:\A_FP_AI\LLM_FINE_TUNE\finetune\.venv\Lib\site-packages\transformers\data\data_collator.py", line 63, in pad_without_fast_tokenizer_warning
+    padded = tokenizer.pad(*pad_args, **pad_kwargs)
+  File "E:\A_FP_AI\LLM_FINE_TUNE\finetune\.venv\Lib\site-packages\transformers\tokenization_utils_base.py", line 2738, in pad
+    return BatchEncoding(batch_outputs, tensor_type=return_tensors)
+  File "E:\A_FP_AI\LLM_FINE_TUNE\finetune\.venv\Lib\site-packages\transformers\tokenization_utils_base.py", line 242, in __init__
+    self.convert_to_tensors(tensor_type=tensor_type, prepend_batch_axis=prepend_batch_axis)
+    ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\A_FP_AI\LLM_FINE_TUNE\finetune\.venv\Lib\site-packages\transformers\tokenization_utils_base.py", line 758, in convert_to_tensors
+    raise ValueError(
+    ...<4 lines>...
+    ) from e
+ValueError: Unable to create tensor, you should probably activate truncation and/or padding with 'padding=True' 'truncation=True' to have batched tensors with the same length. Perhaps your features (`labels` in this case) have excessive nesting (inputs type `list` where type `int` is expected).
+

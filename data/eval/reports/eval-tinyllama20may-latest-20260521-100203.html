@@ -1,0 +1,113 @@
+<!doctype html><html><head><meta charset='utf-8'><title>Eval report — tinyllama20may:latest</title><style>
+body { font-family: -apple-system, Segoe UI, Roboto, sans-serif;
+       margin: 24px; color: #222; background: #fafafa; }
+h1 { margin: 0 0 4px 0; }
+.subtle { color: #666; font-size: 0.9rem; }
+.summary { display: flex; gap: 16px; margin: 20px 0; flex-wrap: wrap; }
+.card { background: white; border: 1px solid #ddd; border-radius: 8px;
+        padding: 12px 18px; min-width: 110px; }
+.card .v { font-size: 1.8rem; font-weight: 600; }
+.card .l { font-size: 0.8rem; text-transform: uppercase; color: #777;
+           letter-spacing: 0.5px; }
+.card.pass .v { color: #1f883d; }
+.card.fail .v { color: #cf222e; }
+table { border-collapse: collapse; width: 100%; background: white;
+        border: 1px solid #ddd; border-radius: 8px; overflow: hidden; }
+th, td { text-align: left; padding: 8px 12px;
+         border-bottom: 1px solid #eee; font-size: 0.95rem; }
+th { background: #f5f5f5; font-weight: 600; }
+tr:last-child td { border-bottom: none; }
+.task-acc.good { color: #1f883d; font-weight: 600; }
+.task-acc.bad  { color: #cf222e; font-weight: 600; }
+.task-acc.mid  { color: #9a6700; font-weight: 600; }
+details { background: white; border: 1px solid #ddd; border-radius: 8px;
+          margin: 8px 0; padding: 0; }
+details summary { padding: 10px 14px; cursor: pointer; user-select: none;
+                  display: flex; gap: 12px; align-items: center; }
+details summary::-webkit-details-marker { display: none; }
+details summary::before { content: "▶"; font-size: 0.8rem; color: #999;
+                          transition: transform 0.15s; }
+details[open] summary::before { transform: rotate(90deg); }
+.badge { padding: 2px 8px; border-radius: 12px; font-size: 0.75rem;
+         font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+.badge.pass { background: #dcfce7; color: #166534; }
+.badge.fail { background: #fee2e2; color: #991b1b; }
+.badge.task { background: #e0e7ff; color: #3730a3; }
+.summary-text { color: #444; flex: 1; }
+.summary-text .u { font-family: ui-monospace, Menlo, Consolas, monospace; }
+.detail-grid { padding: 14px 18px 18px 18px; display: grid;
+               grid-template-columns: 100px 1fr; gap: 8px 16px;
+               border-top: 1px solid #eee; }
+.detail-grid .label { font-weight: 600; color: #555; font-size: 0.85rem;
+                      text-transform: uppercase; letter-spacing: 0.5px; }
+.detail-grid pre { margin: 0; padding: 8px 12px; background: #f8f8f8;
+                   border: 1px solid #e5e5e5; border-radius: 4px;
+                   white-space: pre-wrap; word-wrap: break-word;
+                   font-family: ui-monospace, Menlo, Consolas, monospace;
+                   font-size: 0.85rem; max-height: 300px; overflow: auto; }
+.controls { margin: 16px 0 8px 0; display: flex; gap: 8px;
+            align-items: center; flex-wrap: wrap; }
+.controls .filter { padding: 6px 12px; border: 1px solid #ccc;
+                    background: white; border-radius: 6px; cursor: pointer;
+                    font-size: 0.9rem; }
+.controls .filter.active { background: #222; color: white;
+                           border-color: #222; }
+.hide-pass details.row.pass { display: none; }
+.hide-fail details.row.fail { display: none; }
+</style></head><body><h1>Evaluation report</h1><div class='subtle'>Model: <code>tinyllama20may:latest</code> · Run at 2026-05-21 10:02:03 · System prompt <b>dropped</b></div><div class='summary'><div class='card'><div class='v'>7</div><div class='l'>Total</div></div><div class='card pass'><div class='v'>1</div><div class='l'>Passed</div></div><div class='card fail'><div class='v'>6</div><div class='l'>Failed</div></div><div class='card'><div class='v'>14.3%</div><div class='l'>Accuracy</div></div></div><h2>Per-task breakdown</h2><table><thead><tr><th>Task</th><th>Passed</th><th>Failed</th><th>Total</th><th>Accuracy</th></tr></thead><tbody><tr><td>birthdate</td><td>0</td><td>1</td><td>1</td><td class='task-acc bad'>0.0%</td></tr><tr><td>change_state_identifier</td><td>0</td><td>1</td><td>1</td><td class='task-acc bad'>0.0%</td></tr><tr><td>gender</td><td>0</td><td>1</td><td>1</td><td class='task-acc bad'>0.0%</td></tr><tr><td>healthcare_funding_decide</td><td>0</td><td>1</td><td>1</td><td class='task-acc bad'>0.0%</td></tr><tr><td>healthcare_state_extraction</td><td>0</td><td>1</td><td>1</td><td class='task-acc bad'>0.0%</td></tr><tr><td>part_b</td><td>1</td><td>0</td><td>1</td><td class='task-acc good'>100.0%</td></tr><tr><td>supplement</td><td>0</td><td>1</td><td>1</td><td class='task-acc bad'>0.0%</td></tr></tbody></table><h2>Per-prompt results</h2><div class='controls'><span>Filter:</span><button class='filter active' data-mode='all' onclick="setFilter('all')">All</button><button class='filter' data-mode='fail' onclick="setFilter('fail')">Failed only</button><button class='filter' data-mode='pass' onclick="setFilter('pass')">Passed only</button><span class='subtle'>Click a row to see the full prompt and output.</span></div><details class='row fail'><summary><span class='badge fail'>FAIL</span><span class='badge task'>healthcare_funding_decide</span><span class='summary-text'>#1 · <span class='u'>abort it</span> → expected <code>no</code>, got <code>abort</code></span></summary><div class='detail-grid'><div class='label'>Task</div><div>healthcare_funding_decide</div><div class='label'>System</div><pre>You are an assistant that identifies YES/NO intent from user replies.
+
+STRICT RULES:
+- Return only: yes, no, or RETRY
+- Use both userInput and question context together
+- Infer conversational intent naturally
+- Short confirmations or partial phrases should still be interpreted
+
+Affirmative examples: yes, proceed, continue, go ahead, okay, ok, sure, do it, let&#x27;s do it
+Negative examples: no, don&#x27;t, stop, cancel, not now, never mind
+
+If intent is unclear, return RETRY</pre><div class='label'>User</div><pre>abort it</pre><div class='label'>Expected</div><pre>no</pre><div class='label'>Got</div><pre>abort</pre></div></details><details class='row fail'><summary><span class='badge fail'>FAIL</span><span class='badge task'>birthdate</span><span class='summary-text'>#2 · <span class='u'>march2001</span> → expected <code>03-2001</code>, got <code>March 2001</code></span></summary><div class='detail-grid'><div class='label'>Task</div><div>birthdate</div><div class='label'>System</div><pre>You are an assistant that extracts and normalizes a user&#x27;s birth date.
+
+STRICT_RULE:
+- Return only one value in format: MM-YYYY
+- Month must always be 2 digits (01-12)
+- If date is unclear return RETRY</pre><div class='label'>User</div><pre>march2001</pre><div class='label'>Expected</div><pre>03-2001</pre><div class='label'>Got</div><pre>March 2001</pre></div></details><details class='row fail'><summary><span class='badge fail'>FAIL</span><span class='badge task'>healthcare_state_extraction</span><span class='summary-text'>#3 · <span class='u'>magi tear</span> → expected <code>magiTier</code>, got <code>&quot;Make me a healthy beverage with tea as the main ingredient.&quot;</code></span></summary><div class='detail-grid'><div class='label'>Task</div><div>healthcare_state_extraction</div><div class='label'>System</div><pre>You are an assistant that maps user input to healthcare state.
+
+Return only one value from:
+magiTier, partA, partB, partD, supplement, preMedicarePlan, dental, RETRY</pre><div class='label'>User</div><pre>magi tear</pre><div class='label'>Expected</div><pre>magiTier</pre><div class='label'>Got</div><pre>&quot;Make me a healthy beverage with tea as the main ingredient.&quot;</pre></div></details><details class='row fail'><summary><span class='badge fail'>FAIL</span><span class='badge task'>change_state_identifier</span><span class='summary-text'>#4 · <span class='u'>edit my retirement zip code</span> → expected <code>true</code>, got <code>RETRWEED</code></span></summary><div class='detail-grid'><div class='label'>Task</div><div>change_state_identifier</div><div class='label'>System</div><pre>You are a Change State Identifier.
+
+Return true only if:
+- The input contains an intent keyword like modify/change/go to/update/switch AND
+  the user specifies what is being changed.
+Return false otherwise.
+
+Output format: true/false</pre><div class='label'>User</div><pre>edit my retirement zip code</pre><div class='label'>Expected</div><pre>true</pre><div class='label'>Got</div><pre>RETRWEED</pre></div></details><details class='row fail'><summary><span class='badge fail'>FAIL</span><span class='badge task'>supplement</span><span class='summary-text'>#5 · <span class='u'>medigap n</span> → expected <code>planN</code>, got <code>medigap</code></span></summary><div class='detail-grid'><div class='label'>Task</div><div>supplement</div><div class='label'>System</div><pre>You are an assistant to identify if user is opting for one of the below supplement / medigap / medicare advantage plan:
+- PART C also known as PLANC or MA plan or MEDICARE ADVANTAGE PLAN
+- PLAN N
+- PLAN G
+- PLAN F
+
+STRICT_RULES:
+- Fix typo in order to match the input out of above mentioned plans
+- Return planC for PART C / MA / MEDICARE ADVANTAGE / planC
+- Return planG for PLAN G / Medigap Plan G / planG
+- Return planN for PLAN N / Medigap Plan N / planN
+- Return planF for PART F / Medigap Plan F / planF
+- if not clear then return RETRY</pre><div class='label'>User</div><pre>medigap n</pre><div class='label'>Expected</div><pre>planN</pre><div class='label'>Got</div><pre>medigap</pre></div></details><details class='row fail'><summary><span class='badge fail'>FAIL</span><span class='badge task'>gender</span><span class='summary-text'>#6 · <span class='u'>maile</span> → expected <code>M</code>, got <code>&quot;email&quot;</code></span></summary><div class='detail-grid'><div class='label'>Task</div><div>gender</div><div class='label'>System</div><pre>You are an assistant that identifies user gender from input text.
+
+STRICT_RULE:
+- Return only one value: M or F
+- If unclear return RETRY</pre><div class='label'>User</div><pre>maile</pre><div class='label'>Expected</div><pre>M</pre><div class='label'>Got</div><pre>&quot;email&quot;</pre></div></details><details class='row pass'><summary><span class='badge pass'>PASS</span><span class='badge task'>part_b</span><span class='summary-text'>#7 · <span class='u'>defenately</span> → expected <code>true</code>, got <code>true</code></span></summary><div class='detail-grid'><div class='label'>Task</div><div>part_b</div><div class='label'>System</div><pre>You are an assistant to identify if user has purchased PART B Plan of medicare insurance.
+
+STRICT_RULES:
+- Return only true/false
+- if not clear then return RETRY</pre><div class='label'>User</div><pre>defenately</pre><div class='label'>Expected</div><pre>true</pre><div class='label'>Got</div><pre>true</pre></div></details><script>
+function setFilter(mode) {
+  var body = document.body;
+  body.classList.remove('hide-pass', 'hide-fail');
+  if (mode === 'fail') body.classList.add('hide-pass');
+  if (mode === 'pass') body.classList.add('hide-fail');
+  document.querySelectorAll('.filter').forEach(function(b) {
+    b.classList.toggle('active', b.dataset.mode === mode);
+  });
+}
+</script></body></html>

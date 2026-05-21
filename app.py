@@ -26,6 +26,7 @@ from pipeline import (
     converter,
     dataset_builder,
     document_loader,
+    eval_runner,
     ollama_client,
     trainer,
 )
@@ -209,10 +210,12 @@ with st.sidebar:
 # ---------------------------------------------------------------------------
 # Tabs
 # ---------------------------------------------------------------------------
-tab_cfg, tab_data, tab_run, tab_chat = st.tabs([
+tab_cfg, tab_data, tab_run, tab_import, tab_eval, tab_chat = st.tabs([
     ":material/tune: Configure",
     ":material/dataset: Dataset",
     ":material/play_arrow: Fine-tune",
+    ":material/folder_open: Import adapter",
+    ":material/grading: Evaluate",
     ":material/chat: Chat & validate",
 ])
 
@@ -817,7 +820,465 @@ with tab_run:
 
 
 # =========================================================================
-# Tab 3 — Chat & validate
+# Tab 4 — Import adapter (bring your own fine-tuned folder)
+# =========================================================================
+with tab_import:
+    st.header("Import an externally fine-tuned model into Ollama")
+    st.caption(
+        "Point at a LoRA adapter folder (e.g. from Colab) or an already-merged "
+        "HF model folder. The app will merge (if needed), convert to GGUF, and "
+        "register the result with Ollama."
+    )
+
+    st.session_state.setdefault("import_path", "")
+    st.session_state.setdefault("import_inspection", None)
+    st.session_state.setdefault("import_log", [])
+
+    st.text_input(
+        "Path to fine-tuned folder",
+        key="import_path",
+        placeholder=r"C:\Users\you\Downloads\my_fine_tuned_model",
+        help="Folder containing adapter_config.json (LoRA) or config.json + "
+             "model weights (merged HF model).",
+    )
+
+    insp_cols = st.columns([0.25, 0.75])
+    if insp_cols[0].button(":material/search: Inspect path",
+                           use_container_width=True):
+        path_str = (st.session_state.get("import_path") or "").strip().strip('"')
+        if not path_str:
+            st.warning("Enter a folder path first.")
+        else:
+            info = converter.inspect_external_folder(Path(path_str))
+            st.session_state["import_inspection"] = info
+            st.session_state["import_log"] = []
+            st.rerun()
+
+    info = st.session_state.get("import_inspection")
+    if info:
+        ic1, ic2, ic3 = st.columns(3)
+        ic1.metric("Detected kind", info["kind"])
+        ic2.metric("Has tokenizer", "yes" if info["has_tokenizer"] else "no")
+        ic3.metric("Base model",
+                   (info["base_model"] or "—").split("/")[-1])
+        if info.get("notes"):
+            with st.expander(":material/warning: Notes", expanded=False):
+                for n in info["notes"]:
+                    st.caption(n)
+
+        st.subheader("Import options")
+
+        mode_label_to_value = {
+            "Auto-detect (recommended)": "unknown",
+            "LoRA adapter (will merge with base model)": "adapter",
+            "Merged HF model (skip merge — already has config.json + weights)":
+                "merged",
+        }
+        mode_label = st.selectbox(
+            "Treat folder as",
+            options=list(mode_label_to_value.keys()),
+            index=0,
+            help=("Auto-detect picks 'adapter' if adapter_config.json is "
+                  "present, otherwise 'merged'."),
+            key="import_mode_label",
+        )
+        chosen_mode = mode_label_to_value[mode_label]
+
+        # The base model is required for adapter mode; pre-fill with detected.
+        effective_mode = chosen_mode
+        if effective_mode == "unknown":
+            effective_mode = info["kind"] if info["kind"] != "unknown" else "adapter"
+        st.text_input(
+            "Base HF model repo (LoRA adapter only)",
+            value=info.get("base_model") or "",
+            key="import_base_model",
+            disabled=(effective_mode == "merged"),
+            help="HuggingFace repo to load the original weights from for the "
+                 "merge step. Ignored when the folder is already merged.",
+        )
+
+        st.text_input(
+            "New Ollama model name",
+            value=converter.suggest_ollama_name(
+                Path(st.session_state["import_path"].strip().strip('"')),
+                info.get("base_model"),
+            ),
+            key="import_ollama_name",
+            help="Final tag in `ollama list`. Allowed chars: a-z, 0-9, . _ -",
+        )
+
+        oc1, oc2 = st.columns(2)
+        oc1.selectbox(
+            "GGUF quantization",
+            ["q4_k_m", "q5_k_m", "q8_0", "f16"],
+            key="import_quant",
+            help="q4_k_m gives the smallest file. Falls back to q8_0 if "
+                 "llama-quantize isn't built.",
+        )
+        oc2.slider("Chat temperature", 0.0, 1.5, value=0.3, step=0.05,
+                   key="import_temperature")
+        st.slider("Chat top-p", 0.0, 1.0, value=0.9, step=0.01,
+                  key="import_top_p")
+        st.text_area(
+            "System prompt",
+            value=st.session_state.get(
+                "system_prompt",
+                get_default_config()["system_prompt"],
+            ),
+            key="import_system_prompt",
+            height=100,
+        )
+
+        st.divider()
+        run_import = st.button(
+            ":material/rocket_launch: Import & register with Ollama",
+            type="primary",
+            use_container_width=True,
+        )
+
+        import_log_box = st.empty()
+        if st.session_state["import_log"]:
+            import_log_box.code(
+                "\n".join(st.session_state["import_log"][-300:]),
+                language="text",
+            )
+
+        def _push_import_log(msg: str) -> None:
+            st.session_state["import_log"].append(msg)
+            import_log_box.code(
+                "\n".join(st.session_state["import_log"][-300:]),
+                language="text",
+            )
+
+        if run_import:
+            st.session_state["import_log"] = []
+            try:
+                result = converter.import_external_to_ollama(
+                    Path(st.session_state["import_path"].strip().strip('"')),
+                    base_model_repo=(
+                        st.session_state.get("import_base_model") or None
+                    ),
+                    ollama_name=st.session_state["import_ollama_name"],
+                    quant=st.session_state["import_quant"],
+                    system_prompt=st.session_state["import_system_prompt"],
+                    temperature=float(st.session_state["import_temperature"]),
+                    top_p=float(st.session_state["import_top_p"]),
+                    mode=chosen_mode,
+                    log_cb=_push_import_log,
+                )
+                st.session_state["last_finetuned_model"] = result["ollama_name"]
+                st.success(
+                    f"Imported `{result['ollama_name']}` into Ollama. "
+                    "Switch to the Chat tab to try it."
+                )
+                st.balloons()
+            except Exception as exc:
+                _push_import_log(
+                    f"\nERROR: {exc}\n{traceback.format_exc()}"
+                )
+                st.error(f"Import failed: {exc}")
+    else:
+        st.info("Enter a path and click **Inspect path** to begin.")
+
+
+# =========================================================================
+# Tab 5 — Evaluate (run a JSONL test set against an Ollama model)
+# =========================================================================
+EVAL_DIR = Path(__file__).parent / "data" / "eval"
+REPORTS_DIR = EVAL_DIR / "reports"
+EVAL_DIR.mkdir(parents=True, exist_ok=True)
+REPORTS_DIR.mkdir(parents=True, exist_ok=True)
+
+with tab_eval:
+    st.header("Evaluate a model against a JSONL test set")
+    st.caption(
+        "Pick an Ollama model and a test JSONL — the app sends each row's "
+        "system + user prompt to Ollama, compares the reply to `expected`, "
+        "and tallies pass/fail."
+    )
+
+    # ---- Session state -------------------------------------------------------
+    ss = st.session_state
+    ss.setdefault("eval_status", "idle")    # idle | running | done | aborted | error
+    ss.setdefault("eval_rows", [])          # loaded test rows
+    ss.setdefault("eval_results", [])       # per-row results
+    ss.setdefault("eval_idx", 0)            # next row to process
+    ss.setdefault("eval_abort", False)
+    ss.setdefault("eval_model", None)
+    ss.setdefault("eval_drop_system", False)
+    ss.setdefault("eval_temperature", 0.0)
+    ss.setdefault("eval_num_predict", 64)
+    ss.setdefault("eval_test_label", "")
+    ss.setdefault("eval_report_html", None)
+    ss.setdefault("eval_report_name", None)
+
+    # ---- Sample format expander ---------------------------------------------
+    with st.expander(":material/info: Expected JSONL format (click for sample)",
+                     expanded=False):
+        st.markdown(
+            "One JSON object per line. **`user`** and **`expected`** are "
+            "required; **`system`** and **`task`** are optional."
+        )
+        st.code(eval_runner.SAMPLE_JSONL, language="json")
+        st.caption(
+            "**Notes:** `system` is sent as the system prompt (omit it for a "
+            "'direct question' test). `expected` is compared after lowercasing "
+            "and trimming a trailing period — so `4.5`, `4.5.`, and `4.5` are "
+            "all treated as equal."
+        )
+        st.download_button(
+            ":material/download: Download sample.jsonl",
+            data=eval_runner.SAMPLE_JSONL,
+            file_name="sample_test.jsonl",
+            mime="application/jsonl",
+            use_container_width=False,
+        )
+
+    running = ss["eval_status"] == "running"
+
+    # ---- Model + test file pickers ------------------------------------------
+    col_a, col_b = st.columns(2)
+    with col_a:
+        try:
+            eval_models = [m["name"] for m in ollama_client.list_models()]
+        except Exception as exc:
+            eval_models = []
+            st.error(f"Cannot list Ollama models: {exc}")
+        default_idx = 0
+        if ss.get("last_finetuned_model") in eval_models:
+            default_idx = eval_models.index(ss["last_finetuned_model"])
+        ss["eval_model"] = st.selectbox(
+            "Ollama model to test",
+            options=eval_models or ["—"],
+            index=default_idx if eval_models else 0,
+            disabled=running or not eval_models,
+            key="eval_model_pick",
+        )
+
+    with col_b:
+        existing = sorted(
+            list(EVAL_DIR.glob("*.jsonl"))
+            + [p for p in (Path(__file__).parent / "data").glob("*.jsonl")],
+            key=lambda p: p.stat().st_mtime, reverse=True,
+        )
+        # Dedupe by absolute path (data/ may overlap data/eval/)
+        seen: set[str] = set()
+        existing = [p for p in existing
+                    if not (str(p.resolve()) in seen or seen.add(str(p.resolve())))]
+        labels = ["(upload new file)"] + [str(p) for p in existing]
+        picked_label = st.selectbox(
+            "Test JSONL",
+            options=labels,
+            index=1 if len(labels) > 1 else 0,
+            disabled=running,
+            key="eval_file_pick",
+        )
+
+    uploaded_test = None
+    if picked_label == "(upload new file)":
+        uploaded_test = st.file_uploader(
+            "Upload a test .jsonl",
+            type=["jsonl", "json"],
+            accept_multiple_files=False,
+            disabled=running,
+            key="eval_test_uploader",
+        )
+
+    # ---- Options ------------------------------------------------------------
+    oc1, oc2, oc3 = st.columns(3)
+    oc1.checkbox(
+        "Drop system prompt",
+        key="eval_drop_system",
+        disabled=running,
+        help="Sends only the user message — exposes how much the model "
+             "depends on the training system prompt.",
+    )
+    oc2.slider(
+        "Temperature", 0.0, 1.5, step=0.05, key="eval_temperature",
+        disabled=running,
+        help="0.0 = deterministic. Use 0 for classification tests.",
+    )
+    oc3.number_input(
+        "Max new tokens", min_value=8, max_value=2048, step=8,
+        key="eval_num_predict", disabled=running,
+    )
+
+    # ---- Start / Abort buttons ----------------------------------------------
+    bc1, bc2 = st.columns([0.5, 0.5])
+    start_clicked = bc1.button(
+        ":material/play_arrow: Start evaluation",
+        type="primary", use_container_width=True,
+        disabled=running or not eval_models,
+    )
+    abort_clicked = bc2.button(
+        ":material/stop_circle: Abort",
+        use_container_width=True,
+        disabled=not running,
+    )
+
+    if abort_clicked and running:
+        ss["eval_abort"] = True
+        st.toast("Abort requested — stopping after the current row.",
+                 icon=":material/stop_circle:")
+
+    # ---- Kick off a new run -------------------------------------------------
+    if start_clicked:
+        try:
+            if uploaded_test is not None:
+                raw = uploaded_test.getvalue().decode("utf-8", errors="replace")
+                save_name = f"uploaded-{datetime.now().strftime('%Y%m%d-%H%M%S')}.jsonl"
+                save_path = EVAL_DIR / save_name
+                save_path.write_text(raw, encoding="utf-8")
+                test_path = save_path
+                ss["eval_test_label"] = save_path.name
+            elif picked_label and picked_label != "(upload new file)":
+                test_path = Path(picked_label)
+                ss["eval_test_label"] = test_path.name
+            else:
+                st.error("Pick or upload a test JSONL first.")
+                st.stop()
+
+            rows = eval_runner.load_test_jsonl(test_path)
+            if not rows:
+                st.error("Test file has no valid rows.")
+                st.stop()
+
+            ss["eval_rows"] = rows
+            ss["eval_results"] = []
+            ss["eval_idx"] = 0
+            ss["eval_abort"] = False
+            ss["eval_status"] = "running"
+            ss["eval_report_html"] = None
+            ss["eval_report_name"] = None
+            st.rerun()
+        except Exception as exc:
+            st.error(f"Could not start: {exc}")
+
+    # ---- Counters + progress ------------------------------------------------
+    rows = ss["eval_rows"]
+    results = ss["eval_results"]
+    total = len(rows)
+    done = len(results)
+    passed = sum(1 for r in results if r["passed"])
+    failed = done - passed
+
+    pc1, pc2, pc3, pc4 = st.columns(4)
+    pc1.metric("Total", total or "—")
+    pc2.metric("Passed", passed if total else "—",
+               delta=f"{(passed/done):.0%}" if done else None,
+               delta_color="off")
+    pc3.metric("Failed", failed if total else "—",
+               delta=f"{(failed/done):.0%}" if done else None,
+               delta_color="off")
+    pc4.metric("Done", f"{done}/{total}" if total else "—")
+
+    if total:
+        st.progress(min(done / total, 1.0),
+                    text=f"{done} / {total} processed")
+
+    status_box = st.empty()
+    if ss["eval_status"] == "running":
+        status_box.info(
+            f"Running… ({done}/{total}). Click **Abort** to stop after the "
+            "current row."
+        )
+    elif ss["eval_status"] == "aborted":
+        status_box.warning(f"Aborted at {done}/{total}. Partial report below.")
+    elif ss["eval_status"] == "done" and total:
+        acc = passed / total if total else 0
+        status_box.success(
+            f"Done. {passed}/{total} passed ({acc:.1%})."
+        )
+
+    # ---- One step per rerun (gives Abort a chance to fire) ------------------
+    if ss["eval_status"] == "running":
+        if ss["eval_abort"]:
+            ss["eval_status"] = "aborted"
+        elif ss["eval_idx"] >= len(rows):
+            ss["eval_status"] = "done"
+        else:
+            row = rows[ss["eval_idx"]]
+            try:
+                r = eval_runner.run_one(
+                    ss["eval_model"], row,
+                    drop_system=ss["eval_drop_system"],
+                    temperature=float(ss["eval_temperature"]),
+                    num_predict=int(ss["eval_num_predict"]),
+                )
+                ss["eval_results"].append(r)
+                ss["eval_idx"] += 1
+            except Exception as exc:
+                ss["eval_status"] = "error"
+                status_box.error(f"Error at row {ss['eval_idx']+1}: {exc}")
+            else:
+                st.rerun()
+
+    # ---- Final report (built when run finishes or is aborted) ---------------
+    if ss["eval_status"] in ("done", "aborted") and ss["eval_results"]:
+        summary = eval_runner.summarize(ss["eval_results"])
+
+        st.subheader("Per-task breakdown")
+        st.dataframe(
+            pd.DataFrame(summary["per_task"]),
+            use_container_width=True,
+            hide_index=True,
+            column_config={
+                "task": "task",
+                "total": "total",
+                "passed": "passed",
+                "failed": "failed",
+                "accuracy": st.column_config.ProgressColumn(
+                    "accuracy", format="%.1f%%", min_value=0.0, max_value=1.0
+                ),
+            },
+        )
+
+        # Build (or reuse) the HTML report
+        if ss["eval_report_html"] is None:
+            ss["eval_report_html"] = eval_runner.build_html_report(
+                model=ss["eval_model"],
+                results=ss["eval_results"],
+                summary=summary,
+                drop_system=ss["eval_drop_system"],
+            )
+            ts = datetime.now().strftime("%Y%m%d-%H%M%S")
+            safe_model = ss["eval_model"].replace(":", "-").replace("/", "-")
+            ss["eval_report_name"] = f"eval-{safe_model}-{ts}.html"
+            # Persist alongside the test file for later inspection.
+            (REPORTS_DIR / ss["eval_report_name"]).write_text(
+                ss["eval_report_html"], encoding="utf-8"
+            )
+
+        st.download_button(
+            ":material/download: Download HTML report",
+            data=ss["eval_report_html"],
+            file_name=ss["eval_report_name"],
+            mime="text/html",
+            type="primary",
+            use_container_width=True,
+        )
+        st.caption(
+            f"Report also saved to `data/eval/reports/{ss['eval_report_name']}`."
+        )
+
+        with st.expander(":material/visibility: Preview failed rows in app",
+                         expanded=False):
+            fails = [r for r in ss["eval_results"] if not r["passed"]]
+            if not fails:
+                st.success("No failures.")
+            else:
+                for i, r in enumerate(fails[:50], 1):
+                    st.markdown(
+                        f"**{i}. [{r['task']}]** "
+                        f"user: `{r['user']}` · expected: `{r['expected']}` · "
+                        f"got: `{(r['got'] or '').strip()[:120]}`"
+                    )
+                if len(fails) > 50:
+                    st.caption(f"… and {len(fails)-50} more — see HTML report.")
+
+
+# =========================================================================
+# Tab 6 — Chat & validate
 # =========================================================================
 @st.dialog("Confirm model deletion")
 def _confirm_delete_dialog(name: str) -> None:
