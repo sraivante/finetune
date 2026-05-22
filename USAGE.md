@@ -333,18 +333,36 @@ Bring-your-own fine-tune entry point. Use this when training already happened *o
 | **New Ollama model name** | Final tag in `ollama list`. Allowed chars: `a-z 0-9 . _ -`. Auto-suggested as `<base>-imported-<timestamp>`. |
 | **GGUF quantization** | Same as Fine-tune tab — `q4_k_m` / `q5_k_m` / `q8_0` / `f16`. |
 | **Chat temperature / top-p / System prompt** | Embedded in the generated Modelfile, becomes the default for chat. |
+| **Chat template** | Auto-detected from the model's own jinja (`chat_template.jinja` / `tokenizer_config.json`) and `config.json` `model_type`. Shown as a colored chip row + dropdown so you can override. See [8.2](#82-chat-template-picker-auto-detect--override). |
 
-### 8.2 What happens on Import
+### 8.2 Chat template picker (auto-detect + override)
+
+Ollama does **not** apply a model's embedded jinja `chat_template` automatically — it only uses what the Modelfile's `TEMPLATE` directive says. If the Modelfile has no `TEMPLATE`, your fine-tune behaves like the untouched base model (prompts arrive unwrapped, the model rambles instead of replying as an assistant). The Import tab fixes this dynamically per model.
+
+**What it shows after you click *Inspect path*:**
+
+| Chip color | Meaning |
+|---|---|
+| 🟢 **Green** — *recommended* | The format whose detect-marker was found in the model's own `chat_template`, or whose `model_types` matched `config.json` `model_type`. Default selection. |
+| 🟠 **Orange** — *your pick* | Appears only if you override the dropdown to something other than the recommended format. The Modelfile will be written with this instead. |
+| 🔴 **Red** — *not applicable* | No marker match and `model_type` doesn't fit this family. Pick only if you really know what you're doing. |
+| ⚪ Grey — *compatible* | Not the top pick, but the detect-marker is present in the jinja or its `model_types` includes your `model_type`. |
+
+The dropdown lists all supported formats (`chatml`, `llama3`, `gemma`, `mistral`, `phi3`, `zephyr`) with the same 🟢/⚪/🔴 indicators and the model families each one is used by. An expander below previews the actual `TEMPLATE` string and stop tokens that will be written. Detection lives in `pipeline/templates.py` → `detect_with_candidates()`; the seven family definitions are in the `CHAT_FORMATS` dict in the same file.
+
+If you don't change anything, the recommended format is used. If you override, an orange warning calls it out so it's never silent.
+
+### 8.3 What happens on Import
 
 | Step | LoRA adapter folder | Merged HF model folder |
 |---|---|---|
 | 1 | Load base model from HuggingFace, attach the adapter via PEFT, run `merge_and_unload()`, save merged model to `data/merged/<run-id>/` | (skipped — folder is used directly) |
 | 2 | Run `llama.cpp/convert_hf_to_gguf.py` on the merged folder | Same |
-| 3 | Write a Modelfile and run `ollama create <new-tag> -f Modelfile` | Same |
+| 3 | Write a Modelfile (with explicit `TEMPLATE """..."""` + `PARAMETER stop "..."` from the picker above) and run `ollama create <new-tag> -f Modelfile` | Same |
 
 Live log streams from each subprocess. On success, the new tag is also pre-selected in the Chat tab via `last_finetuned_model`.
 
-### 8.3 Required disk space
+### 8.4 Required disk space
 
 LoRA-adapter mode loads the full HF base model in fp16 during the merge step. Plan for:
 
@@ -525,6 +543,7 @@ Every form field, in tab order.
 | **New Ollama model name** | `<base>-imported-<ts>` | Final tag in `ollama list`. |
 | **GGUF quantization** | `q4_k_m` | Same fallback rules as the Fine-tune tab. |
 | **Chat temperature / top-p / System prompt** | from Configure tab | Baked into the Modelfile. |
+| **Chat template** | auto-detected (recommended chip is green) | Sniffed from the model's own jinja (`chat_template.jinja` / `tokenizer_config.json` markers) and `config.json` `model_type`. Override via dropdown; orange chip = your pick, red = not applicable. Written into the Modelfile as `TEMPLATE """..."""` + `PARAMETER stop "..."`. |
 
 ### 12.8 Evaluate tab
 
@@ -712,6 +731,10 @@ The folder you pointed at has neither `adapter_config.json` (LoRA) nor `config.j
 ### Import adapter: "Base HF model repo is required to merge a LoRA adapter"
 
 The detected `adapter_config.json` had no `base_model_name_or_path`, or the field was blank. Enter the HuggingFace repo manually (e.g. `TinyLlama/TinyLlama-1.1B-Chat-v1.0`). The base must be the *exact* repo the adapter was trained against — using a different one will silently produce garbage outputs.
+
+### Import adapter: imported model replies look like base-model gibberish
+
+Almost always a wrong `TEMPLATE` in the generated Modelfile. The Import tab's chat-template picker writes `TEMPLATE """..."""` + `PARAMETER stop "..."` lines from the green-chip (recommended) format by default; if you overrode to an orange chip and the reply quality dropped, switch back to the recommended one and re-import. If the picker showed no green chip (no jinja `chat_template` and no recognised `model_type`), the folder is missing tokenizer metadata — copy `tokenizer_config.json` from the base HF repo into the adapter folder and click *Inspect path* again.
 
 ### Evaluate: "Test file has no valid rows"
 

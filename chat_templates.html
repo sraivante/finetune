@@ -80,7 +80,16 @@
   </div>
 
   <div class="note">
-    <strong>How to auto-detect:</strong> read the model's own <code>chat_template.jinja</code> (or the <code>chat_template</code> field in <code>tokenizer_config.json</code>) and look for the <em>Detect marker</em> below. If none match, fall back to <code>config.json</code> &rarr; <code>model_type</code>. See <code>pipeline/templates.py</code> &rarr; <code>detect_chat_format()</code>.
+    <strong>How to auto-detect:</strong> read the model's own <code>chat_template.jinja</code> (or the <code>chat_template</code> field in <code>tokenizer_config.json</code>) and look for the <em>Detect marker</em> below. If none match, fall back to <code>config.json</code> &rarr; <code>model_type</code>. See <code>pipeline/templates.py</code> &rarr; <code>detect_chat_format()</code> (single result) or <code>detect_with_candidates()</code> (recommended + per-family status, used by the Import-adapter UI).
+  </div>
+
+  <div class="note" style="background:#ecfdf5;border-color:#a7f3d0;color:#065f46">
+    <strong>Import-adapter UI picker.</strong> When you click <em>Inspect path</em> on the Import-adapter tab, the app sniffs the folder's jinja and shows a colored chip row above the dropdown:
+    <span style="background:#16a34a;color:#fff;padding:2px 8px;border-radius:10px;margin:0 4px;font-size:.8em">green = recommended</span>
+    <span style="background:#ea580c;color:#fff;padding:2px 8px;border-radius:10px;margin:0 4px;font-size:.8em">orange = your pick</span>
+    <span style="background:#dc2626;color:#fff;padding:2px 8px;border-radius:10px;margin:0 4px;font-size:.8em">red = not applicable</span>
+    <span style="background:#6b7280;color:#fff;padding:2px 8px;border-radius:10px;margin:0 4px;font-size:.8em">grey = compatible</span>
+    The selected key is written into the Modelfile as <code>TEMPLATE """..."""</code> + <code>PARAMETER stop "..."</code> so Ollama actually applies the right wrapping at inference time.
   </div>
 
   <table>

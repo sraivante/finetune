@@ -88,7 +88,8 @@ streamlit run app.py
 ```
 
 To stop the app, press <kbd>Ctrl</kbd>+<kbd>C</kbd> in the terminal where it's
-running. If you lost the terminal: `taskkill /F /IM streamlit.exe`.
+running. If you lost the terminal, run `stop.bat` from the project root — it
+finds whatever's listening on port 8501 and kills that PID (and any children).
 
 ---
 
@@ -148,12 +149,20 @@ which kind you provided; you can override via a dropdown. Steps:
 
 1. Paste the absolute path to your folder.
 2. Click **Inspect path** — shows detected kind, base model (from
-   `adapter_config.json`), and any warnings.
-3. Confirm the base HF repo, Ollama tag, quantization, system prompt.
+   `adapter_config.json`), the **auto-detected chat template** sniffed from
+   the model's own jinja, and any warnings.
+3. Confirm the base HF repo, Ollama tag, quantization, system prompt. Review
+   the chat-template chips:
+   - 🟢 **green** = recommended (based on the model's `chat_template.jinja` /
+     `tokenizer_config.json` markers, falling back to `config.json` `model_type`)
+   - 🟠 **orange** = your override (only appears if you change the dropdown)
+   - 🔴 **red** = not applicable to this model family
 4. Click **Import & register with Ollama**.
 
 The merge + GGUF + `ollama create` steps reuse the same code as the Fine-tune
-tab.
+tab. The generated Modelfile now includes explicit `TEMPLATE """..."""` and
+`PARAMETER stop "..."` lines — without these Ollama won't apply the model's
+embedded jinja and the fine-tune behaves like the base model.
 
 ### Tab 5 — Evaluate
 Run any Ollama model against a JSONL test set, see live pass/fail counters,
@@ -272,4 +281,10 @@ training.
 - **Customize the eval HTML report.** CSS and template live in
   `_REPORT_CSS` / `build_html_report` in `pipeline/eval_runner.py`.
 - **Programmatic adapter import.** `pipeline.converter.import_external_to_ollama`
-  is callable directly — pass a folder path, base model repo, and Ollama tag.
+  is callable directly — pass a folder path, base model repo, Ollama tag, and
+  optionally `chat_format_key=` (one of `chatml`/`llama3`/`gemma`/`mistral`/
+  `phi3`/`zephyr`) to override the auto-detected template.
+- **Add a new chat-template family.** Append a new entry to `CHAT_FORMATS` in
+  `pipeline/templates.py`: define the Ollama TEMPLATE string, stop tokens,
+  jinja detect markers, `model_type` list, and an examples blurb. It will
+  show up in the Import-adapter dropdown automatically.

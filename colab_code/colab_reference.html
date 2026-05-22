@@ -1,0 +1,745 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Google Colab — quick reference (download / upload / GPU / resources)</title>
+<style>
+  :root{
+    --bg:#f8fafc; --card:#ffffff; --ink:#1e293b; --muted:#64748b;
+    --line:#e2e8f0; --accent:#6366f1; --accent-soft:#eef2ff;
+    --code-bg:#0f172a; --code-ink:#e2e8f0;
+    --green:#16a34a; --amber:#b45309; --red:#dc2626;
+
+    /* Colab-mockup palette */
+    --c-bg:#ffffff;
+    --c-fg:#202124;
+    --c-mute:#5f6368;
+    --c-line:#dadce0;
+    --c-soft:#f1f3f4;
+    --c-blue:#1a73e8;
+    --c-blue-soft:#e8f0fe;
+    --c-hl-bg:#fce8e6;
+    --c-hl-bd:#ea4335;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; padding:24px;
+    font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
+    color:var(--ink); background:var(--bg); line-height:1.55;
+  }
+  .wrap{max-width:1100px;margin:0 auto}
+
+  header h1{margin:0 0 6px;font-size:1.6rem}
+  header p{margin:0;color:var(--muted);max-width:78ch}
+
+  /* ============== Tabs ============== */
+  .tabs{
+    display:flex; flex-wrap:wrap; gap:6px;
+    margin:22px 0 0; padding:6px;
+    background:var(--card); border:1px solid var(--line);
+    border-radius:14px; box-shadow:0 1px 2px rgba(15,23,42,.04);
+    position:sticky; top:0; z-index:5;
+  }
+  .tab{
+    appearance:none; cursor:pointer;
+    border:1px solid transparent; background:transparent;
+    color:var(--ink); padding:10px 14px;
+    font-size:.92rem; font-weight:600;
+    border-radius:10px; flex:1 1 auto; min-width:130px;
+    display:flex; align-items:center; justify-content:center; gap:8px;
+    transition:background .12s ease, color .12s ease, border-color .12s ease;
+  }
+  .tab:hover{background:var(--accent-soft); color:var(--accent)}
+  .tab[aria-selected="true"]{
+    background:var(--accent); color:#fff; border-color:var(--accent);
+  }
+  .tab .ico{font-size:1.05rem; line-height:1}
+
+  /* ============== Panels ============== */
+  .panel{
+    display:none;
+    background:var(--card); border:1px solid var(--line);
+    border-radius:14px; padding:20px 22px;
+    margin-top:14px;
+    box-shadow:0 1px 2px rgba(15,23,42,.04);
+  }
+  .panel[aria-hidden="false"]{display:block}
+  .panel h2{margin:0 0 4px; font-size:1.2rem}
+  .panel h2 .sub{display:block; font-size:.82rem; color:var(--muted); font-weight:500; margin-top:2px}
+  .panel h3{margin:22px 0 8px; font-size:1rem}
+  .panel h3:first-of-type{margin-top:10px}
+
+  ol, ul{padding-left:22px; margin:8px 0}
+  li{margin:4px 0}
+
+  pre{
+    margin:8px 0; background:var(--code-bg); color:var(--code-ink);
+    padding:12px 14px; border-radius:10px; overflow:auto;
+    font-family:ui-monospace,Consolas,monospace; font-size:.84rem; line-height:1.5;
+  }
+  code{font-family:ui-monospace,Consolas,monospace}
+  p code, li code, td code{
+    background:#f1f5f9; border:1px solid var(--line);
+    padding:1px 6px; border-radius:6px; font-size:.85em;
+  }
+
+  .callout{
+    margin:12px 0; padding:12px 14px; border-radius:10px; font-size:.92rem;
+    border:1px solid; display:flex; gap:10px; align-items:flex-start;
+  }
+  .callout.tip{   background:#ecfdf5; border-color:#a7f3d0; color:#065f46}
+  .callout.note{  background:#fffbeb; border-color:#fde68a; color:#7c5e10}
+  .callout.warn{  background:#fef2f2; border-color:#fecaca; color:#991b1b}
+  .callout .ico{font-size:1.1rem; line-height:1; margin-top:1px}
+
+  table{
+    width:100%; border-collapse:collapse; margin:8px 0;
+    background:var(--card); border:1px solid var(--line); border-radius:10px;
+    overflow:hidden; font-size:.92rem;
+  }
+  thead th{
+    background:#f1f5f9; text-align:left; padding:10px 12px;
+    font-size:.74rem; text-transform:uppercase; letter-spacing:.04em;
+    color:var(--muted);
+  }
+  tbody td{padding:10px 12px; border-top:1px solid var(--line); vertical-align:top}
+
+  .pill{font-size:.74rem; padding:3px 9px; border-radius:999px; font-weight:600;
+        background:var(--accent-soft); color:var(--accent); display:inline-block}
+  .pill.green{background:#dcfce7; color:#166534}
+  .pill.amber{background:#fef3c7; color:#92400e}
+  .pill.red{background:#fee2e2; color:#991b1b}
+
+  /* ====================================================================
+     Colab UI mockup — looks like the Colab interface so you can match
+     it visually to what you see on screen. The red box / red label
+     ("CLICK HERE") points at the exact element to interact with.
+     ==================================================================== */
+  figure.mock{
+    margin:14px 0 6px;
+    border:1px solid var(--c-line);
+    border-radius:10px; overflow:hidden;
+    background:var(--c-bg); color:var(--c-fg);
+    font-family:"Google Sans","Roboto",-apple-system,Segoe UI,sans-serif;
+    box-shadow:0 1px 3px rgba(60,64,67,.08);
+    font-size:.9rem;
+  }
+  figure.mock figcaption{
+    background:#f8f9fa; color:var(--c-mute);
+    padding:8px 12px; font-size:.82rem;
+    border-top:1px solid var(--c-line);
+    font-family:-apple-system,Segoe UI,Roboto,sans-serif;
+  }
+  figure.mock figcaption b{color:var(--c-fg)}
+
+  .c-window{display:flex; min-height:170px}
+  .c-window--col{display:block}
+
+  /* tabs/topbar of the colab window */
+  .c-topbar{
+    display:flex; align-items:center; gap:14px;
+    padding:6px 12px;
+    border-bottom:1px solid var(--c-line);
+    background:var(--c-bg); color:var(--c-fg);
+    font-size:.85rem;
+  }
+  .c-topbar .c-logo{
+    width:22px; height:22px; border-radius:4px;
+    background:linear-gradient(135deg,#f9ab00 0%, #f9ab00 50%, #fff 50%, #fff 100%);
+    border:1px solid #e8a800;
+  }
+  .c-topbar .c-menu{display:flex; gap:14px; color:var(--c-mute)}
+  .c-topbar .c-menu span{cursor:default}
+  .c-topbar .c-menu .open{
+    background:var(--c-soft); color:var(--c-fg);
+    padding:2px 8px; border-radius:4px;
+  }
+  .c-topbar .c-spacer{flex:1}
+  .c-topbar .c-ind{
+    display:flex; align-items:center; gap:6px;
+    padding:2px 10px; border:1px solid var(--c-line); border-radius:18px;
+    font-size:.78rem; color:var(--c-mute);
+  }
+  .c-topbar .c-ind .bar{
+    width:34px; height:6px; background:var(--c-soft);
+    border-radius:3px; position:relative; overflow:hidden;
+  }
+  .c-topbar .c-ind .bar i{
+    position:absolute; left:0; top:0; bottom:0;
+    background:var(--c-blue); border-radius:3px;
+  }
+
+  /* left activity bar (icons column) */
+  .c-side{
+    width:46px; background:#f8f9fa; border-right:1px solid var(--c-line);
+    padding:8px 0; display:flex; flex-direction:column; align-items:center; gap:4px;
+    flex:0 0 46px;
+  }
+  .c-side .ic{
+    width:30px; height:30px; border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    color:var(--c-mute); font-size:1.05rem; cursor:default;
+  }
+  .c-side .ic:hover{background:var(--c-soft)}
+
+  /* files panel */
+  .c-files{flex:1; background:var(--c-bg); min-width:0}
+  .c-files .c-files__hd{
+    padding:8px 12px; display:flex; align-items:center; gap:10px;
+    border-bottom:1px solid var(--c-line); font-weight:500;
+  }
+  .c-files .c-tools{
+    display:flex; gap:2px; padding:4px 8px; border-bottom:1px solid var(--c-line);
+  }
+  .c-files .c-tool{
+    width:34px; height:34px; border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    color:var(--c-mute); cursor:default; font-size:1rem; position:relative;
+  }
+  .c-files .c-tool:hover{background:var(--c-soft)}
+  .c-files .c-list{padding:6px 4px}
+  .c-files .c-row{
+    display:flex; align-items:center; gap:10px;
+    padding:6px 10px; border-radius:6px; cursor:default; position:relative;
+  }
+  .c-files .c-row:hover{background:var(--c-soft)}
+  .c-files .c-row .ic{color:var(--c-mute)}
+
+  /* context menu */
+  .c-menu-pop{
+    position:absolute; top:8px; left:55%;
+    background:var(--c-bg); border:1px solid var(--c-line); border-radius:6px;
+    box-shadow:0 4px 14px rgba(60,64,67,.18);
+    padding:6px 0; min-width:200px; font-size:.88rem; z-index:2;
+  }
+  .c-menu-pop .mi{
+    padding:6px 18px; display:flex; align-items:center; gap:12px;
+    color:var(--c-fg); cursor:default;
+  }
+  .c-menu-pop .mi:hover{background:var(--c-soft)}
+  .c-menu-pop .sep{height:1px; background:var(--c-line); margin:6px 0}
+
+  /* dropdown menu (Runtime menu) */
+  .c-dd{
+    position:absolute; top:36px; left:18px;
+    background:var(--c-bg); border:1px solid var(--c-line); border-radius:6px;
+    box-shadow:0 4px 14px rgba(60,64,67,.18);
+    padding:6px 0; min-width:300px; font-size:.88rem; z-index:2;
+  }
+  .c-dd .mi{
+    padding:6px 16px; display:flex; align-items:center; gap:14px;
+    color:var(--c-fg); cursor:default; justify-content:space-between;
+  }
+  .c-dd .mi .sc{color:var(--c-mute); font-size:.78rem}
+  .c-dd .mi:hover{background:var(--c-soft)}
+  .c-dd .sep{height:1px; background:var(--c-line); margin:6px 0}
+
+  /* settings dialog (Change runtime type) */
+  .c-dlg{
+    background:var(--c-bg); border-radius:8px; border:1px solid var(--c-line);
+    box-shadow:0 8px 24px rgba(60,64,67,.20);
+    width:min(540px, 100%);
+    margin:14px auto;
+  }
+  .c-dlg__hd{padding:14px 18px; font-weight:500; border-bottom:1px solid var(--c-line)}
+  .c-dlg__bd{padding:14px 18px; display:grid; gap:12px}
+  .c-dlg__row{display:grid; grid-template-columns:1fr 1.4fr; gap:12px; align-items:center}
+  .c-dlg__row label{color:var(--c-mute); font-size:.85rem}
+  .c-select{
+    border:1px solid var(--c-line); border-radius:6px; padding:8px 12px;
+    background:var(--c-bg); display:flex; align-items:center; justify-content:space-between;
+    color:var(--c-fg); position:relative;
+  }
+  .c-select::after{
+    content:"▾"; color:var(--c-mute); font-size:.8rem;
+  }
+  .c-dlg__ft{
+    padding:10px 14px; display:flex; justify-content:flex-end; gap:8px;
+    border-top:1px solid var(--c-line);
+  }
+  .c-btn{
+    padding:6px 14px; border-radius:4px; border:1px solid transparent;
+    font-weight:500; cursor:default; font-size:.85rem;
+  }
+  .c-btn--text{color:var(--c-blue); background:transparent}
+  .c-btn--prim{color:#fff; background:var(--c-blue); border-color:var(--c-blue)}
+
+  /* resources popup */
+  .c-res{
+    background:var(--c-bg); border:1px solid var(--c-line); border-radius:8px;
+    box-shadow:0 4px 14px rgba(60,64,67,.18);
+    padding:14px; width:min(360px, 100%); margin:14px auto;
+    font-size:.88rem;
+  }
+  .c-res h4{margin:0 0 8px; font-size:.95rem; font-weight:500}
+  .c-res .row{display:grid; grid-template-columns:90px 1fr 80px; gap:10px; align-items:center; padding:6px 0}
+  .c-res .row .meter{
+    height:8px; background:var(--c-soft); border-radius:4px; position:relative; overflow:hidden;
+  }
+  .c-res .row .meter i{
+    position:absolute; left:0; top:0; bottom:0; background:var(--c-blue); border-radius:4px;
+  }
+  .c-res .row .val{text-align:right; color:var(--c-mute); font-size:.8rem}
+  .c-res .foot{margin-top:8px; padding-top:8px; border-top:1px solid var(--c-line); color:var(--c-blue); font-size:.85rem}
+
+  /* Highlight: the red "click here" treatment */
+  .hl{
+    outline:2px solid var(--c-hl-bd) !important;
+    background:var(--c-hl-bg) !important;
+    border-radius:6px;
+    position:relative;
+  }
+  .hl::after{
+    content:attr(data-tip);
+    position:absolute;
+    background:var(--c-hl-bd); color:#fff;
+    font-size:.7rem; font-weight:700; letter-spacing:.02em;
+    padding:3px 8px; border-radius:4px; white-space:nowrap;
+    pointer-events:none; z-index:5;
+  }
+  .hl[data-pos="top"]::after  { bottom:calc(100% + 6px); left:50%; transform:translateX(-50%) }
+  .hl[data-pos="right"]::after{ top:50%; left:calc(100% + 8px); transform:translateY(-50%) }
+  .hl[data-pos="left"]::after { top:50%; right:calc(100% + 8px); transform:translateY(-50%) }
+  .hl[data-pos="below"]::after{ top:calc(100% + 6px); left:50%; transform:translateX(-50%) }
+  .hl[data-pos="below-right"]::after{ top:calc(100% + 6px); left:0 }
+
+  kbd{
+    background:#f1f5f9; border:1px solid var(--line);
+    border-bottom-width:2px; padding:1px 6px; border-radius:5px;
+    font-family:ui-monospace,Consolas,monospace; font-size:.82em;
+  }
+
+  footer{margin:22px 2px; color:var(--muted); font-size:.85rem}
+
+  /* ============== responsive ============== */
+  @media (max-width:720px){
+    body{padding:14px}
+    .tab{flex:1 1 calc(50% - 6px); min-width:0; padding:9px 8px; font-size:.86rem}
+    .panel{padding:16px}
+    header h1{font-size:1.35rem}
+    .c-side{flex:0 0 40px; width:40px}
+    .c-dlg__row{grid-template-columns:1fr}
+    .c-dd{min-width:260px}
+    .c-menu-pop{left:auto; right:8px}
+  }
+  @media (max-width:420px){
+    .tab{flex:1 1 100%}
+    .tab .label-long{display:none}
+    .c-topbar .c-menu span:not(.open){display:none}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <h1>Google Colab — quick reference</h1>
+    <p>The four things you'll need every time you fine-tune on Colab and bring the result back into the Import-adapter tab: <strong>download</strong> output files, <strong>upload</strong> inputs, <strong>change the GPU</strong>, and <strong>check live resource usage</strong>. Each tab below shows the exact Colab UI element to click (highlighted in red) — plus the equivalent code if you'd rather automate.</p>
+  </header>
+
+  <!-- Tablist -->
+  <div class="tabs" role="tablist" aria-label="Colab quick-reference tabs">
+    <button class="tab" role="tab" id="tab-download" aria-controls="panel-download" aria-selected="true">
+      <span class="ico">⬇️</span><span>Download<span class="label-long"> from Colab</span></span>
+    </button>
+    <button class="tab" role="tab" id="tab-upload" aria-controls="panel-upload" aria-selected="false">
+      <span class="ico">⬆️</span><span>Upload<span class="label-long"> to Colab</span></span>
+    </button>
+    <button class="tab" role="tab" id="tab-gpu" aria-controls="panel-gpu" aria-selected="false">
+      <span class="ico">🎛️</span><span>Change<span class="label-long"> GPU</span></span>
+    </button>
+    <button class="tab" role="tab" id="tab-resources" aria-controls="panel-resources" aria-selected="false">
+      <span class="ico">📊</span><span>Resources<span class="label-long"> in use</span></span>
+    </button>
+  </div>
+
+  <!-- ============================================================ -->
+  <!-- PANEL 1: Download -->
+  <!-- ============================================================ -->
+  <section class="panel" role="tabpanel" id="panel-download" aria-labelledby="tab-download" aria-hidden="false">
+    <h2>Download a file from Colab
+      <span class="sub">Right-click any file in the Files panel — works for the LoRA adapter folder you'll drop into the Import-adapter tab.</span>
+    </h2>
+
+    <h3>The UI way (no code)</h3>
+    <figure class="mock">
+      <div class="c-window">
+        <!-- left activity bar with Files icon highlighted -->
+        <div class="c-side">
+          <div class="ic">≡</div>
+          <div class="ic">🔍</div>
+          <div class="ic">{x}</div>
+          <div class="ic">🔑</div>
+          <div class="ic hl" data-tip="STEP 1: open Files" data-pos="right">📁</div>
+          <div class="ic">&lt;/&gt;</div>
+        </div>
+
+        <!-- files panel with context menu open -->
+        <div class="c-files" style="position:relative">
+          <div class="c-files__hd">Files</div>
+          <div class="c-tools">
+            <div class="c-tool" title="Upload">⬆</div>
+            <div class="c-tool" title="Refresh">⟳</div>
+            <div class="c-tool" title="Mount Drive">🗁</div>
+            <div class="c-tool" title="Help">?</div>
+          </div>
+          <div class="c-list">
+            <div class="c-row"><span class="ic">📁</span> sample_data</div>
+            <div class="c-row"><span class="ic">📁</span> finetune_out</div>
+            <div class="c-row"><span class="ic">📄</span> adapter.zip</div>
+          </div>
+
+          <!-- right-click context menu -->
+          <div class="c-menu-pop">
+            <div class="mi">↻ Rename file</div>
+            <div class="mi hl" data-tip="STEP 3: click Download" data-pos="right">⬇️ Download</div>
+            <div class="mi">📋 Copy path</div>
+            <div class="sep"></div>
+            <div class="mi">🗑️ Delete file</div>
+          </div>
+        </div>
+      </div>
+      <figcaption>
+        <b>Step 1 →</b> Click the <b>folder icon</b> in the left sidebar.
+        <b>Step 2 →</b> <b>Right-click</b> the file (or click the three-dot menu next to it).
+        <b>Step 3 →</b> Pick <b>Download</b>. Browser save dialog opens.
+      </figcaption>
+    </figure>
+
+    <div class="callout note">
+      <span class="ico">⚠️</span>
+      <div>For a folder, right-click won't work directly — zip it first (see the code path below) or push to Drive.</div>
+    </div>
+
+    <h3>The code way</h3>
+    <p>Useful at the end of a training cell so the download starts automatically.</p>
+    <pre>from google.colab import files
+files.download("/content/adapter_model.safetensors")    # one file
+
+# Whole adapter folder → zip first
+import shutil
+shutil.make_archive("/content/adapter", "zip", "/content/finetune_out/adapter")
+files.download("/content/adapter.zip")</pre>
+
+    <h3>For files &gt; ~100 MB: push to Drive</h3>
+    <p>Same Files panel — click the <b>Mount Drive</b> icon (the third toolbar button, the folder-with-Drive-logo). Or run:</p>
+    <pre>from google.colab import drive
+drive.mount("/content/drive")
+import shutil
+shutil.copytree(
+    "/content/finetune_out/adapter",
+    "/content/drive/MyDrive/finetune_adapters/qwen-0.5b-20260522",
+)</pre>
+    <p>Then on your laptop, open <a href="https://drive.google.com" target="_blank" rel="noreferrer">drive.google.com</a> → right-click the folder → <em>Download</em>. Drive zips it server-side.</p>
+
+    <div class="callout tip">
+      <span class="ico">💡</span>
+      <div>For this project, the folder you want is the one containing <code>adapter_config.json</code> + <code>adapter_model.safetensors</code>. Once it's on your laptop, paste the absolute path into <em>Tab 4 — Import adapter</em>.</div>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- PANEL 2: Upload -->
+  <!-- ============================================================ -->
+  <section class="panel" role="tabpanel" id="panel-upload" aria-labelledby="tab-upload" aria-hidden="true">
+    <h2>Upload a file to Colab
+      <span class="sub">Same Files panel, the toolbar button on the left.</span>
+    </h2>
+
+    <h3>The UI way</h3>
+    <figure class="mock">
+      <div class="c-window">
+        <div class="c-side">
+          <div class="ic">≡</div>
+          <div class="ic">🔍</div>
+          <div class="ic">{x}</div>
+          <div class="ic">🔑</div>
+          <div class="ic hl" data-tip="STEP 1" data-pos="right">📁</div>
+          <div class="ic">&lt;/&gt;</div>
+        </div>
+
+        <div class="c-files">
+          <div class="c-files__hd">Files</div>
+          <div class="c-tools">
+            <div class="c-tool hl" data-tip="STEP 2: Upload" data-pos="below">⬆</div>
+            <div class="c-tool" title="Refresh">⟳</div>
+            <div class="c-tool" title="Mount Drive">🗁</div>
+            <div class="c-tool" title="Help">?</div>
+          </div>
+          <div class="c-list">
+            <div class="c-row"><span class="ic">📁</span> sample_data</div>
+            <div class="c-row" style="color:var(--c-mute); font-style:italic">drop files here, or click ⬆ above…</div>
+          </div>
+        </div>
+      </div>
+      <figcaption>
+        <b>Step 1 →</b> Open the <b>Files</b> panel (folder icon, left sidebar).
+        <b>Step 2 →</b> Click the <b>upload icon</b> (page-with-up-arrow, leftmost in the toolbar).
+        <b>Step 3 →</b> Pick the file in your OS dialog. It appears under <code>/content/</code>.
+      </figcaption>
+    </figure>
+
+    <div class="callout note">
+      <span class="ico">⚠️</span>
+      <div><code>/content/</code> is <b>ephemeral</b> — it disappears when the runtime recycles (~12 h idle, or when you change runtime type). For anything you need long-term, mount Drive (next section).</div>
+    </div>
+
+    <h3>The code way</h3>
+    <pre>from google.colab import files
+uploaded = files.upload()           # opens an OS file picker
+for name, data in uploaded.items():
+    print(name, len(data), "bytes") # files now live in the CWD</pre>
+
+    <h3>For persistent / large files: mount Drive</h3>
+    <p>In the same Files-panel toolbar, click the <b>Mount Drive</b> icon (third toolbar button — looks like a folder + Drive logo). Or use code:</p>
+    <pre>from google.colab import drive
+drive.mount("/content/drive")
+# Files are now at /content/drive/MyDrive/...</pre>
+
+    <h3>Pull from a URL or GitHub</h3>
+    <p>Fastest when the file is already on the web:</p>
+    <pre>!wget -q https://raw.githubusercontent.com/you/repo/main/data/train.jsonl -O /content/train.jsonl
+!git clone --depth 1 https://github.com/you/repo /content/repo
+# Private repo: https://&lt;TOKEN&gt;@github.com/you/repo</pre>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- PANEL 3: Change GPU -->
+  <!-- ============================================================ -->
+  <section class="panel" role="tabpanel" id="panel-gpu" aria-labelledby="tab-gpu" aria-hidden="true">
+    <h2>Change the GPU (or any accelerator)
+      <span class="sub">Runtime menu → Change runtime type → pick your card → Save.</span>
+    </h2>
+
+    <h3>Step 1: open the Runtime menu</h3>
+    <figure class="mock">
+      <div class="c-window c-window--col" style="position:relative">
+        <div class="c-topbar">
+          <div class="c-logo"></div>
+          <div class="c-menu">
+            <span>File</span>
+            <span>Edit</span>
+            <span>View</span>
+            <span>Insert</span>
+            <span class="open hl" data-tip="Runtime menu open" data-pos="below">Runtime</span>
+            <span>Tools</span>
+            <span>Help</span>
+          </div>
+          <div class="c-spacer"></div>
+          <div class="c-ind"><span>RAM</span><div class="bar"><i style="width:30%"></i></div><span>Disk</span><div class="bar"><i style="width:35%"></i></div></div>
+        </div>
+
+        <div class="c-dd">
+          <div class="mi">▶ Run all <span class="sc">Ctrl+F9</span></div>
+          <div class="mi">▶ Run the focused cell <span class="sc">Ctrl+Enter</span></div>
+          <div class="sep"></div>
+          <div class="mi">■ Interrupt execution <span class="sc">Ctrl+M I</span></div>
+          <div class="mi">↻ Restart session <span class="sc">Ctrl+M .</span></div>
+          <div class="mi">⨯ Disconnect and delete runtime</div>
+          <div class="sep"></div>
+          <div class="mi hl" data-tip="CLICK HERE" data-pos="right">⚙ Change runtime type</div>
+          <div class="mi">📋 Manage sessions</div>
+          <div class="mi">📑 View runtime logs</div>
+        </div>
+
+        <div style="height:230px"></div>
+      </div>
+      <figcaption>
+        Top menu &rarr; <b>Runtime</b> &rarr; <b>Change runtime type</b>. (Or keyboard: <kbd>Alt+R</kbd> then <kbd>T</kbd>.)
+      </figcaption>
+    </figure>
+
+    <h3>Step 2: pick the GPU and Save</h3>
+    <figure class="mock">
+      <div class="c-dlg">
+        <div class="c-dlg__hd">Change runtime type</div>
+        <div class="c-dlg__bd">
+          <div class="c-dlg__row">
+            <label>Runtime type</label>
+            <div class="c-select">Python 3</div>
+          </div>
+          <div class="c-dlg__row">
+            <label>Hardware accelerator</label>
+            <div class="c-select hl" data-tip="Pick T4 / L4 / A100" data-pos="right">T4 GPU</div>
+          </div>
+        </div>
+        <div class="c-dlg__ft">
+          <button class="c-btn c-btn--text">Cancel</button>
+          <button class="c-btn c-btn--prim hl" data-tip="Save reconnects the VM" data-pos="top">Save</button>
+        </div>
+      </div>
+      <figcaption>
+        Hardware accelerator dropdown lists what's actually available to you: <b>CPU / T4 (free) / L4 / A100 / TPU v2-8</b>. Save reconnects to a fresh VM — <em>everything in <code>/content/</code> is wiped</em>.
+      </figcaption>
+    </figure>
+
+    <table>
+      <thead><tr><th>Option</th><th>Tier</th><th>VRAM</th><th>When to use</th></tr></thead>
+      <tbody>
+        <tr><td>CPU</td><td><span class="pill">Free</span></td><td>—</td><td>Inspection / data prep only — too slow for training.</td></tr>
+        <tr><td>T4 GPU</td><td><span class="pill green">Free</span></td><td>16 GB</td><td>LoRA fine-tune up to ~3B. The default starter pick.</td></tr>
+        <tr><td>L4 GPU</td><td><span class="pill amber">Pro</span></td><td>24 GB</td><td>~2× T4 throughput. Comfortable for 7B QLoRA.</td></tr>
+        <tr><td>A100 GPU</td><td><span class="pill amber">Pro+</span></td><td>40 GB</td><td>7B+ full fine-tunes, fast QLoRA on 13B.</td></tr>
+        <tr><td>TPU v2-8</td><td><span class="pill">Free / Pro</span></td><td>—</td><td>Only useful with JAX/Flax. <code>transformers + peft</code> wants CUDA → skip.</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Step 3: verify the GPU is attached</h3>
+    <pre>!nvidia-smi --query-gpu=name,memory.total --format=csv,noheader
+# → Tesla T4, 15360 MiB
+# → NVIDIA L4, 23034 MiB
+# → NVIDIA A100-SXM4-40GB, 40960 MiB
+
+import torch
+print("CUDA:", torch.cuda.is_available())
+print("Device:", torch.cuda.get_device_name(0) if torch.cuda.is_available() else "none")</pre>
+
+    <div class="callout warn">
+      <span class="ico">⛔</span>
+      <div>Save your adapter to Drive / HF Hub <b>before</b> switching runtime — the VM is reset, not paused. Free-tier GPUs are also best-effort: if <code>nvidia-smi</code> reports no GPU even after picking T4, you've hit the daily quota.</div>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- PANEL 4: Resources -->
+  <!-- ============================================================ -->
+  <section class="panel" role="tabpanel" id="panel-resources" aria-labelledby="tab-resources" aria-hidden="true">
+    <h2>See current resource usage
+      <span class="sub">The RAM / Disk meter in the top-right corner is the fastest check; <code>nvidia-smi</code> is the most detailed.</span>
+    </h2>
+
+    <h3>Step 1: the RAM / Disk indicator (top-right)</h3>
+    <figure class="mock">
+      <div class="c-topbar">
+        <div class="c-logo"></div>
+        <div class="c-menu">
+          <span>File</span><span>Edit</span><span>View</span><span>Insert</span>
+          <span>Runtime</span><span>Tools</span><span>Help</span>
+        </div>
+        <div class="c-spacer"></div>
+        <div class="c-ind hl" data-tip="Hover or click" data-pos="below-right">
+          <span>RAM</span><div class="bar"><i style="width:30%"></i></div>
+          <span>Disk</span><div class="bar"><i style="width:55%"></i></div>
+        </div>
+      </div>
+      <figcaption>The <b>RAM / Disk</b> chip sits at the top-right of every notebook. Hover for a tooltip; click to expand into the <em>Resources</em> panel below.</figcaption>
+    </figure>
+
+    <h3>Step 2: the expanded Resources panel</h3>
+    <figure class="mock">
+      <div class="c-res">
+        <h4>Resources <span style="color:var(--c-mute); font-weight:400; font-size:.85rem">— Connected to T4 · 3h 47m left</span></h4>
+        <div class="row">
+          <span>System RAM</span>
+          <div class="meter"><i style="width:30%"></i></div>
+          <span class="val">3.8 / 12.7 GB</span>
+        </div>
+        <div class="row">
+          <span>GPU RAM</span>
+          <div class="meter"><i style="width:48%; background:#f9ab00"></i></div>
+          <span class="val">7.1 / 15.0 GB</span>
+        </div>
+        <div class="row">
+          <span>Disk</span>
+          <div class="meter"><i style="width:55%"></i></div>
+          <span class="val">43 / 78 GB</span>
+        </div>
+        <div class="foot">Manage sessions →</div>
+      </div>
+      <figcaption>System RAM = CPU memory · GPU RAM = VRAM on the attached card · Disk = the VM scratch (<code>/content/</code>).</figcaption>
+    </figure>
+
+    <h3>Step 3: <code>nvidia-smi</code> for the detail</h3>
+    <pre>!nvidia-smi
+# Just the numbers we care about:
+!nvidia-smi --query-gpu=memory.used,memory.total,utilization.gpu \
+            --format=csv,noheader,nounits</pre>
+    <p><em>utilization.gpu</em> tells you if training is GPU-bound. Single-digit % usually means a data-loading bottleneck, not compute.</p>
+
+    <h3>Continuous monitor (refreshes every 2 s)</h3>
+    <pre>!nvidia-smi -l 2
+# Press the stop button (■) in the cell toolbar to stop.</pre>
+
+    <h3>From inside PyTorch (during training)</h3>
+    <pre>import torch
+def show_vram(tag=""):
+    a = torch.cuda.memory_allocated() / 1e9
+    r = torch.cuda.memory_reserved()  / 1e9
+    print(f"[{tag}] allocated={a:.2f} GB  reserved={r:.2f} GB")
+
+show_vram("before")
+# ... training step ...
+show_vram("after")</pre>
+
+    <h3>One-cell snapshot — CPU + GPU + Disk together</h3>
+    <pre>import torch, psutil, shutil
+if torch.cuda.is_available():
+    p = torch.cuda.get_device_properties(0)
+    used = torch.cuda.memory_allocated() / 1e9
+    print(f"GPU  {p.name}: {used:.2f} / {p.total_memory/1e9:.1f} GB")
+m = psutil.virtual_memory()
+print(f"RAM            : {(m.total-m.available)/1e9:.2f} / {m.total/1e9:.1f} GB")
+du, df_, _ = shutil.disk_usage("/content")
+print(f"Disk /content  : {(du-df_)/1e9:.1f} / {du/1e9:.1f} GB")</pre>
+
+    <div class="callout tip">
+      <span class="ico">💡</span>
+      <div>If <code>memory_allocated</code> climbs across epochs, something is holding tensor references (lists growing without bound). Wrap eval blocks in <code>with torch.no_grad():</code> and call <code>torch.cuda.empty_cache()</code> between epochs.</div>
+    </div>
+  </section>
+
+  <footer>
+    Self-contained — no external assets, opens offline. For the full fine-tune workflow once your adapter is back on disk, see <a href="../USAGE.md" target="_blank" rel="noreferrer">USAGE.md</a> → <em>Tab 4 — Import adapter</em>.
+  </footer>
+</div>
+
+<script>
+  (function(){
+    const tabs   = Array.from(document.querySelectorAll('[role="tab"]'));
+    const panels = Array.from(document.querySelectorAll('[role="tabpanel"]'));
+
+    function activate(tabId){
+      tabs.forEach(t => {
+        const on = t.id === tabId;
+        t.setAttribute("aria-selected", on ? "true" : "false");
+        t.tabIndex = on ? 0 : -1;
+      });
+      panels.forEach(p => {
+        const on = p.getAttribute("aria-labelledby") === tabId;
+        p.setAttribute("aria-hidden", on ? "false" : "true");
+      });
+      if (history.replaceState) {
+        history.replaceState(null, "", "#" + tabId.replace(/^tab-/, ""));
+      }
+    }
+
+    tabs.forEach(t => {
+      t.addEventListener("click", () => activate(t.id));
+      t.addEventListener("keydown", e => {
+        const idx = tabs.indexOf(t);
+        if (e.key === "ArrowRight" || e.key === "ArrowDown") {
+          e.preventDefault();
+          const next = tabs[(idx + 1) % tabs.length];
+          next.focus(); activate(next.id);
+        } else if (e.key === "ArrowLeft" || e.key === "ArrowUp") {
+          e.preventDefault();
+          const prev = tabs[(idx - 1 + tabs.length) % tabs.length];
+          prev.focus(); activate(prev.id);
+        } else if (e.key === "Home") {
+          e.preventDefault(); tabs[0].focus(); activate(tabs[0].id);
+        } else if (e.key === "End") {
+          e.preventDefault(); tabs[tabs.length - 1].focus(); activate(tabs[tabs.length - 1].id);
+        }
+      });
+    });
+
+    const hash = (location.hash || "").replace("#", "");
+    if (hash) {
+      const target = document.getElementById("tab-" + hash);
+      if (target) activate(target.id);
+    }
+  })();
+</script>
+</body>
+</html>

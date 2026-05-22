@@ -239,8 +239,9 @@ footer.page {
 </li>
 <li><a href="#8-tab-4-import-adapter">8. Tab 4 — Import adapter</a><ul>
 <li><a href="#81-inputs">8.1 Inputs</a></li>
-<li><a href="#82-what-happens-on-import">8.2 What happens on Import</a></li>
-<li><a href="#83-required-disk-space">8.3 Required disk space</a></li>
+<li><a href="#82-chat-template-picker-auto-detect-override">8.2 Chat template picker (auto-detect + override)</a></li>
+<li><a href="#83-what-happens-on-import">8.3 What happens on Import</a></li>
+<li><a href="#84-required-disk-space">8.4 Required disk space</a></li>
 </ul>
 </li>
 <li><a href="#9-tab-5-evaluate">9. Tab 5 — Evaluate</a><ul>
@@ -287,6 +288,7 @@ footer.page {
 <li><a href="#streamlit-session-widget-error-cannot-be-modified-after-the-widget-x-is-instantiated">Streamlit session widget error: "cannot be modified after the widget X is instantiated"</a></li>
 <li><a href="#import-adapter-could-not-detect-folder-kind">Import adapter: "Could not detect folder kind"</a></li>
 <li><a href="#import-adapter-base-hf-model-repo-is-required-to-merge-a-lora-adapter">Import adapter: "Base HF model repo is required to merge a LoRA adapter"</a></li>
+<li><a href="#import-adapter-imported-model-replies-look-like-base-model-gibberish">Import adapter: imported model replies look like base-model gibberish</a></li>
 <li><a href="#evaluate-test-file-has-no-valid-rows">Evaluate: "Test file has no valid rows"</a></li>
 <li><a href="#evaluate-abort-button-doesnt-react-instantly">Evaluate: Abort button doesn't react instantly</a></li>
 <li><a href="#evaluate-accuracy-is-far-below-100-even-on-examples-that-were-in-the-training-data">Evaluate: accuracy is far below 100% even on examples that were in the training data</a></li>
@@ -692,9 +694,44 @@ streamlit run app.py
 <td><strong>Chat temperature / top-p / System prompt</strong></td>
 <td>Embedded in the generated Modelfile, becomes the default for chat.</td>
 </tr>
+<tr>
+<td><strong>Chat template</strong></td>
+<td>Auto-detected from the model's own jinja (<code>chat_template.jinja</code> / <code>tokenizer_config.json</code>) and <code>config.json</code> <code>model_type</code>. Shown as a colored chip row + dropdown so you can override. See <a href="#82-chat-template-picker-auto-detect--override">8.2</a>.</td>
+</tr>
 </tbody>
 </table></div>
-<h3 id="82-what-happens-on-import"><a class="toclink" href="#82-what-happens-on-import">8.2 What happens on Import</a></h3>
+<h3 id="82-chat-template-picker-auto-detect-override"><a class="toclink" href="#82-chat-template-picker-auto-detect-override">8.2 Chat template picker (auto-detect + override)</a></h3>
+<p>Ollama does <strong>not</strong> apply a model's embedded jinja <code>chat_template</code> automatically — it only uses what the Modelfile's <code>TEMPLATE</code> directive says. If the Modelfile has no <code>TEMPLATE</code>, your fine-tune behaves like the untouched base model (prompts arrive unwrapped, the model rambles instead of replying as an assistant). The Import tab fixes this dynamically per model.</p>
+<p><strong>What it shows after you click <em>Inspect path</em>:</strong></p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Chip color</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>🟢 <strong>Green</strong> — <em>recommended</em></td>
+<td>The format whose detect-marker was found in the model's own <code>chat_template</code>, or whose <code>model_types</code> matched <code>config.json</code> <code>model_type</code>. Default selection.</td>
+</tr>
+<tr>
+<td>🟠 <strong>Orange</strong> — <em>your pick</em></td>
+<td>Appears only if you override the dropdown to something other than the recommended format. The Modelfile will be written with this instead.</td>
+</tr>
+<tr>
+<td>🔴 <strong>Red</strong> — <em>not applicable</em></td>
+<td>No marker match and <code>model_type</code> doesn't fit this family. Pick only if you really know what you're doing.</td>
+</tr>
+<tr>
+<td>⚪ Grey — <em>compatible</em></td>
+<td>Not the top pick, but the detect-marker is present in the jinja or its <code>model_types</code> includes your <code>model_type</code>.</td>
+</tr>
+</tbody>
+</table></div>
+<p>The dropdown lists all supported formats (<code>chatml</code>, <code>llama3</code>, <code>gemma</code>, <code>mistral</code>, <code>phi3</code>, <code>zephyr</code>) with the same 🟢/⚪/🔴 indicators and the model families each one is used by. An expander below previews the actual <code>TEMPLATE</code> string and stop tokens that will be written. Detection lives in <code>pipeline/templates.py</code> → <code>detect_with_candidates()</code>; the seven family definitions are in the <code>CHAT_FORMATS</code> dict in the same file.</p>
+<p>If you don't change anything, the recommended format is used. If you override, an orange warning calls it out so it's never silent.</p>
+<h3 id="83-what-happens-on-import"><a class="toclink" href="#83-what-happens-on-import">8.3 What happens on Import</a></h3>
 <div class="table-wrap"><table>
 <thead>
 <tr>
@@ -716,13 +753,13 @@ streamlit run app.py
 </tr>
 <tr>
 <td>3</td>
-<td>Write a Modelfile and run <code>ollama create &lt;new-tag&gt; -f Modelfile</code></td>
+<td>Write a Modelfile (with explicit <code>TEMPLATE """..."""</code> + <code>PARAMETER stop "..."</code> from the picker above) and run <code>ollama create &lt;new-tag&gt; -f Modelfile</code></td>
 <td>Same</td>
 </tr>
 </tbody>
 </table></div>
 <p>Live log streams from each subprocess. On success, the new tag is also pre-selected in the Chat tab via <code>last_finetuned_model</code>.</p>
-<h3 id="83-required-disk-space"><a class="toclink" href="#83-required-disk-space">8.3 Required disk space</a></h3>
+<h3 id="84-required-disk-space"><a class="toclink" href="#84-required-disk-space">8.4 Required disk space</a></h3>
 <p>LoRA-adapter mode loads the full HF base model in fp16 during the merge step. Plan for:</p>
 <div class="table-wrap"><table>
 <thead>
@@ -1153,6 +1190,11 @@ python scripts/eval_finetuned.py --model &lt;tag&gt; --test data/test_prompts.js
 <td>from Configure tab</td>
 <td>Baked into the Modelfile.</td>
 </tr>
+<tr>
+<td><strong>Chat template</strong></td>
+<td>auto-detected (recommended chip is green)</td>
+<td>Sniffed from the model's own jinja (<code>chat_template.jinja</code> / <code>tokenizer_config.json</code> markers) and <code>config.json</code> <code>model_type</code>. Override via dropdown; orange chip = your pick, red = not applicable. Written into the Modelfile as <code>TEMPLATE """..."""</code> + <code>PARAMETER stop "..."</code>.</td>
+</tr>
 </tbody>
 </table></div>
 <h3 id="128-evaluate-tab"><a class="toclink" href="#128-evaluate-tab">12.8 Evaluate tab</a></h3>
@@ -1353,6 +1395,8 @@ Do not generate code or unrelated examples.
 </ul>
 <h3 id="import-adapter-base-hf-model-repo-is-required-to-merge-a-lora-adapter"><a class="toclink" href="#import-adapter-base-hf-model-repo-is-required-to-merge-a-lora-adapter">Import adapter: "Base HF model repo is required to merge a LoRA adapter"</a></h3>
 <p>The detected <code>adapter_config.json</code> had no <code>base_model_name_or_path</code>, or the field was blank. Enter the HuggingFace repo manually (e.g. <code>TinyLlama/TinyLlama-1.1B-Chat-v1.0</code>). The base must be the <em>exact</em> repo the adapter was trained against — using a different one will silently produce garbage outputs.</p>
+<h3 id="import-adapter-imported-model-replies-look-like-base-model-gibberish"><a class="toclink" href="#import-adapter-imported-model-replies-look-like-base-model-gibberish">Import adapter: imported model replies look like base-model gibberish</a></h3>
+<p>Almost always a wrong <code>TEMPLATE</code> in the generated Modelfile. The Import tab's chat-template picker writes <code>TEMPLATE """..."""</code> + <code>PARAMETER stop "..."</code> lines from the green-chip (recommended) format by default; if you overrode to an orange chip and the reply quality dropped, switch back to the recommended one and re-import. If the picker showed no green chip (no jinja <code>chat_template</code> and no recognised <code>model_type</code>), the folder is missing tokenizer metadata — copy <code>tokenizer_config.json</code> from the base HF repo into the adapter folder and click <em>Inspect path</em> again.</p>
 <h3 id="evaluate-test-file-has-no-valid-rows"><a class="toclink" href="#evaluate-test-file-has-no-valid-rows">Evaluate: "Test file has no valid rows"</a></h3>
 <p>Every row must have at least <code>user</code> and <code>expected</code> fields. The loader raises on the first bad line with <code>line N: missing required 'user' and/or 'expected' field</code>. Open the file and check the offending line.</p>
 <h3 id="evaluate-abort-button-doesnt-react-instantly"><a class="toclink" href="#evaluate-abort-button-doesnt-react-instantly">Evaluate: Abort button doesn't react instantly</a></h3>
