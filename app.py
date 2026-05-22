@@ -26,6 +26,7 @@ from pipeline import (
     converter,
     dataset_builder,
     document_loader,
+    eval_adapter,
     eval_runner,
     ollama_client,
     templates as chat_templates,
@@ -69,6 +70,82 @@ def _seed_state() -> None:
     st.session_state.setdefault("generation_model",
                                 st.session_state.get("ollama_model")
                                 or get_default_config()["ollama_model"])
+
+
+# ---------------------------------------------------------------------------
+# OS-native folder / file picker (local Streamlit only)
+# ---------------------------------------------------------------------------
+def _pick_path_via_dialog(kind: str = "folder",
+                          title: str = "",
+                          initial_dir: str = "") -> str:
+    """Open an OS-native folder/file dialog and return the chosen path.
+
+    Runs the tk dialog in a subprocess so each pick is a fresh interpreter —
+    Streamlit's script reruns interact badly with a long-lived tk root.
+    Empty string on cancel or any failure (e.g. no display in headless env).
+    """
+    import subprocess
+    import textwrap
+
+    code = textwrap.dedent(f"""
+        import sys
+        try:
+            import tkinter as tk
+            from tkinter import filedialog
+        except Exception:
+            sys.exit(0)
+        root = tk.Tk()
+        root.withdraw()
+        try:
+            root.wm_attributes("-topmost", 1)
+        except Exception:
+            pass
+        opts = {{"title": {title!r} or "Select"}}
+        if {initial_dir!r}:
+            opts["initialdir"] = {initial_dir!r}
+        if {kind!r} == "folder":
+            p = filedialog.askdirectory(**opts)
+        else:
+            p = filedialog.askopenfilename(**opts)
+        if p:
+            sys.stdout.write(p)
+        root.destroy()
+    """)
+    try:
+        out = subprocess.run(
+            [sys.executable, "-c", code],
+            capture_output=True, text=True, timeout=300,
+        )
+        return (out.stdout or "").strip()
+    except Exception:
+        return ""
+
+
+def _browse_button(label: str, *, state_key: str, kind: str,
+                   dialog_title: str, button_key: str) -> None:
+    """Render a "Browse..." button that updates `state_key` and reruns.
+
+    Place this in a narrow column NEXT TO the matching st.text_input that
+    binds the same `state_key`. On click, opens an OS-native picker; if the
+    user chooses something we write to session_state and rerun so the
+    text_input picks up the new value on the next script run.
+    """
+    if st.button(label, key=button_key, use_container_width=True,
+                 help="Opens an OS file/folder dialog."):
+        initial = st.session_state.get(state_key, "") or ""
+        if initial:
+            # If the current value is an existing file, start the dialog in
+            # its parent dir; if it's an existing dir, start there directly.
+            try:
+                ip = Path(initial)
+                initial = str(ip if ip.is_dir() else (ip.parent if ip.exists() else ""))
+            except Exception:
+                initial = ""
+        chosen = _pick_path_via_dialog(kind=kind, title=dialog_title,
+                                        initial_dir=initial)
+        if chosen:
+            st.session_state[state_key] = chosen
+            st.rerun()
 
 
 # ---------------------------------------------------------------------------
@@ -834,15 +911,29 @@ with tab_import:
     st.session_state.setdefault("import_path", "")
     st.session_state.setdefault("import_inspection", None)
     st.session_state.setdefault("import_template_detection", None)
+    st.session_state.setdefault("import_eval_result", None)
+    st.session_state.setdefault("import_eval_log", [])
     st.session_state.setdefault("import_log", [])
 
-    st.text_input(
-        "Path to fine-tuned folder",
-        key="import_path",
-        placeholder=r"C:\Users\you\Downloads\my_fine_tuned_model",
-        help="Folder containing adapter_config.json (LoRA) or config.json + "
-             "model weights (merged HF model).",
-    )
+    fld_cols = st.columns([0.78, 0.22])
+    with fld_cols[0]:
+        st.text_input(
+            "Path to fine-tuned folder",
+            key="import_path",
+            placeholder=r"C:\Users\you\Downloads\my_fine_tuned_model",
+            help="Folder containing adapter_config.json (LoRA) or config.json + "
+                 "model weights (merged HF model). Use Browse to pick instead.",
+        )
+    with fld_cols[1]:
+        # Spacer aligns the button with the input (the input's label adds height).
+        st.write(" ")
+        _browse_button(
+            ":material/folder_open: Browse folder…",
+            state_key="import_path",
+            kind="folder",
+            dialog_title="Select the fine-tuned model folder",
+            button_key="browse_import_folder",
+        )
 
     insp_cols = st.columns([0.25, 0.75])
     if insp_cols[0].button(":material/search: Inspect path",
@@ -863,6 +954,9 @@ with tab_import:
                 st.warning(f"Could not detect chat template: {exc}")
             # User picks again from scratch next time inspect is clicked.
             st.session_state.pop("import_chat_format_key", None)
+            # A new folder = stale eval result; clear it.
+            st.session_state["import_eval_result"] = None
+            st.session_state["import_eval_log"] = []
             st.session_state["import_log"] = []
             st.rerun()
 
@@ -1024,6 +1118,434 @@ with tab_import:
                     f"(`{rec_key}`). The Modelfile will be written with "
                     f"`{sel_key}` instead."
                 )
+
+        # -------------------------------------------------------------------
+        # Optional accuracy gate: load adapter (or merged) + run deterministic
+        # generation on N val rows, report exact-match. The verdict card has a
+        # CSS hover tooltip with a colored breakdown so you can decide whether
+        # to proceed with GGUF conversion or go back to fine-tuning.
+        # -------------------------------------------------------------------
+        with st.expander(
+            ":material/science: Check accuracy before converting "
+            "(optional, recommended)",
+            expanded=False,
+        ):
+            st.caption(
+                "Loads the adapter (or merged model) into transformers, runs "
+                "deterministic greedy generation on N validation rows, and "
+                "scores exact-match against the gold assistant message. Use "
+                "this to gate GGUF conversion — if accuracy is low, train "
+                "more instead of converting a bad model."
+            )
+
+            # Rank candidate val JSONLs. Different models (Qwen vs TinyLlama)
+            # need different val files — picking alphabetically would be wrong.
+            APP_DIR = Path(__file__).parent
+            _adapter_path = Path(
+                st.session_state["import_path"].strip().strip('"')
+            )
+            _candidates = eval_adapter.find_val_candidates(
+                _adapter_path,
+                base_model_repo=(
+                    st.session_state.get("import_base_model")
+                    or info.get("base_model")
+                ),
+                project_root=APP_DIR,
+            )
+
+            if _candidates:
+                st.caption(
+                    f"**Base model:** `"
+                    f"{(info.get('base_model') or 'unknown')}` &nbsp;·&nbsp; "
+                    f"showing {len(_candidates)} val-file candidate(s), "
+                    "best match first."
+                )
+
+                def _fmt_candidate(idx: int) -> str:
+                    c = _candidates[idx]
+                    badges = []
+                    if c["looks_like_val"]:
+                        badges.append("🟢 val/test")
+                    if c["model_match"]:
+                        badges.append("🎯 matches model")
+                    if c["source"] == "in-folder":
+                        badges.append("📦 in adapter folder")
+                    elif c["source"] == "sibling":
+                        badges.append("📂 next to adapter")
+                    elif c["source"] == "project-eval":
+                        badges.append("🧪 project eval set")
+                    name = Path(c["path"]).name
+                    return f"{' '.join(badges)}  {name}" if badges else name
+
+                idx_options = list(range(len(_candidates))) + [-1]
+
+                def _fmt_all(i: int) -> str:
+                    return "✏️  paste a custom path…" if i == -1 else _fmt_candidate(i)
+
+                pick = st.selectbox(
+                    "Validation JSONL",
+                    options=idx_options,
+                    format_func=_fmt_all,
+                    index=0,
+                    key="import_val_pick",
+                    help="Ranked best-first. Files inside the adapter folder "
+                         "or named like a val/test split rank highest. "
+                         "Filenames matching the base model family (qwen / "
+                         "tinyllama / llama…) get a 🎯 boost. Pick "
+                         '"paste a custom path" if your file is somewhere else.',
+                )
+
+                if pick == -1:
+                    val_cols = st.columns([0.75, 0.25])
+                    with val_cols[0]:
+                        st.text_input(
+                            "Validation JSONL path",
+                            value=st.session_state.get("import_val_jsonl", ""),
+                            key="import_val_jsonl",
+                            help='Row format: {"messages": [{"role":"system",...},'
+                                 ' {"role":"user",...}, {"role":"assistant",...}]}. '
+                                 "Use Browse to pick from disk.",
+                        )
+                    with val_cols[1]:
+                        st.write(" ")
+                        _browse_button(
+                            ":material/upload_file: Browse file…",
+                            state_key="import_val_jsonl",
+                            kind="file",
+                            dialog_title="Select validation JSONL",
+                            button_key="browse_import_val_custom",
+                        )
+                    # Free-text path — we can't infer if it's train or val.
+                    # Ask the user to confirm before running.
+                    st.radio(
+                        "Is this file a held-out validation split, or the "
+                        "training set the model already saw?",
+                        options=["held-out validation",
+                                 "training set (memorisation check)"],
+                        index=0,
+                        key="import_val_kind",
+                        horizontal=True,
+                        help="Picking the training set is fine for a quick "
+                             "smoke test — the score tells you if the model "
+                             "memorised anything — but it OVERSTATES real "
+                             "accuracy. Use a held-out split for an honest "
+                             "verdict.",
+                    )
+                else:
+                    chosen = _candidates[pick]
+                    # Push the resolved path into session_state so the runner
+                    # below sees it without needing another widget.
+                    st.session_state["import_val_jsonl"] = chosen["path"]
+                    st.caption(f"_Why this file:_ {chosen['reason']}")
+                    st.code(chosen["path"], language="text")
+
+                    # Surface UPFRONT what kind of file this is, so the user
+                    # interprets the resulting accuracy correctly.
+                    if chosen["looks_like_val"]:
+                        st.success(
+                            ":material/verified: **Held-out validation file** "
+                            "— the accuracy score will be a meaningful "
+                            "real-world estimate."
+                        )
+                        st.session_state["import_val_kind"] = (
+                            "held-out validation"
+                        )
+                    elif chosen["source"] in ("in-folder", "sibling"):
+                        st.warning(
+                            ":material/warning: **This looks like the "
+                            "TRAINING file** for this adapter (it lives "
+                            "inside / next to the adapter folder and its "
+                            "name doesn't match a val/test pattern). "
+                            "Accuracy will be inflated by memorisation — "
+                            "useful as a smoke test (\"did the model learn "
+                            "*anything*?\") but **not** an honest score. "
+                            "For a real verdict, create a held-out split "
+                            "(e.g. last 10–20% of rows saved as "
+                            "`fp_val.jsonl`) and re-run."
+                        )
+                        st.session_state["import_val_kind"] = (
+                            "training set (memorisation check)"
+                        )
+                    elif chosen["source"] == "project-eval":
+                        st.info(
+                            ":material/info: **Project eval-set file** "
+                            "(under `data/eval/`). Treated as held-out by "
+                            "convention, but make sure it wasn't included "
+                            "in the training data for this adapter."
+                        )
+                        st.session_state["import_val_kind"] = (
+                            "held-out validation"
+                        )
+                    else:
+                        st.info(
+                            ":material/info: This is a **project dataset "
+                            "file** — possibly the training set, possibly "
+                            "not. Confirm below:"
+                        )
+                        st.radio(
+                            "Is this file a held-out validation split, or "
+                            "the training set the model already saw?",
+                            options=["held-out validation",
+                                     "training set (memorisation check)"],
+                            index=1,
+                            key="import_val_kind",
+                            horizontal=True,
+                            help="Default: training set (the safer "
+                                 "interpretation). Change if you're sure "
+                                 "the model never saw these rows.",
+                        )
+            else:
+                st.warning(
+                    "No JSONL candidates found in the adapter folder, its "
+                    "parent dir, or the project's `data/` tree. Use Browse "
+                    "or paste an absolute path below."
+                )
+                val_cols2 = st.columns([0.75, 0.25])
+                with val_cols2[0]:
+                    st.text_input(
+                        "Validation JSONL path",
+                        value=st.session_state.get("import_val_jsonl", ""),
+                        key="import_val_jsonl",
+                        help='Row format: {"messages": [{"role":"system",...}, '
+                             '{"role":"user",...}, {"role":"assistant",...}]}.',
+                    )
+                with val_cols2[1]:
+                    st.write(" ")
+                    _browse_button(
+                        ":material/upload_file: Browse file…",
+                        state_key="import_val_jsonl",
+                        kind="file",
+                        dialog_title="Select validation JSONL",
+                        button_key="browse_import_val_fallback",
+                    )
+
+            cc1, cc2 = st.columns(2)
+            cc1.number_input(
+                "Samples to test", min_value=5, max_value=200,
+                value=30, step=5, key="import_val_samples",
+            )
+            cc2.number_input(
+                "Max new tokens per row", min_value=4, max_value=128,
+                value=16, step=4, key="import_val_max_tokens",
+                help="Short answers (yes/no, labels) → 16 is plenty. "
+                     "Sentence answers → 64+.",
+            )
+
+            run_eval = st.button(
+                ":material/play_arrow: Run accuracy check",
+                use_container_width=True,
+                key="run_import_eval",
+            )
+
+            eval_log_box = st.empty()
+            if st.session_state["import_eval_log"]:
+                eval_log_box.code(
+                    "\n".join(st.session_state["import_eval_log"][-200:]),
+                    language="text",
+                )
+
+            def _push_eval_log(msg: str) -> None:
+                st.session_state["import_eval_log"].append(msg)
+                eval_log_box.code(
+                    "\n".join(st.session_state["import_eval_log"][-200:]),
+                    language="text",
+                )
+
+            if run_eval:
+                st.session_state["import_eval_log"] = []
+                st.session_state["import_eval_result"] = None
+                _eval_mode = (
+                    chosen_mode if chosen_mode in ("adapter", "merged") else "auto"
+                )
+                try:
+                    res = eval_adapter.evaluate_adapter_accuracy(
+                        Path(
+                            st.session_state["import_path"].strip().strip('"')
+                        ),
+                        base_model_repo=(
+                            st.session_state.get("import_base_model") or None
+                        ),
+                        val_jsonl=Path(st.session_state["import_val_jsonl"]),
+                        n_samples=int(st.session_state["import_val_samples"]),
+                        max_new_tokens=int(
+                            st.session_state["import_val_max_tokens"]
+                        ),
+                        mode=_eval_mode,
+                        log_cb=_push_eval_log,
+                    )
+                    st.session_state["import_eval_result"] = res
+                except Exception as exc:
+                    _push_eval_log(
+                        f"\nERROR: {exc}\n{traceback.format_exc()}"
+                    )
+                    st.error(f"Accuracy check failed: {exc}")
+
+            res = st.session_state.get("import_eval_result")
+            if res and res["total"] == 0:
+                st.error(
+                    ":material/error: Accuracy check produced 0 usable rows — "
+                    "every line in the validation JSONL was skipped. "
+                    "Each line must be: "
+                    '`{"messages": [{"role":"system",...}, '
+                    '{"role":"user",...}, {"role":"assistant",...}]}` '
+                    "(system is optional; user + assistant are required). "
+                    "Check the log above for the per-row reason."
+                )
+            elif res:
+                acc = res["accuracy"]
+                is_train = (
+                    st.session_state.get("import_val_kind", "").startswith(
+                        "training"
+                    )
+                )
+                # Stricter thresholds on the training set: the model is
+                # supposed to memorise it, so even 80% is unremarkable.
+                if is_train:
+                    if acc >= 0.95:
+                        bg, fg, bd = "#dcfce7", "#166534", "#16a34a"
+                        label = ":material/check_circle: Memorised — adapter learned the training set"
+                        advice = ("≥95% on the training set means the LoRA "
+                                  "capacity was sufficient. Real-world "
+                                  "accuracy is unknown until you score "
+                                  "against a held-out split.")
+                    elif acc >= 0.7:
+                        bg, fg, bd = "#fef3c7", "#92400e", "#d97706"
+                        label = ":material/warning: Partial memorisation"
+                        advice = ("70–94% on the *training* set is weak — "
+                                  "the adapter only partly learned what it "
+                                  "saw. Increase epochs or LoRA rank.")
+                    else:
+                        bg, fg, bd = "#fee2e2", "#991b1b", "#dc2626"
+                        label = ":material/cancel: Adapter failed to learn"
+                        advice = ("<70% on the *training* set means "
+                                  "training didn't take. Check learning "
+                                  "rate, target_modules, and that the "
+                                  "right base model was attached.")
+                else:
+                    if acc >= 0.8:
+                        bg, fg, bd = "#dcfce7", "#166534", "#16a34a"
+                        label = ":material/check_circle: Good — safe to proceed"
+                        advice = ("Accuracy is healthy. Click "
+                                  "**Import & register with Ollama** below.")
+                    elif acc >= 0.6:
+                        bg, fg, bd = "#fef3c7", "#92400e", "#d97706"
+                        label = ":material/warning: Borderline"
+                        advice = ("60–79% is OK for hard or open-ended "
+                                  "tasks. For classification, train more "
+                                  "epochs / increase LoRA rank before "
+                                  "converting.")
+                    else:
+                        bg, fg, bd = "#fee2e2", "#991b1b", "#dc2626"
+                        label = ":material/cancel: Poor — go back and fine-tune more"
+                        advice = ("The adapter didn't learn enough. "
+                                  "Increase epochs, raise LoRA rank, or "
+                                  "add more training data, then re-import.")
+
+                wrong = res["total"] - res["correct"]
+                # Hover tooltip: colored chips for correct / wrong / N, the
+                # three threshold bands, then the advice.
+                tooltip_html = (
+                    '<div class="acc-tip">'
+                    '<div class="acc-tip__row">'
+                    '<span style="color:#86efac">'
+                    ':material/check: Correct</span>'
+                    f'<b>{res["correct"]}</b></div>'
+                    '<div class="acc-tip__row">'
+                    '<span style="color:#fca5a5">'
+                    ':material/close: Wrong</span>'
+                    f'<b>{wrong}</b></div>'
+                    '<div class="acc-tip__row">'
+                    '<span style="color:#93c5fd">N</span>'
+                    f'<b>{res["total"]}</b></div>'
+                    '<hr>'
+                    '<div style="color:#86efac">≥ 80% &nbsp;→ ✅ Ship it</div>'
+                    '<div style="color:#fde68a">60–79% → ⚠️ Borderline</div>'
+                    '<div style="color:#fca5a5">&lt; 60%&nbsp; → ❌ Train more</div>'
+                    '<hr>'
+                    f'<div class="acc-tip__advice">{advice}</div>'
+                    '</div>'
+                )
+
+                # Render: visible colored card + hover tooltip (pure CSS).
+                # Material icon syntax (:material/...) isn't parsed inside raw
+                # HTML — strip it down to text for the inline strings.
+                _strip_icons = (
+                    lambda s: s.replace(":material/check_circle: ", "✅ ")
+                               .replace(":material/warning: ", "⚠️ ")
+                               .replace(":material/cancel: ", "❌ ")
+                               .replace(":material/check: ", "✓ ")
+                               .replace(":material/close: ", "✗ ")
+                )
+                label_html = _strip_icons(label)
+                tooltip_html_plain = _strip_icons(tooltip_html)
+
+                st.markdown(
+                    f"""
+<style>
+.acc-card{{
+  position:relative;display:flex;align-items:center;gap:18px;
+  background:{bg};color:{fg};border:2px solid {bd};
+  border-radius:12px;padding:18px 20px;margin:14px 0 4px;cursor:help;
+}}
+.acc-card .acc-pct{{font-size:2.4rem;font-weight:800;line-height:1}}
+.acc-card .acc-msg{{font-size:1.05rem;font-weight:700}}
+.acc-card .acc-sub{{font-size:.86rem;opacity:.85;margin-top:3px}}
+.acc-card .acc-tip{{
+  display:none;position:absolute;top:calc(100% + 8px);left:0;z-index:30;
+  background:#1e293b;color:#fff;padding:12px 14px;border-radius:10px;
+  min-width:260px;font-size:.86rem;
+  box-shadow:0 12px 24px rgba(15,23,42,.30);
+}}
+.acc-card .acc-tip__row{{display:flex;justify-content:space-between;gap:14px;padding:2px 0}}
+.acc-card .acc-tip hr{{border:none;border-top:1px solid #475569;margin:8px 0}}
+.acc-card .acc-tip__advice{{color:#e2e8f0;line-height:1.45}}
+.acc-card:hover .acc-tip{{display:block}}
+.acc-card:focus-within .acc-tip{{display:block}}
+</style>
+<div class="acc-card" tabindex="0">
+  <div class="acc-pct">{acc:.0%}</div>
+  <div>
+    <div class="acc-msg">{label_html}</div>
+    <div class="acc-sub">
+      {res['correct']} / {res['total']} exact-match
+      &nbsp;·&nbsp; <em>{st.session_state.get('import_val_kind', 'unknown set')}</em>
+      &nbsp;·&nbsp; hover for the colored breakdown
+    </div>
+  </div>
+  {tooltip_html_plain}
+</div>
+                    """,
+                    unsafe_allow_html=True,
+                )
+
+                with st.expander(
+                    f"Show all {res['total']} examples", expanded=False
+                ):
+                    if not res["examples"]:
+                        st.warning(
+                            "No examples were scored — every row in the "
+                            "validation JSONL got skipped. Expected row "
+                            'format: `{"messages": [{"role":"system",...}, '
+                            '{"role":"user",...}, {"role":"assistant",...}]}`. '
+                            "Check the log above for the per-row reason "
+                            "(usually a missing field)."
+                        )
+                    else:
+                        df = pd.DataFrame(res["examples"])
+                        df["status"] = df["correct"].map(
+                            {True: "✓", False: "✗"}
+                        )
+                        st.dataframe(
+                            df[["status", "user", "gold", "pred"]].rename(
+                                columns={
+                                    "user": "Prompt",
+                                    "gold": "Expected",
+                                    "pred": "Predicted",
+                                }
+                            ),
+                            use_container_width=True,
+                            hide_index=True,
+                        )
 
         st.divider()
         run_import = st.button(
