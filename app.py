@@ -28,6 +28,7 @@ from pipeline import (
     document_loader,
     eval_runner,
     ollama_client,
+    templates as chat_templates,
     trainer,
 )
 
@@ -832,6 +833,7 @@ with tab_import:
 
     st.session_state.setdefault("import_path", "")
     st.session_state.setdefault("import_inspection", None)
+    st.session_state.setdefault("import_template_detection", None)
     st.session_state.setdefault("import_log", [])
 
     st.text_input(
@@ -851,6 +853,16 @@ with tab_import:
         else:
             info = converter.inspect_external_folder(Path(path_str))
             st.session_state["import_inspection"] = info
+            # Sniff the model's jinja chat_template for the recommended format.
+            try:
+                st.session_state["import_template_detection"] = (
+                    chat_templates.detect_with_candidates(Path(path_str))
+                )
+            except Exception as exc:
+                st.session_state["import_template_detection"] = None
+                st.warning(f"Could not detect chat template: {exc}")
+            # User picks again from scratch next time inspect is clicked.
+            st.session_state.pop("import_chat_format_key", None)
             st.session_state["import_log"] = []
             st.rerun()
 
@@ -929,6 +941,90 @@ with tab_import:
             height=100,
         )
 
+        # -------------------------------------------------------------------
+        # Chat template picker — auto-detected from the model's own jinja,
+        # with a dropdown override. Color code:
+        #   green  = recommended for this model
+        #   orange = user has picked a different one
+        #   red    = not applicable to this model family
+        # -------------------------------------------------------------------
+        detection = st.session_state.get("import_template_detection")
+        if detection and detection.get("candidates"):
+            st.subheader("Chat template")
+
+            rec_key = detection["recommended"]
+            sel_key = st.session_state.get("import_chat_format_key", rec_key)
+
+            chip_html_parts: list[str] = []
+            for k, c in detection["candidates"].items():
+                status = c["status"]
+                if k == sel_key and sel_key != rec_key:
+                    bg, label = "#ea580c", f"{k} (your pick)"          # orange
+                elif status == "recommended":
+                    bg, label = "#16a34a", f"{k} (recommended)"         # green
+                elif status == "not_applicable":
+                    bg, label = "#dc2626", f"{k} (n/a)"                 # red
+                else:
+                    bg, label = "#6b7280", k                             # grey
+                chip_html_parts.append(
+                    '<span style="background:{bg};color:white;padding:3px 10px;'
+                    'border-radius:12px;margin:0 6px 6px 0;font-size:0.85em;'
+                    'display:inline-block">{lbl}</span>'.format(bg=bg, lbl=label)
+                )
+            st.markdown("".join(chip_html_parts), unsafe_allow_html=True)
+
+            if detection.get("chat_template_found"):
+                st.caption(
+                    f"Detected `{rec_key}` via {detection['source']}. "
+                    "Green = recommended, orange = your override, red = "
+                    "doesn't fit this model family."
+                )
+            else:
+                st.caption(
+                    "No jinja chat_template found in folder — falling back to "
+                    f"`{rec_key}`. Override below if you know the right format."
+                )
+
+            format_keys = list(detection["candidates"].keys())
+
+            def _fmt_option(k: str) -> str:
+                c = detection["candidates"][k]
+                icon = {
+                    "recommended": "🟢",
+                    "compatible": "⚪",
+                    "not_applicable": "🔴",
+                }[c["status"]]
+                return f"{icon} {k} — {c['examples']}"
+
+            st.selectbox(
+                "Chat template to write into the Modelfile",
+                options=format_keys,
+                index=format_keys.index(rec_key),
+                format_func=_fmt_option,
+                key="import_chat_format_key",
+                help=(
+                    "Green ● = best match for this model (based on its own "
+                    "jinja chat_template). Red ● = not applicable to this "
+                    "model family — pick only if you really know what you're "
+                    "doing."
+                ),
+            )
+
+            sel_key = st.session_state["import_chat_format_key"]
+            sel_info = detection["candidates"][sel_key]
+            with st.expander(
+                f"Preview: {sel_key} template + stop tokens", expanded=False
+            ):
+                st.caption(sel_info["reason"])
+                st.caption(f"Stop tokens: {sel_info['stop']}")
+                st.code(sel_info["template"], language="jinja2")
+            if sel_key != rec_key:
+                st.warning(
+                    f"You've overridden the recommended template "
+                    f"(`{rec_key}`). The Modelfile will be written with "
+                    f"`{sel_key}` instead."
+                )
+
         st.divider()
         run_import = st.button(
             ":material/rocket_launch: Import & register with Ollama",
@@ -964,6 +1060,9 @@ with tab_import:
                     temperature=float(st.session_state["import_temperature"]),
                     top_p=float(st.session_state["import_top_p"]),
                     mode=chosen_mode,
+                    chat_format_key=st.session_state.get(
+                        "import_chat_format_key"
+                    ),
                     log_cb=_push_import_log,
                 )
                 st.session_state["last_finetuned_model"] = result["ollama_name"]

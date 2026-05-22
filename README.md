@@ -1,12 +1,21 @@
 # Ollama Fine-Tune Studio
 
 A Streamlit app that fine-tunes any Ollama model on your own documents using
-LoRA, converts the result to GGUF, registers it back with Ollama, and lets you
-chat with the new model to validate it.
+LoRA, converts the result to GGUF, registers it back with Ollama, lets you
+import adapters trained elsewhere (Colab, etc.), evaluates the fine-tune
+against a JSONL test set with an HTML report, and chats with the model.
 
 ```
 Upload docs → Generate Q&A → LoRA train → Merge → GGUF → ollama create → Chat
+                                  ↑                            ↑
+                                  └── Import adapter ──────────┤
+                                                               │
+                                                          Evaluate
+                                                          (HTML report)
 ```
+
+For the full reference (every parameter, every external API, troubleshooting),
+see [`USAGE.md`](USAGE.md) or open [`usage.html`](usage.html) in a browser.
 
 ---
 
@@ -62,6 +71,10 @@ ollama pull qwen2.5:0.5b-instruct
 ## 3. Start the app
 
 ```bat
+:: 1. Make sure Ollama is running (skip if it's a Windows service)
+ollama serve
+
+:: 2. Launch the Streamlit app
 run.bat
 ```
 
@@ -73,6 +86,9 @@ If you prefer to do it manually:
 call .venv\Scripts\activate.bat
 streamlit run app.py
 ```
+
+To stop the app, press <kbd>Ctrl</kbd>+<kbd>C</kbd> in the terminal where it's
+running. If you lost the terminal: `taskkill /F /IM streamlit.exe`.
 
 ---
 
@@ -100,7 +116,12 @@ streamlit run app.py
 > Tip: leave everything alone for your first run and use the **Reset all to
 > defaults** button if you want to start over.
 
-### Tab 2 — Fine-tune
+### Tab 2 — Dataset
+Combine generated and uploaded JSONL files, edit pairs inline, then **approve**
+the merged dataset for training. The Fine-tune tab stays locked until you
+approve a dataset here.
+
+### Tab 3 — Fine-tune
 Click **Start fine-tuning**. The 5-step pipeline runs with live logs and a
 progress bar:
 
@@ -118,7 +139,43 @@ The final tag looks like:
 qwen2.5-0.5b-instruct-ft-20260516-103212
 ```
 
-### Tab 3 — Chat & validate
+### Tab 4 — Import adapter
+Bring your own fine-tuned folder (e.g. from a Colab run or another machine) and
+register it with Ollama without re-training. Accepts both **LoRA adapter
+folders** (`adapter_config.json` + `adapter_model.safetensors`) and
+**already-merged HF model folders** (`config.json` + weights). Auto-detects
+which kind you provided; you can override via a dropdown. Steps:
+
+1. Paste the absolute path to your folder.
+2. Click **Inspect path** — shows detected kind, base model (from
+   `adapter_config.json`), and any warnings.
+3. Confirm the base HF repo, Ollama tag, quantization, system prompt.
+4. Click **Import & register with Ollama**.
+
+The merge + GGUF + `ollama create` steps reuse the same code as the Fine-tune
+tab.
+
+### Tab 5 — Evaluate
+Run any Ollama model against a JSONL test set, see live pass/fail counters,
+and download a self-contained HTML report.
+
+- **Test JSONL format:** one JSON per line with `user` and `expected`
+  (required) plus optional `system` and `task`. A sample download is exposed
+  in the tab.
+- **Abort** button — interrupts the run cleanly after the current row.
+- **HTML report** — collapsible row-level details, filter by pass/fail, no
+  external assets (open offline). Auto-saved to
+  `data/eval/reports/eval-<model>-<timestamp>.html`.
+
+For shell / CI use, `scripts/eval_finetuned.py` does the same thing without
+the UI:
+
+```bat
+python scripts/eval_finetuned.py --model <ollama-tag>
+python scripts/eval_finetuned.py --model <ollama-tag> --no-system
+```
+
+### Tab 6 — Chat & validate
 Pick the new fine-tuned model (it's pre-selected for you) and ask it questions
 about the documents you uploaded. Adjust temperature / top-p / max tokens in
 the *Inference defaults* expander on the Configure tab.
@@ -145,16 +202,25 @@ Once the base model is cached, subsequent runs are much faster.
 
 ```
 data/
-  uploads/        ← your documents (gitignored)
-  datasets/       ← generated training JSONL
-  checkpoints/    ← LoRA adapter weights
-  merged/         ← merged HF model (adapter folded into base)
-  gguf/           ← final GGUF + Modelfile
-llama.cpp/        ← cloned by setup.bat (gitignored)
+  uploads/                 ← your documents (gitignored)
+  datasets/                ← generated training JSONL
+  checkpoints/             ← LoRA adapter weights
+  merged/                  ← merged HF model (adapter folded into base)
+  gguf/                    ← final GGUF + Modelfile
+  test_prompts.jsonl       ← bundled sample test set for the Evaluate tab
+  eval/                    ← uploaded test files
+    reports/               ← HTML eval reports (one per run)
+llama.cpp/                 ← cloned by setup.bat (gitignored)
+scripts/
+  eval_finetuned.py        ← CLI counterpart of the Evaluate tab
+  build_usage_html.py      ← regenerates usage.html from USAGE.md
+colab_finetune.ipynb       ← optional: train on Colab, drop the folder
+                             into the Import adapter tab
 ```
 
 You can safely delete anything in `data/` to reclaim disk space; just keep
-the source documents in `data/uploads/` if you want to retrain.
+the source documents in `data/uploads/` if you want to retrain, and
+`data/eval/` if you want to keep evaluation history.
 
 ---
 
@@ -203,3 +269,7 @@ training.
   `pipeline/document_loader.py`.
 - **Tweak the Q&A generator prompt.** See `QA_SYSTEM_PROMPT` in
   `pipeline/dataset_builder.py`.
+- **Customize the eval HTML report.** CSS and template live in
+  `_REPORT_CSS` / `build_html_report` in `pipeline/eval_runner.py`.
+- **Programmatic adapter import.** `pipeline.converter.import_external_to_ollama`
+  is callable directly — pass a folder path, base model repo, and Ollama tag.

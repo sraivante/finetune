@@ -216,46 +216,64 @@ footer.page {
 <li><a href="#pull-at-least-one-ollama-model">Pull at least one Ollama model</a></li>
 </ul>
 </li>
-<li><a href="#3-application-stages">3. Application stages</a></li>
-<li><a href="#4-tab-1-configure">4. Tab 1 — Configure</a><ul>
+<li><a href="#3-how-to-run-the-app-quick-start">3. How to run the app (quick start)</a></li>
+<li><a href="#4-application-stages">4. Application stages</a></li>
+<li><a href="#5-tab-1-configure">5. Tab 1 — Configure</a><ul>
 <li><a href="#41-upload-training-documents">4.1 Upload training documents</a></li>
 <li><a href="#42-tuning-options">4.2 Tuning options</a></li>
 </ul>
 </li>
-<li><a href="#5-tab-2-dataset">5. Tab 2 — Dataset</a><ul>
+<li><a href="#6-tab-2-dataset">6. Tab 2 — Dataset</a><ul>
 <li><a href="#51-approval-banner">5.1 Approval banner</a></li>
 <li><a href="#52-section-1-add-new-dataset-files-optional">5.2 Section 1 — Add new dataset files (optional)</a></li>
 <li><a href="#53-section-2-choose-jsonl-files-to-combine">5.3 Section 2 — Choose JSONL files to combine</a></li>
 <li><a href="#54-section-3-review-merged-dataset">5.4 Section 3 — Review merged dataset</a></li>
 </ul>
 </li>
-<li><a href="#6-tab-3-fine-tune">6. Tab 3 — Fine-tune</a><ul>
+<li><a href="#7-tab-3-fine-tune">7. Tab 3 — Fine-tune</a><ul>
 <li><a href="#61-header-summary">6.1 Header summary</a></li>
 <li><a href="#62-the-pipeline-3-internal-steps">6.2 The pipeline (3 internal steps)</a></li>
 <li><a href="#63-training-loss-curve">6.3 Training loss curve</a></li>
 <li><a href="#64-live-log">6.4 Live log</a></li>
 </ul>
 </li>
-<li><a href="#7-tab-4-chat-validate">7. Tab 4 — Chat &amp; validate</a><ul>
-<li><a href="#71-manage-models-expander">7.1 Manage models expander</a></li>
-<li><a href="#72-chat-with-a-model">7.2 Chat with a model</a></li>
+<li><a href="#8-tab-4-import-adapter">8. Tab 4 — Import adapter</a><ul>
+<li><a href="#81-inputs">8.1 Inputs</a></li>
+<li><a href="#82-what-happens-on-import">8.2 What happens on Import</a></li>
+<li><a href="#83-required-disk-space">8.3 Required disk space</a></li>
 </ul>
 </li>
-<li><a href="#8-parameter-reference">8. Parameter reference</a><ul>
-<li><a href="#81-dataset-generation-configure">8.1 Dataset generation (Configure)</a></li>
-<li><a href="#82-lora-adapter-configure">8.2 LoRA adapter (Configure)</a></li>
-<li><a href="#83-training-loop-configure">8.3 Training loop (Configure)</a></li>
-<li><a href="#84-conversion-registration-configure">8.4 Conversion &amp; registration (Configure)</a></li>
-<li><a href="#85-inference-defaults-configure-used-by-chat-tab-and-embedded-in-the-new-models-modelfile">8.5 Inference defaults (Configure → used by Chat tab AND embedded in the new model's Modelfile)</a></li>
-<li><a href="#86-dataset-tab-additional-fields">8.6 Dataset tab — additional fields</a></li>
+<li><a href="#9-tab-5-evaluate">9. Tab 5 — Evaluate</a><ul>
+<li><a href="#91-inputs">9.1 Inputs</a></li>
+<li><a href="#92-expected-jsonl-format">9.2 Expected JSONL format</a></li>
+<li><a href="#93-during-the-run">9.3 During the run</a></li>
+<li><a href="#94-after-the-run-or-after-abort">9.4 After the run (or after Abort)</a></li>
+<li><a href="#95-the-html-report">9.5 The HTML report</a></li>
 </ul>
 </li>
-<li><a href="#9-external-apis-and-integrations">9. External APIs and integrations</a><ul>
+<li><a href="#10-tab-6-chat-validate">10. Tab 6 — Chat &amp; validate</a><ul>
+<li><a href="#101-manage-models-expander">10.1 Manage models expander</a></li>
+<li><a href="#102-chat-with-a-model">10.2 Chat with a model</a></li>
+</ul>
+</li>
+<li><a href="#11-command-line-evaluator">11. Command-line evaluator</a></li>
+<li><a href="#12-parameter-reference">12. Parameter reference</a><ul>
+<li><a href="#121-dataset-generation-configure">12.1 Dataset generation (Configure)</a></li>
+<li><a href="#122-lora-adapter-configure">12.2 LoRA adapter (Configure)</a></li>
+<li><a href="#123-training-loop-configure">12.3 Training loop (Configure)</a></li>
+<li><a href="#124-conversion-registration-configure">12.4 Conversion &amp; registration (Configure)</a></li>
+<li><a href="#125-inference-defaults-configure-used-by-chat-tab-and-embedded-in-the-new-models-modelfile">12.5 Inference defaults (Configure → used by Chat tab AND embedded in the new model's Modelfile)</a></li>
+<li><a href="#126-dataset-tab-additional-fields">12.6 Dataset tab — additional fields</a></li>
+<li><a href="#127-import-adapter-tab">12.7 Import adapter tab</a></li>
+<li><a href="#128-evaluate-tab">12.8 Evaluate tab</a></li>
+</ul>
+</li>
+<li><a href="#13-external-apis-and-integrations">13. External APIs and integrations</a><ul>
 <li><a href="#wire-format-used-internally">Wire format used internally</a></li>
 </ul>
 </li>
-<li><a href="#10-file-system-layout">10. File system layout</a></li>
-<li><a href="#11-troubleshooting">11. Troubleshooting</a><ul>
+<li><a href="#14-file-system-layout">14. File system layout</a></li>
+<li><a href="#15-troubleshooting">15. Troubleshooting</a><ul>
 <li><a href="#ollama-unreachable">"Ollama unreachable"</a></li>
 <li><a href="#no-hf-mapping-for-model">"No HF mapping for &lt;model&gt;"</a></li>
 <li><a href="#got-0-pairs-from-n-chunks">"Got 0 pairs from N chunks"</a></li>
@@ -267,6 +285,11 @@ footer.page {
 <li><a href="#unicodedecodeerror-charmap-on-windows">UnicodeDecodeError 'charmap' on Windows</a></li>
 <li><a href="#the-fine-tuned-model-hallucinates-answers-off-topic">The fine-tuned model hallucinates / answers off-topic</a></li>
 <li><a href="#streamlit-session-widget-error-cannot-be-modified-after-the-widget-x-is-instantiated">Streamlit session widget error: "cannot be modified after the widget X is instantiated"</a></li>
+<li><a href="#import-adapter-could-not-detect-folder-kind">Import adapter: "Could not detect folder kind"</a></li>
+<li><a href="#import-adapter-base-hf-model-repo-is-required-to-merge-a-lora-adapter">Import adapter: "Base HF model repo is required to merge a LoRA adapter"</a></li>
+<li><a href="#evaluate-test-file-has-no-valid-rows">Evaluate: "Test file has no valid rows"</a></li>
+<li><a href="#evaluate-abort-button-doesnt-react-instantly">Evaluate: Abort button doesn't react instantly</a></li>
+<li><a href="#evaluate-accuracy-is-far-below-100-even-on-examples-that-were-in-the-training-data">Evaluate: accuracy is far below 100% even on examples that were in the training data</a></li>
 </ul>
 </li>
 </ul>
@@ -359,17 +382,45 @@ cmake --build build --config Release
 ollama pull qwen3:14b                   # strong generator for Q&amp;A pairs
 </code></pre>
 <hr>
-<h2 id="3-application-stages"><a class="toclink" href="#3-application-stages">3. Application stages</a></h2>
-<p>The app is organized as four sequential tabs, designed to be used left-to-right. State (selected files, approved dataset, training log) is preserved across tabs.</p>
-<pre><code>┌───────────┐   ┌───────────┐   ┌───────────┐   ┌───────────────────┐
-│ Configure │ → │  Dataset  │ → │ Fine-tune │ → │  Chat &amp; validate  │
-└───────────┘   └───────────┘   └───────────┘   └───────────────────┘
-   upload         build,            train             query the new
-   docs +         review,           LoRA →            model, manage
-   set hyper-     approve           merge →           Ollama models,
-   parameters    JSONL              GGUF →            delete unwanted
-                                    register          ones
+<h2 id="3-how-to-run-the-app-quick-start"><a class="toclink" href="#3-how-to-run-the-app-quick-start">3. How to run the app (quick start)</a></h2>
+<p>After <a href="#2-installation">Installation</a> is done, <strong>launching the app is two commands</strong>:</p>
+<pre><code class="language-bat">:: 1. Make sure Ollama is running (skip if installed as a Windows service)
+ollama serve
+
+:: 2. Start the Streamlit app — opens http://localhost:8501 in your browser
+run.bat
 </code></pre>
+<p>That's it. The sequence inside <code>run.bat</code> is just:</p>
+<pre><code class="language-bat">call .venv\Scripts\activate.bat
+streamlit run app.py
+</code></pre>
+<p>So on macOS / Linux:</p>
+<pre><code class="language-bash">source .venv/bin/activate
+streamlit run app.py
+</code></pre>
+<p><strong>Stopping the app:</strong> click the terminal window that's running Streamlit and press <kbd>Ctrl</kbd>+<kbd>C</kbd>. If you lost track of the window, run <code>taskkill /F /IM streamlit.exe</code> on Windows, or <code>pkill -f streamlit</code> on macOS / Linux.</p>
+<p><strong>Recommended first-run path:</strong></p>
+<ol>
+<li><strong>Sidebar</strong> — pick an Ollama model to fine-tune (default <code>qwen2.5:0.5b-instruct</code> is CPU-friendly).</li>
+<li><strong>Configure</strong> tab — upload one small document, leave hyperparameters at defaults.</li>
+<li><strong>Dataset</strong> tab — <em>Generate from documents</em> → pick a strong generation model → <em>Generate now</em> → <em>Approve &amp; use for training</em>.</li>
+<li><strong>Fine-tune</strong> tab — <em>Start fine-tuning</em>. Wait for the loss curve and live log.</li>
+<li><strong>Chat &amp; validate</strong> tab — chat with the new model.</li>
+</ol>
+<p>If you already have a fine-tuned LoRA folder (e.g. from Colab), skip steps 2–4 and use the <strong>Import adapter</strong> tab instead.</p>
+<hr>
+<h2 id="4-application-stages"><a class="toclink" href="#4-application-stages">4. Application stages</a></h2>
+<p>The app is organized as six tabs, designed to be used left-to-right. State (selected files, approved dataset, training log, eval results) is preserved across tabs.</p>
+<pre><code>┌──────────┐  ┌─────────┐  ┌──────────┐  ┌────────────────┐  ┌──────────┐  ┌──────────────┐
+│ Configure│→│ Dataset │→│ Fine-tune│→│ Import adapter │→│ Evaluate │→│ Chat &amp; valid.│
+└──────────┘  └─────────┘  └──────────┘  └────────────────┘  └──────────┘  └──────────────┘
+   upload      build,        train         bring your own      run a         query the
+   docs +      review,       LoRA →        fine-tuned folder   JSONL test    new model,
+   set hyper-  approve       merge →       (LoRA or merged)    set →         manage,
+   parameters  JSONL         GGUF →        → GGUF → Ollama     HTML report   delete
+                             register
+</code></pre>
+<p>The middle row of tabs (Fine-tune <em>and</em> Import adapter) both end at the same place: a new tag in <code>ollama list</code>. Use <strong>Fine-tune</strong> when you want the full pipeline from documents → dataset → training → Ollama. Use <strong>Import adapter</strong> when training already happened elsewhere (Colab, another machine) and you just want the merge + GGUF + Ollama-register steps.</p>
 <p>A <strong>persistent sidebar</strong> is visible on every tab. It contains:</p>
 <ul>
 <li><strong>Ollama model to fine-tune</strong> — the <em>target</em> model that will be LoRA-tuned.</li>
@@ -377,7 +428,7 @@ ollama pull qwen3:14b                   # strong generator for Q&amp;A pairs
 <li><strong>Reset all to defaults</strong> button — restores every form field to the recommended preset.</li>
 </ul>
 <hr>
-<h2 id="4-tab-1-configure"><a class="toclink" href="#4-tab-1-configure">4. Tab 1 — Configure</a></h2>
+<h2 id="5-tab-1-configure"><a class="toclink" href="#5-tab-1-configure">5. Tab 1 — Configure</a></h2>
 <p>This tab has two purposes: collect training documents and let the user override training hyperparameters.</p>
 <h3 id="41-upload-training-documents"><a class="toclink" href="#41-upload-training-documents">4.1 Upload training documents</a></h3>
 <p>Drag-and-drop area accepts:</p>
@@ -445,7 +496,7 @@ ollama pull qwen3:14b                   # strong generator for Q&amp;A pairs
 <p><strong>Tip:</strong> Use the sidebar's <strong>Reset all to defaults</strong> button to reload the recommended preset at any time.</p>
 </blockquote>
 <hr>
-<h2 id="5-tab-2-dataset"><a class="toclink" href="#5-tab-2-dataset">5. Tab 2 — Dataset</a></h2>
+<h2 id="6-tab-2-dataset"><a class="toclink" href="#6-tab-2-dataset">6. Tab 2 — Dataset</a></h2>
 <p>The training set must be reviewed before any LoRA pass — bad pairs lead to model drift. This tab supports <strong>combining multiple sources</strong> (any mix of generated + uploaded + existing JSONL files) into a single approved dataset.</p>
 <h3 id="51-approval-banner"><a class="toclink" href="#51-approval-banner">5.1 Approval banner</a></h3>
 <p>At the top, a status banner tells you whether a dataset is approved:</p>
@@ -510,7 +561,7 @@ ollama pull qwen3:14b                   # strong generator for Q&amp;A pairs
 <li><strong>Approve &amp; use for training</strong> → saves AND locks this file as the approved training dataset. Banner turns green; Fine-tune unlocks.</li>
 </ul>
 <hr>
-<h2 id="6-tab-3-fine-tune"><a class="toclink" href="#6-tab-3-fine-tune">6. Tab 3 — Fine-tune</a></h2>
+<h2 id="7-tab-3-fine-tune"><a class="toclink" href="#7-tab-3-fine-tune">7. Tab 3 — Fine-tune</a></h2>
 <p>Once a dataset is approved, this tab runs the LoRA training pipeline and registers the result with Ollama.</p>
 <h3 id="61-header-summary"><a class="toclink" href="#61-header-summary">6.1 Header summary</a></h3>
 <p>Four metrics across the top show what's about to be trained:</p>
@@ -602,10 +653,197 @@ ollama pull qwen3:14b                   # strong generator for Q&amp;A pairs
 <h3 id="64-live-log"><a class="toclink" href="#64-live-log">6.4 Live log</a></h3>
 <p>Every <code>transformers</code> log line, model load message, GGUF conversion line, and Ollama subprocess line streams into the log box. The last 200 lines are kept; older lines scroll off.</p>
 <hr>
-<h2 id="7-tab-4-chat-validate"><a class="toclink" href="#7-tab-4-chat-validate">7. Tab 4 — Chat &amp; validate</a></h2>
-<h3 id="71-manage-models-expander"><a class="toclink" href="#71-manage-models-expander">7.1 Manage models expander</a></h3>
+<h2 id="8-tab-4-import-adapter"><a class="toclink" href="#8-tab-4-import-adapter">8. Tab 4 — Import adapter</a></h2>
+<p>Bring-your-own fine-tune entry point. Use this when training already happened <em>outside</em> this app — for example, on Google Colab, on a colleague's GPU box, or via the included <code>colab_finetune.ipynb</code> notebook. The tab accepts both <strong>LoRA adapter folders</strong> (PEFT output: <code>adapter_config.json</code> + <code>adapter_model.safetensors</code>) and <strong>merged HF model folders</strong> (<code>config.json</code> + <code>model.safetensors</code> / shards).</p>
+<h3 id="81-inputs"><a class="toclink" href="#81-inputs">8.1 Inputs</a></h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Field</th>
+<th>What it is</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Path to fine-tuned folder</strong></td>
+<td>Absolute path on this machine to the folder you want to import. The folder must contain either <code>adapter_config.json</code> (LoRA) <strong>or</strong> <code>config.json</code> + model weights (merged).</td>
+</tr>
+<tr>
+<td><strong>Inspect path</strong> button</td>
+<td>Reads the folder, detects whether it's an adapter or a merged model, extracts the base model from <code>adapter_config.json</code> / <code>config.json</code>, and reports any issues (missing tokenizer, missing weights).</td>
+</tr>
+<tr>
+<td><strong>Treat folder as</strong> dropdown</td>
+<td><em>Auto-detect (recommended)</em> / <em>LoRA adapter</em> / <em>Merged HF model</em>. Overrides auto-detection if needed.</td>
+</tr>
+<tr>
+<td><strong>Base HF model repo</strong></td>
+<td>Required for LoRA mode — pre-filled from <code>adapter_config.json</code>. Ignored for merged mode (the folder already has full weights).</td>
+</tr>
+<tr>
+<td><strong>New Ollama model name</strong></td>
+<td>Final tag in <code>ollama list</code>. Allowed chars: <code>a-z 0-9 . _ -</code>. Auto-suggested as <code>&lt;base&gt;-imported-&lt;timestamp&gt;</code>.</td>
+</tr>
+<tr>
+<td><strong>GGUF quantization</strong></td>
+<td>Same as Fine-tune tab — <code>q4_k_m</code> / <code>q5_k_m</code> / <code>q8_0</code> / <code>f16</code>.</td>
+</tr>
+<tr>
+<td><strong>Chat temperature / top-p / System prompt</strong></td>
+<td>Embedded in the generated Modelfile, becomes the default for chat.</td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="82-what-happens-on-import"><a class="toclink" href="#82-what-happens-on-import">8.2 What happens on Import</a></h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Step</th>
+<th>LoRA adapter folder</th>
+<th>Merged HF model folder</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Load base model from HuggingFace, attach the adapter via PEFT, run <code>merge_and_unload()</code>, save merged model to <code>data/merged/&lt;run-id&gt;/</code></td>
+<td>(skipped — folder is used directly)</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Run <code>llama.cpp/convert_hf_to_gguf.py</code> on the merged folder</td>
+<td>Same</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Write a Modelfile and run <code>ollama create &lt;new-tag&gt; -f Modelfile</code></td>
+<td>Same</td>
+</tr>
+</tbody>
+</table></div>
+<p>Live log streams from each subprocess. On success, the new tag is also pre-selected in the Chat tab via <code>last_finetuned_model</code>.</p>
+<h3 id="83-required-disk-space"><a class="toclink" href="#83-required-disk-space">8.3 Required disk space</a></h3>
+<p>LoRA-adapter mode loads the full HF base model in fp16 during the merge step. Plan for:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Base model size</th>
+<th>Disk needed during merge</th>
+<th>Final GGUF (q8_0)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0.5B</td>
+<td>~1 GB</td>
+<td>~600 MB</td>
+</tr>
+<tr>
+<td>1B (e.g. TinyLlama)</td>
+<td>~2 GB</td>
+<td>~1.1 GB</td>
+</tr>
+<tr>
+<td>3B</td>
+<td>~6 GB</td>
+<td>~3.2 GB</td>
+</tr>
+<tr>
+<td>7B</td>
+<td>~14 GB</td>
+<td>~7.3 GB</td>
+</tr>
+</tbody>
+</table></div>
+<p>Merged-mode imports skip the download — only GGUF conversion needs room.</p>
+<hr>
+<h2 id="9-tab-5-evaluate"><a class="toclink" href="#9-tab-5-evaluate">9. Tab 5 — Evaluate</a></h2>
+<p>Runs a JSONL test set against any Ollama model (typically the one you just fine-tuned or imported), tallies pass / fail per row, and produces a downloadable HTML report.</p>
+<h3 id="91-inputs"><a class="toclink" href="#91-inputs">9.1 Inputs</a></h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Field</th>
+<th>What it is</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Ollama model to test</strong></td>
+<td>Dropdown of every model in <code>ollama list</code>. Pre-selects <code>last_finetuned_model</code> if available.</td>
+</tr>
+<tr>
+<td><strong>Test JSONL</strong></td>
+<td>Dropdown listing every <code>.jsonl</code> in <code>data/</code> and <code>data/eval/</code> (newest first). Pick <em>"(upload new file)"</em> to drop in a fresh file — uploads are persisted to <code>data/eval/uploaded-&lt;timestamp&gt;.jsonl</code>.</td>
+</tr>
+<tr>
+<td><strong>Drop system prompt</strong></td>
+<td>Toggle. If checked, sends only the user message — useful for <em>demonstrating</em> how much the model depends on the training-time system prompt.</td>
+</tr>
+<tr>
+<td><strong>Temperature</strong></td>
+<td>Defaults to <strong>0.0</strong> for classification reproducibility.</td>
+</tr>
+<tr>
+<td><strong>Max new tokens</strong></td>
+<td>Defaults to 64. Increase if expected answers are long.</td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="92-expected-jsonl-format"><a class="toclink" href="#92-expected-jsonl-format">9.2 Expected JSONL format</a></h3>
+<p>One JSON object per line. <code>user</code> and <code>expected</code> are required; <code>system</code> and <code>task</code> are optional.</p>
+<pre><code class="language-jsonl">{&quot;task&quot;: &quot;investment_profile&quot;, &quot;system&quot;: &quot;You are a strict classifier. Map to Conservative -&gt; 4.5, Moderate -&gt; 6.5, Aggressive -&gt; 8.5. Output ONLY the number.&quot;, &quot;user&quot;: &quot;agresive&quot;, &quot;expected&quot;: &quot;8.5&quot;}
+{&quot;task&quot;: &quot;yes_no_intent&quot;, &quot;system&quot;: &quot;Return only yes, no, or RETRY.&quot;, &quot;user&quot;: &quot;abort it&quot;, &quot;expected&quot;: &quot;no&quot;}
+{&quot;task&quot;: &quot;free_form&quot;, &quot;user&quot;: &quot;what is 2 + 2?&quot;, &quot;expected&quot;: &quot;4&quot;}
+</code></pre>
+<p>A <strong>sample file download</strong> is exposed inside the "Expected JSONL format" expander on the tab.</p>
+<p>Comparison rule: case-insensitive, trims whitespace and a trailing period. So <code>4.5</code>, <code>4.5.</code>, and <code>4.5</code> all match.</p>
+<h3 id="93-during-the-run"><a class="toclink" href="#93-during-the-run">9.3 During the run</a></h3>
+<ul>
+<li>Live counters: <strong>Total / Passed / Failed / Done</strong> update after every row.</li>
+<li>Progress bar <code>done / total</code>.</li>
+<li><strong>Abort</strong> button — sets a flag the loop checks between rows. Worst-case lag is one Ollama call (typically 1–3 seconds).</li>
+</ul>
+<p>To make Abort actually work, the tab uses a <strong>one-row-per-rerun</strong> pattern: each Streamlit cycle processes a single test row, appends the result, and calls <code>st.rerun()</code>. This keeps the UI responsive to button clicks during long evals.</p>
+<h3 id="94-after-the-run-or-after-abort"><a class="toclink" href="#94-after-the-run-or-after-abort">9.4 After the run (or after Abort)</a></h3>
+<ul>
+<li><strong>Per-task breakdown</strong> table with a coloured accuracy progress column.</li>
+<li><strong>Download HTML report</strong> button — produces a self-contained <code>.html</code> file (no external assets, no JS required for the core UI; uses one inline script only for the <em>Filter passed/failed</em> buttons). The same report is auto-saved to <code>data/eval/reports/eval-&lt;model&gt;-&lt;timestamp&gt;.html</code>.</li>
+<li><strong>In-app preview</strong> expander listing the first 50 failed rows with their <code>user</code>, <code>expected</code>, and <code>got</code> values.</li>
+</ul>
+<h3 id="95-the-html-report"><a class="toclink" href="#95-the-html-report">9.5 The HTML report</a></h3>
+<p>Open the downloaded file directly in any browser — works offline.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Section</th>
+<th>What it shows</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Summary cards</td>
+<td>Total / Passed / Failed / Accuracy %, plus the model name, timestamp, and whether the system prompt was sent or dropped.</td>
+</tr>
+<tr>
+<td>Per-task breakdown</td>
+<td>Each task with passed / failed / total / accuracy. Accuracy is colour-coded (green ≥ 90%, amber 70–90%, red &lt; 70%).</td>
+</tr>
+<tr>
+<td>Per-prompt results</td>
+<td>One collapsible row per test case. Closed view: PASS / FAIL badge, task, user input, expected vs got. Click to expand — shows the full <code>system</code>, <code>user</code>, <code>expected</code>, <code>got</code>, and <code>error</code> text in <code>&lt;pre&gt;</code> blocks.</td>
+</tr>
+<tr>
+<td>Filter buttons</td>
+<td><em>All / Failed only / Passed only</em> — toggles row visibility via a single inline script.</td>
+</tr>
+</tbody>
+</table></div>
+<hr>
+<h2 id="10-tab-6-chat-validate"><a class="toclink" href="#10-tab-6-chat-validate">10. Tab 6 — Chat &amp; validate</a></h2>
+<h3 id="101-manage-models-expander"><a class="toclink" href="#101-manage-models-expander">10.1 Manage models expander</a></h3>
 <p>A collapsible panel at the top lists every Ollama model on this machine with: name, size, <strong>delete</strong> button. Clicking delete opens a confirmation dialog — only after explicit confirmation is <code>ollama delete</code> called.</p>
-<h3 id="72-chat-with-a-model"><a class="toclink" href="#72-chat-with-a-model">7.2 Chat with a model</a></h3>
+<h3 id="102-chat-with-a-model"><a class="toclink" href="#102-chat-with-a-model">10.2 Chat with a model</a></h3>
 <ul>
 <li><strong>Model to chat with</strong> dropdown — lists every model live (refreshed each render). Defaults to the most-recently-fine-tuned model if one exists.</li>
 <li><strong>Clear chat</strong> button — wipes the conversation buffer.</li>
@@ -614,9 +852,24 @@ ollama pull qwen3:14b                   # strong generator for Q&amp;A pairs
 </ul>
 <p>The conversation uses the inference defaults you configured (temperature, top-p, max new tokens).</p>
 <hr>
-<h2 id="8-parameter-reference"><a class="toclink" href="#8-parameter-reference">8. Parameter reference</a></h2>
+<h2 id="11-command-line-evaluator"><a class="toclink" href="#11-command-line-evaluator">11. Command-line evaluator</a></h2>
+<p>If you'd rather run the eval from a shell (for CI, scripts, or just a tighter feedback loop), <code>scripts/eval_finetuned.py</code> does the same thing as the Evaluate tab without the UI.</p>
+<pre><code class="language-bat">:: From the project root, with .venv activated
+python scripts/eval_finetuned.py --model &lt;ollama-tag&gt;
+
+:: Drop the system prompt to see how much the model depends on it
+python scripts/eval_finetuned.py --model &lt;ollama-tag&gt; --no-system
+
+:: Other knobs
+python scripts/eval_finetuned.py --model &lt;tag&gt; --test data/test_prompts.jsonl ^
+                                 --temperature 0 --num-predict 32 --show-misses 50
+</code></pre>
+<p>Output: running accuracy every 10 rows, then a per-task breakdown table and the first N wrong answers. Exits with code 0 if every test passed, 1 if any failed.</p>
+<p>The bundled <code>data/test_prompts.jsonl</code> is a 114-row sample (3 per task) drawn from a multi-classifier training set — replace it with your own to evaluate a different fine-tune.</p>
+<hr>
+<h2 id="12-parameter-reference"><a class="toclink" href="#12-parameter-reference">12. Parameter reference</a></h2>
 <p>Every form field, in tab order.</p>
-<h3 id="81-dataset-generation-configure"><a class="toclink" href="#81-dataset-generation-configure">8.1 Dataset generation (Configure)</a></h3>
+<h3 id="121-dataset-generation-configure"><a class="toclink" href="#121-dataset-generation-configure">12.1 Dataset generation (Configure)</a></h3>
 <div class="table-wrap"><table>
 <thead>
 <tr>
@@ -659,7 +912,7 @@ ollama pull qwen3:14b                   # strong generator for Q&amp;A pairs
 </tr>
 </tbody>
 </table></div>
-<h3 id="82-lora-adapter-configure"><a class="toclink" href="#82-lora-adapter-configure">8.2 LoRA adapter (Configure)</a></h3>
+<h3 id="122-lora-adapter-configure"><a class="toclink" href="#122-lora-adapter-configure">12.2 LoRA adapter (Configure)</a></h3>
 <div class="table-wrap"><table>
 <thead>
 <tr>
@@ -696,7 +949,7 @@ ollama pull qwen3:14b                   # strong generator for Q&amp;A pairs
 </tr>
 </tbody>
 </table></div>
-<h3 id="83-training-loop-configure"><a class="toclink" href="#83-training-loop-configure">8.3 Training loop (Configure)</a></h3>
+<h3 id="123-training-loop-configure"><a class="toclink" href="#123-training-loop-configure">12.3 Training loop (Configure)</a></h3>
 <div class="table-wrap"><table>
 <thead>
 <tr>
@@ -781,7 +1034,7 @@ ollama pull qwen3:14b                   # strong generator for Q&amp;A pairs
 </tr>
 </tbody>
 </table></div>
-<h3 id="84-conversion-registration-configure"><a class="toclink" href="#84-conversion-registration-configure">8.4 Conversion &amp; registration (Configure)</a></h3>
+<h3 id="124-conversion-registration-configure"><a class="toclink" href="#124-conversion-registration-configure">12.4 Conversion &amp; registration (Configure)</a></h3>
 <div class="table-wrap"><table>
 <thead>
 <tr>
@@ -806,7 +1059,7 @@ ollama pull qwen3:14b                   # strong generator for Q&amp;A pairs
 </tr>
 </tbody>
 </table></div>
-<h3 id="85-inference-defaults-configure-used-by-chat-tab-and-embedded-in-the-new-models-modelfile"><a class="toclink" href="#85-inference-defaults-configure-used-by-chat-tab-and-embedded-in-the-new-models-modelfile">8.5 Inference defaults (Configure → used by Chat tab AND embedded in the new model's Modelfile)</a></h3>
+<h3 id="125-inference-defaults-configure-used-by-chat-tab-and-embedded-in-the-new-models-modelfile"><a class="toclink" href="#125-inference-defaults-configure-used-by-chat-tab-and-embedded-in-the-new-models-modelfile">12.5 Inference defaults (Configure → used by Chat tab AND embedded in the new model's Modelfile)</a></h3>
 <div class="table-wrap"><table>
 <thead>
 <tr>
@@ -843,7 +1096,7 @@ ollama pull qwen3:14b                   # strong generator for Q&amp;A pairs
 </tr>
 </tbody>
 </table></div>
-<h3 id="86-dataset-tab-additional-fields"><a class="toclink" href="#86-dataset-tab-additional-fields">8.6 Dataset tab — additional fields</a></h3>
+<h3 id="126-dataset-tab-additional-fields"><a class="toclink" href="#126-dataset-tab-additional-fields">12.6 Dataset tab — additional fields</a></h3>
 <div class="table-wrap"><table>
 <thead>
 <tr>
@@ -860,8 +1113,87 @@ ollama pull qwen3:14b                   # strong generator for Q&amp;A pairs
 </tr>
 </tbody>
 </table></div>
+<h3 id="127-import-adapter-tab"><a class="toclink" href="#127-import-adapter-tab">12.7 Import adapter tab</a></h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Default</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Path to fine-tuned folder</strong></td>
+<td>—</td>
+<td>Absolute path on the local machine.</td>
+</tr>
+<tr>
+<td><strong>Treat folder as</strong></td>
+<td>Auto-detect</td>
+<td>Override only if auto-detection picked the wrong kind.</td>
+</tr>
+<tr>
+<td><strong>Base HF model repo</strong></td>
+<td>from <code>adapter_config.json</code></td>
+<td>Required for LoRA mode. Must be the <em>exact</em> repo the adapter was trained against.</td>
+</tr>
+<tr>
+<td><strong>New Ollama model name</strong></td>
+<td><code>&lt;base&gt;-imported-&lt;ts&gt;</code></td>
+<td>Final tag in <code>ollama list</code>.</td>
+</tr>
+<tr>
+<td><strong>GGUF quantization</strong></td>
+<td><code>q4_k_m</code></td>
+<td>Same fallback rules as the Fine-tune tab.</td>
+</tr>
+<tr>
+<td><strong>Chat temperature / top-p / System prompt</strong></td>
+<td>from Configure tab</td>
+<td>Baked into the Modelfile.</td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="128-evaluate-tab"><a class="toclink" href="#128-evaluate-tab">12.8 Evaluate tab</a></h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Default</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Ollama model to test</strong></td>
+<td><code>last_finetuned_model</code></td>
+<td>Any model in <code>ollama list</code>.</td>
+</tr>
+<tr>
+<td><strong>Test JSONL</strong></td>
+<td>newest file in <code>data/eval/</code></td>
+<td>Or <em>"(upload new file)"</em> to drop one in.</td>
+</tr>
+<tr>
+<td><strong>Drop system prompt</strong></td>
+<td>off</td>
+<td>Useful diagnostic — see how reliant the model is on its training-time system prompt.</td>
+</tr>
+<tr>
+<td><strong>Temperature</strong></td>
+<td>0.0</td>
+<td>Use 0 for classification reproducibility.</td>
+</tr>
+<tr>
+<td><strong>Max new tokens</strong></td>
+<td>64</td>
+<td>Bump for longer expected answers.</td>
+</tr>
+</tbody>
+</table></div>
 <hr>
-<h2 id="9-external-apis-and-integrations"><a class="toclink" href="#9-external-apis-and-integrations">9. External APIs and integrations</a></h2>
+<h2 id="13-external-apis-and-integrations"><a class="toclink" href="#13-external-apis-and-integrations">13. External APIs and integrations</a></h2>
 <p>The application does NOT call any cloud LLM API. All inference happens via local Ollama. The only external network calls are:</p>
 <div class="table-wrap"><table>
 <thead>
@@ -917,30 +1249,43 @@ ollama pull qwen3:14b                   # strong generator for Q&amp;A pairs
 </code></pre>
 <p>The trainer formats each example through the tokenizer's chat template, computes loss on the full sequence (including the user turn — standard SFT setup).</p>
 <hr>
-<h2 id="10-file-system-layout"><a class="toclink" href="#10-file-system-layout">10. File system layout</a></h2>
+<h2 id="14-file-system-layout"><a class="toclink" href="#14-file-system-layout">14. File system layout</a></h2>
 <pre><code>finetune/
 ├── app.py                  # Streamlit entry — all UI lives here
 ├── config.py               # DEFAULT_CONFIG + Ollama → HF mapping
 ├── requirements.txt
 ├── setup.bat / run.bat
+├── colab_finetune.ipynb    # Optional: train a LoRA adapter on Colab,
+│                           # then drop the folder into the Import adapter tab
 ├── pipeline/
 │   ├── __init__.py
 │   ├── ollama_client.py    # list / generate / chat-stream / create / delete wrappers
 │   ├── document_loader.py  # PDF/DOCX/TXT/MD/CSV/JSON/PY parsing + chunking
 │   ├── dataset_builder.py  # JSONL Q&amp;A generation using an Ollama model
 │   ├── trainer.py          # PEFT LoRA training, gradient checkpointing, metric callback
-│   └── converter.py        # LoRA merge → GGUF via llama.cpp → Ollama register
+│   ├── converter.py        # LoRA merge → GGUF via llama.cpp → Ollama register;
+│   │                       # also `inspect_external_folder` + `import_external_to_ollama`
+│   │                       # for the Import adapter tab
+│   └── eval_runner.py      # Load test JSONL, run rows against Ollama,
+│                           # summarize, build self-contained HTML report
+├── scripts/
+│   ├── build_usage_html.py # Renders USAGE.md → usage.html
+│   └── eval_finetuned.py   # Command-line counterpart of the Evaluate tab
 ├── data/                   # All gitignored
 │   ├── uploads/            # Your source documents
 │   ├── datasets/           # Generated/uploaded/edited JSONL files
 │   ├── checkpoints/        # LoRA adapter weights, one folder per run
 │   ├── merged/             # Merged HF models (adapter folded into base)
-│   └── gguf/               # GGUF + Modelfile pairs
+│   ├── gguf/               # GGUF + Modelfile pairs
+│   ├── test_prompts.jsonl  # Bundled sample test set (3 rows × 38 tasks)
+│   └── eval/
+│       ├── *.jsonl         # Uploaded / saved test files
+│       └── reports/        # Self-contained HTML eval reports
 └── llama.cpp/              # Cloned automatically on first Fine-tune (gitignored)
 </code></pre>
-<p>You can freely delete anything in <code>data/</code> to reclaim disk; just keep <code>data/uploads/</code> if you want to regenerate datasets.</p>
+<p>You can freely delete anything in <code>data/</code> to reclaim disk; just keep <code>data/uploads/</code> if you want to regenerate datasets and <code>data/eval/</code> if you want to keep evaluation history.</p>
 <hr>
-<h2 id="11-troubleshooting"><a class="toclink" href="#11-troubleshooting">11. Troubleshooting</a></h2>
+<h2 id="15-troubleshooting"><a class="toclink" href="#15-troubleshooting">15. Troubleshooting</a></h2>
 <h3 id="ollama-unreachable"><a class="toclink" href="#ollama-unreachable">"Ollama unreachable"</a></h3>
 <p><code>ollama serve</code> isn't running, or the daemon crashed.</p>
 <pre><code class="language-bash">ollama serve            # starts the daemon in the foreground
@@ -1000,8 +1345,29 @@ Do not generate code or unrelated examples.
 <p>The system prompt is embedded in the GGUF Modelfile at registration time, so every subsequent chat session uses it automatically.</p>
 <h3 id="streamlit-session-widget-error-cannot-be-modified-after-the-widget-x-is-instantiated"><a class="toclink" href="#streamlit-session-widget-error-cannot-be-modified-after-the-widget-x-is-instantiated">Streamlit session widget error: "cannot be modified after the widget X is instantiated"</a></h3>
 <p>This is a Streamlit rule: any widget with a <code>key=</code> parameter "owns" that key. You can't assign to <code>st.session_state[key]</code> after the widget renders. In this codebase we use a separate non-widget-bound key (e.g. <code>dataset_pool</code>) plus a versioned widget key (e.g. <code>ms_files_v0</code>, <code>ms_files_v1</code>) to programmatically refresh the multi-select.</p>
+<h3 id="import-adapter-could-not-detect-folder-kind"><a class="toclink" href="#import-adapter-could-not-detect-folder-kind">Import adapter: "Could not detect folder kind"</a></h3>
+<p>The folder you pointed at has neither <code>adapter_config.json</code> (LoRA) nor <code>config.json</code> + model weights (merged HF). Two common causes:</p>
+<ul>
+<li>You pointed at the <em>parent</em> directory of a Trainer output. Try the <code>checkpoint-XXXX/</code> subdirectory inside, or the named adapter folder produced by <code>trainer.save_model(...)</code>.</li>
+<li>The save was interrupted mid-write — only one or two files are present. Re-run the training and let it finish.</li>
+</ul>
+<h3 id="import-adapter-base-hf-model-repo-is-required-to-merge-a-lora-adapter"><a class="toclink" href="#import-adapter-base-hf-model-repo-is-required-to-merge-a-lora-adapter">Import adapter: "Base HF model repo is required to merge a LoRA adapter"</a></h3>
+<p>The detected <code>adapter_config.json</code> had no <code>base_model_name_or_path</code>, or the field was blank. Enter the HuggingFace repo manually (e.g. <code>TinyLlama/TinyLlama-1.1B-Chat-v1.0</code>). The base must be the <em>exact</em> repo the adapter was trained against — using a different one will silently produce garbage outputs.</p>
+<h3 id="evaluate-test-file-has-no-valid-rows"><a class="toclink" href="#evaluate-test-file-has-no-valid-rows">Evaluate: "Test file has no valid rows"</a></h3>
+<p>Every row must have at least <code>user</code> and <code>expected</code> fields. The loader raises on the first bad line with <code>line N: missing required 'user' and/or 'expected' field</code>. Open the file and check the offending line.</p>
+<h3 id="evaluate-abort-button-doesnt-react-instantly"><a class="toclink" href="#evaluate-abort-button-doesnt-react-instantly">Evaluate: Abort button doesn't react instantly</a></h3>
+<p>By design. The tab processes one test row per Streamlit rerun, so Abort takes effect after the <em>current</em> Ollama call returns (typically 1–3 seconds). If a single call is hanging for much longer, the bottleneck is Ollama, not the abort path.</p>
+<h3 id="evaluate-accuracy-is-far-below-100-even-on-examples-that-were-in-the-training-data"><a class="toclink" href="#evaluate-accuracy-is-far-below-100-even-on-examples-that-were-in-the-training-data">Evaluate: accuracy is far below 100% even on examples that were in the training data</a></h3>
+<p>Common — see the eval-failure analysis we keep in mind when reviewing reports:</p>
+<ol>
+<li><strong>LoRA capacity too small.</strong> If <code>target_modules</code> was left at the PEFT default (<code>q_proj</code>, <code>v_proj</code> only), the adapter has ~0.2% of params trainable. Re-train with all linear layers: <code>["q_proj","k_proj","v_proj","o_proj","gate_proj","up_proj","down_proj"]</code>.</li>
+<li><strong>Too few epochs with <code>constant</code> LR.</strong> Try 8–12 epochs with <code>cosine</code> scheduler so the LR decays toward the end.</li>
+<li><strong>Class imbalance.</strong> If one label dominates a task (e.g. 30 <code>yes</code> / 23 <code>no</code> / 7 <code>RETRY</code>), the model learns the prior. Downsample majority or oversample minority.</li>
+<li><strong>High-cardinality tasks under-sampled.</strong> A task with 31 distinct outputs in 44 rows can't be learned reliably. Generate more examples per task, or split into smaller single-output classifiers.</li>
+<li><strong>Base model too small.</strong> TinyLlama 1.1B struggles with numeric-threshold reasoning and 37 simultaneous classifier heads. Qwen2.5-1.5B-Instruct or 3B-Instruct typically lifts accuracy by 5–10 points on the same data.</li>
+</ol>
 <hr>
-<p><em>Last updated: 2026-05.</em></p>
+<p><em>Last updated: 2026-05-21.</em></p>
   </main>
 </div>
 <footer class="page">Standalone documentation — open this file directly in any browser. No internet required.</footer>

@@ -12,7 +12,7 @@ from pathlib import Path
 from typing import Callable, Literal
 
 from config import GGUF_DIR, LLAMA_CPP_DIR, MERGED_DIR
-from . import ollama_client
+from . import ollama_client, templates as chat_templates
 
 FolderKind = Literal["adapter", "merged", "unknown"]
 
@@ -157,15 +157,27 @@ def _find_quantize_binary() -> str | None:
 
 
 def write_modelfile(gguf_path: Path, system_prompt: str,
-                    temperature: float, top_p: float) -> Path:
+                    temperature: float, top_p: float,
+                    *,
+                    template: str | None = None,
+                    stop: list[str] | None = None) -> Path:
+    """Write an Ollama Modelfile next to the GGUF.
+
+    `template` + `stop` are optional but strongly recommended: Ollama does NOT
+    reliably apply a model's embedded jinja chat_template, so without an
+    explicit TEMPLATE the prompt can reach the model unwrapped.
+    """
     mf = gguf_path.with_suffix(".Modelfile")
-    content = (
-        f'FROM "{gguf_path.as_posix()}"\n'
-        f'PARAMETER temperature {temperature}\n'
-        f'PARAMETER top_p {top_p}\n'
-        f'SYSTEM """{system_prompt}"""\n'
-    )
-    mf.write_text(content, encoding="utf-8")
+    lines: list[str] = [f'FROM "{gguf_path.as_posix()}"']
+    if template:
+        lines.append(f'TEMPLATE """{template}"""')
+    for s in (stop or []):
+        lines.append(f'PARAMETER stop "{s}"')
+    lines.append(f'PARAMETER temperature {temperature}')
+    lines.append(f'PARAMETER top_p {top_p}')
+    if system_prompt:
+        lines.append(f'SYSTEM """{system_prompt}"""')
+    mf.write_text("\n".join(lines) + "\n", encoding="utf-8")
     return mf
 
 
@@ -282,6 +294,7 @@ def import_external_to_ollama(
     temperature: float = 0.3,
     top_p: float = 0.9,
     mode: FolderKind = "unknown",
+    chat_format_key: str | None = None,
     log_cb: Callable[[str], None] | None = None,
 ) -> dict:
     """Take a user-supplied folder and register it with Ollama.
@@ -334,11 +347,24 @@ def import_external_to_ollama(
     gguf_path = convert_to_gguf(merged_dir, requested_gguf,
                                 quant=quant, log_cb=log_cb)
 
+    # Pick the chat template: explicit user override first, else auto-detect
+    # from the merged folder's jinja chat_template / config.json.
+    if chat_format_key and chat_format_key in chat_templates.CHAT_FORMATS:
+        fmt = chat_templates.CHAT_FORMATS[chat_format_key]
+        chat_template, chat_stop = fmt["template"], fmt["stop"]
+        log(f"Using user-selected chat format: {chat_format_key}")
+    else:
+        det = chat_templates.detect_chat_format(merged_dir)
+        chat_template, chat_stop = det["template"], det["stop"]
+        log(f"Auto-detected chat format: {det['key']} (via {det['source']})")
+
     modelfile = write_modelfile(
         gguf_path,
         system_prompt=system_prompt,
         temperature=temperature,
         top_p=top_p,
+        template=chat_template,
+        stop=chat_stop,
     )
     ollama_tag = _slugify_for_ollama(ollama_name)
     register_with_ollama(ollama_tag, modelfile, log_cb=log_cb)
